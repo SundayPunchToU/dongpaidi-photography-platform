@@ -1,0 +1,100 @@
+<!-- 得物风格瀑布流 -->
+<view class="waterfall-container">
+  <!-- 左列 -->
+  <view class="waterfall-column left-column">
+    <view
+      class="work-card {{item.isNew ? 'new-upload' : ''}}"
+      wx:for="{{leftColumn}}"
+      wx:key="id"
+      data-work="{{item}}"
+      bindtap="onWorkTap"
+      style="margin-bottom: 12rpx;"
+    >
+      <!-- 图片区域 -->
+      <view class="image-container">
+        <image
+          class="work-image"
+          src="{{item.coverImage || item.images[0]}}"
+          mode="aspectFill"
+          style="height: {{item.imageHeight}}rpx;"
+        />
+        <!-- 点赞按钮 -->
+        <view
+          class="like-btn {{item.isLiked ? 'liked' : ''}}"
+          data-work="{{item}}"
+          bindtap="onLikeTap"
+        >
+          <t-icon name="heart-filled" size="28rpx" />
+        </view>
+      </view>
+
+      <!-- 信息区域 -->
+      <view class="card-info">
+        <text class="work-title">{{item.title}}</text>
+        <view class="user-section" data-user-id="{{item.userId}}" bindtap="onUserTap">
+          <image class="user-avatar" src="{{item.userAvatar}}" />
+          <text class="user-name">{{item.userName}}</text>
+        </view>
+        <view class="work-stats">
+          <view class="stat-item">
+            <t-icon name="heart-filled" size="20rpx" />
+            <text class="stat-text">{{item.stats.likes}}</text>
+          </view>
+          <view class="stat-item">
+            <t-icon name="chat" size="20rpx" />
+            <text class="stat-text">{{item.stats.comments}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 右列 -->
+  <view class="waterfall-column right-column">
+    <view
+      class="work-card {{item.isNew ? 'new-upload' : ''}}"
+      wx:for="{{rightColumn}}"
+      wx:key="id"
+      data-work="{{item}}"
+      bindtap="onWorkTap"
+      style="margin-bottom: 12rpx;"
+    >
+      <!-- 图片区域 -->
+      <view class="image-container">
+        <image
+          class="work-image"
+          src="{{item.coverImage || item.images[0]}}"
+          mode="aspectFill"
+          style="height: {{item.imageHeight}}rpx;"
+        />
+        <!-- 点赞按钮 -->
+        <view
+          class="like-btn {{item.isLiked ? 'liked' : ''}}"
+          data-work="{{item}}"
+          bindtap="onLikeTap"
+        >
+          <t-icon name="heart-filled" size="28rpx" />
+        </view>
+      </view>
+
+      <!-- 信息区域 -->
+      <view class="card-info">
+        <text class="work-title">{{item.title}}</text>
+        <view class="user-section" data-user-id="{{item.userId}}" bindtap="onUserTap">
+          <image class="user-avatar" src="{{item.userAvatar}}" />
+          <text class="user-name">{{item.userName}}</text>
+        </view>
+        <view class="work-stats">
+          <view class="stat-item">
+            <t-icon name="heart-filled" size="20rpx" />
+            <text class="stat-text">{{item.stats.likes}}</text>
+          </view>
+          <view class="stat-item">
+            <t-icon name="chat" size="20rpx" />
+            <text class="stat-text">{{item.stats.comments}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

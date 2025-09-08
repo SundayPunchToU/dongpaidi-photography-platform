@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: dongpaidi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dongpaidi_dev
+      POSTGRES_USER: dongpaidi_dev
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - dongpaidi-network
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: dongpaidi-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - dongpaidi-network
+
+  # PostgreSQL管理界面 (可选)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: dongpaidi-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@dongpaidi.com
+      PGADMIN_DEFAULT_PASSWORD: admin123456
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - dongpaidi-network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+
+networks:
+  dongpaidi-network:
+    driver: bridge

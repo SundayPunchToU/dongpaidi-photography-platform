@@ -1,0 +1,29 @@
+<!--登录页面-->
+<view class="login-page">
+  <!-- 导航栏 -->
+  <view class="login-header">
+    <view class="back-btn" bindtap="onBack">
+      <t-icon name="chevron-left" size="48rpx" />
+    </view>
+    <text class="login-title">登录</text>
+  </view>
+
+  <view class="login-form">
+    <view class="form-title">欢迎回来</view>
+    <t-input value="{{phone}}" placeholder="请输入手机号" bind:input="onPhoneInput" />
+    <t-input value="{{code}}" placeholder="请输入验证码" bind:input="onCodeInput" />
+    <t-button theme="primary" loading="{{loading}}" bindtap="onLogin" disabled="{{!phone || !code}}">
+      {{loading ? '登录中...' : '登录'}}
+    </t-button>
+
+    <!-- 快速登录（测试用） -->
+    <t-button theme="outline" size="medium" bindtap="onQuickLogin" style="margin-top: 20rpx;">
+      快速登录（测试）
+    </t-button>
+
+    <view class="login-tips">
+      <text>还没有账号？</text>
+      <text class="register-link" bindtap="onRegister">立即注册</text>
+    </view>
+  </view>
+</view>

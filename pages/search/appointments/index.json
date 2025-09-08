@@ -1,0 +1,15 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "搜索约拍",
+  "navigationBarBackgroundColor": "#3a3a3a",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#fafafa",
+  "usingComponents": {
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "appointment-card": "/components/appointment-card/index",
+    "smart-loading": "/components/smart-loading/index"
+  }
+}

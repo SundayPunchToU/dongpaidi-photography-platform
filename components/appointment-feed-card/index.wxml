@@ -1,0 +1,81 @@
+<!-- 朋友圈风格的约拍卡片 -->
+<view class="feed-card" bindtap="onCardTap">
+  <!-- 用户信息头部 -->
+  <view class="feed-header">
+    <view class="user-info" data-user-id="{{appointment.publisherId}}" bindtap="onUserTap">
+      <image class="user-avatar" src="{{appointment.publisherAvatar || '/static/avatars/default.jpg'}}" />
+      <view class="user-details">
+        <text class="user-name">{{appointment.publisherName || '用户'}}</text>
+        <text class="publish-time">{{appointment.timeText || '2024-02-26'}}</text>
+      </view>
+    </view>
+    <view class="share-type">
+      <text class="share-tag {{appointment.shareType || 'model_thanks'}}">
+        {{appointment.shareType === 'model_thanks' ? '感谢摄影师' :
+          appointment.shareType === 'photographer_praise' ? '夸赞模特' :
+          appointment.shareType === 'location_praise' ? '地点推荐' :
+          appointment.shareType === 'equipment_praise' ? '设备分享' : '成长分享'}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 文案内容 -->
+  <view class="feed-content">
+    <text class="content-text">{{appointment.feedText || '南宁约拍滴滴滴，找长期合作的互勉摄特，也接单'}}</text>
+  </view>
+
+  <!-- 图片网格 -->
+  <view
+    class="image-grid large"
+    wx:if="{{appointment.previewImages && appointment.previewImages.length > 0}}"
+  >
+    <view
+      class="image-item"
+      wx:for="{{appointment.previewImages}}"
+      wx:for-index="idx"
+      wx:key="*this"
+      wx:if="{{idx < 9}}"
+    >
+      <image
+        class="grid-image"
+        src="{{item}}"
+        mode="aspectFill"
+      />
+      <view class="more-count" wx:if="{{idx === 8 && appointment.totalImages > 9}}">
+        +{{appointment.totalImages - 9}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 地点标签 -->
+  <view class="location-tag" wx:if="{{appointment.location}}">
+    <t-icon name="location" size="20rpx" color="#f39c12" />
+    <text class="location-text">{{appointment.location.city || '未知地点'}}</text>
+  </view>
+
+  <!-- 拍摄信息 -->
+  <view class="shoot-info">
+    <view class="info-item">
+      <t-icon name="camera" size="24rpx" color="#666" />
+      <text class="info-text">{{appointment.equipment || 'Canon EOS R5'}}</text>
+    </view>
+    <view class="info-item">
+      <t-icon name="money" size="24rpx" color="#666" />
+      <text class="info-text">{{appointment.budgetText || '互勉'}}</text>
+    </view>
+  </view>
+
+  <!-- 互动区域 -->
+  <view class="feed-actions">
+    <view class="action-stats">
+      <view class="stat-item">
+        <t-icon name="chat" size="24rpx" color="#999" />
+        <text class="stat-text">{{appointment.comments || appointment.applicantCount || 10}}</text>
+      </view>
+      <view class="stat-item">
+        <t-icon name="heart" size="24rpx" color="#999" />
+        <text class="stat-text">{{appointment.likes || 35}}</text>
+      </view>
+    </view>
+  </view>
+</view>

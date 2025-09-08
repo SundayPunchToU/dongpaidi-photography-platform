@@ -1,0 +1,351 @@
+<!-- 现代化发布页面 -->
+<view class="modern-publish-page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar">
+    <view class="nav-left" bindtap="goBack">
+      <text style="font-size: 32rpx; color: #fff;">←</text>
+    </view>
+    <text class="nav-title">创作发布</text>
+    <view class="nav-right"></view>
+  </view>
+
+  <!-- 发布类型选择 -->
+  <view class="publish-type-section">
+    <view class="type-header">
+      <text class="type-title">选择发布类型</text>
+      <text class="type-subtitle">分享您的摄影创作</text>
+    </view>
+
+    <view class="type-cards">
+      <view
+        class="type-card {{publishType === 'photographer' ? 'active' : ''}}"
+        data-type="photographer"
+        bindtap="onTypeSelect"
+      >
+        <view class="card-icon photographer">
+          <text style="font-size: 48rpx;">📷</text>
+        </view>
+        <view class="card-content">
+          <text class="card-title">摄影师作品</text>
+          <text class="card-desc">分享您的摄影作品，展示专业技能</text>
+        </view>
+        <view class="card-badge" wx:if="{{publishType === 'photographer'}}">
+          <text style="font-size: 24rpx; color: #fff;">✓</text>
+        </view>
+      </view>
+
+      <view
+        class="type-card {{publishType === 'model' ? 'active' : ''}}"
+        data-type="model"
+        bindtap="onTypeSelect"
+      >
+        <view class="card-icon model">
+          <text style="font-size: 48rpx;">👤</text>
+        </view>
+        <view class="card-content">
+          <text class="card-title">模特资料</text>
+          <text class="card-desc">展示个人形象，寻找拍摄合作机会</text>
+        </view>
+        <view class="card-badge" wx:if="{{publishType === 'model'}}">
+          <text style="font-size: 24rpx; color: #fff;">✓</text>
+        </view>
+      </view>
+
+      <view
+        class="type-card {{publishType === 'works' ? 'active' : ''}}"
+        data-type="works"
+        bindtap="onTypeSelect"
+      >
+        <view class="card-icon works">
+          <t-icon name="image" size="48rpx" color="#fff" />
+        </view>
+        <view class="card-content">
+          <text class="card-title">摄影作品</text>
+          <text class="card-desc">分享精彩摄影作品，获得社区反馈</text>
+        </view>
+        <view class="card-badge" wx:if="{{publishType === 'works'}}">
+          <text style="font-size: 24rpx; color: #fff;">✓</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 发布内容区域 -->
+  <view class="publish-content" wx:if="{{publishType}}">
+    <!-- 寻找摄影师 -->
+    <view class="content-panel photographer-panel" wx:if="{{publishType === 'photographer'}}">
+      <view class="panel-header">
+        <view class="header-icon">📷</view>
+        <view class="header-text">
+          <text class="panel-title">发布拍摄需求</text>
+          <text class="panel-subtitle">详细描述你的拍摄需求，吸引优秀摄影师</text>
+        </view>
+      </view>
+
+      <!-- 基础信息卡片 -->
+      <view class="info-card">
+        <view class="card-header">
+          <text class="card-title">📝 基础信息</text>
+        </view>
+        <view class="card-content">
+          <!-- 拍摄主题 -->
+          <view class="form-item">
+            <text class="form-label">拍摄主题</text>
+            <input
+              class="form-input"
+              placeholder="请输入拍摄主题，如：个人写真、情侣照等"
+              value="{{formData.title}}"
+              bindinput="onInputChange"
+              data-field="title"
+            />
+          </view>
+
+          <!-- 详细描述 -->
+          <view class="form-item">
+            <text class="form-label">详细描述</text>
+            <textarea
+              class="form-textarea"
+              placeholder="详细描述拍摄需求、风格偏好、特殊要求等"
+              value="{{formData.description}}"
+              bindinput="onInputChange"
+              data-field="description"
+              maxlength="500"
+            />
+          </view>
+        </view>
+      </view>
+
+      <!-- 预算与时间卡片 -->
+      <view class="info-card">
+        <view class="card-header">
+          <text class="card-title">💰 预算与时间</text>
+        </view>
+        <view class="card-content">
+          <!-- 预算范围 -->
+          <view class="form-item">
+            <text class="form-label">预算范围</text>
+            <view class="budget-options">
+              <view
+                class="budget-option {{formData.budget === '500-1000' ? 'active' : ''}}"
+                data-budget="500-1000"
+                bindtap="onBudgetSelect"
+              >500-1000元</view>
+              <view
+                class="budget-option {{formData.budget === '1000-2000' ? 'active' : ''}}"
+                data-budget="1000-2000"
+                bindtap="onBudgetSelect"
+              >1000-2000元</view>
+              <view
+                class="budget-option {{formData.budget === '2000-5000' ? 'active' : ''}}"
+                data-budget="2000-5000"
+                bindtap="onBudgetSelect"
+              >2000-5000元</view>
+              <view
+                class="budget-option {{formData.budget === '5000+' ? 'active' : ''}}"
+                data-budget="5000+"
+                bindtap="onBudgetSelect"
+              >5000元以上</view>
+            </view>
+          </view>
+
+          <!-- 拍摄时间 -->
+          <view class="form-item">
+            <text class="form-label">期望时间</text>
+            <picker mode="date" bindchange="onDateChange">
+              <view class="picker-input">
+                <text class="picker-text">{{formData.shootingTime || '选择拍摄日期'}}</text>
+                <text class="picker-icon">📅</text>
+              </view>
+            </picker>
+          </view>
+
+          <!-- 拍摄地点 -->
+          <view class="form-item">
+            <text class="form-label">拍摄地点</text>
+            <view class="location-picker" bindtap="gotoMap">
+              <text class="location-text">{{formData.location || '选择拍摄地点'}}</text>
+              <text class="picker-icon">📍</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 寻找模特 -->
+    <view class="content-panel model-panel" wx:if="{{publishType === 'model'}}">
+      <view class="panel-header">
+        <text class="panel-title">发布约拍需求</text>
+        <text class="panel-subtitle">描述你的拍摄计划，寻找合适的模特</text>
+      </view>
+
+      <view class="form-section">
+        <!-- 拍摄风格 -->
+        <view class="form-item">
+          <text class="form-label">拍摄风格</text>
+          <view class="style-options">
+            <view class="style-option">人像写真</view>
+            <view class="style-option">时尚大片</view>
+            <view class="style-option">古风汉服</view>
+            <view class="style-option">街拍潮流</view>
+            <view class="style-option">艺术创意</view>
+            <view class="style-option">商业拍摄</view>
+          </view>
+        </view>
+
+        <!-- 模特要求 -->
+        <view class="form-item">
+          <text class="form-label">模特要求</text>
+          <view class="requirement-options">
+            <view class="requirement-item">
+              <text class="req-label">性别：</text>
+              <view class="gender-options">
+                <view class="gender-option">不限</view>
+                <view class="gender-option">女性</view>
+                <view class="gender-option">男性</view>
+              </view>
+            </view>
+            <view class="requirement-item">
+              <text class="req-label">年龄：</text>
+              <input class="req-input" placeholder="如：20-30岁" />
+            </view>
+            <view class="requirement-item">
+              <text class="req-label">身高：</text>
+              <input class="req-input" placeholder="如：160cm以上" />
+            </view>
+          </view>
+        </view>
+
+        <!-- 拍摄时间 -->
+        <view class="form-item">
+          <text class="form-label">拍摄时间</text>
+          <picker mode="date" bindchange="onDateChange">
+            <view class="picker-input">
+              <text class="picker-text">选择拍摄日期</text>
+              <text style="font-size: 24rpx; color: #999;">📅</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 拍摄地点 -->
+        <view class="form-item">
+          <text class="form-label">拍摄地点</text>
+          <view class="location-input" bindtap="gotoMap">
+            <text class="location-text">选择拍摄地点</text>
+            <text style="font-size: 24rpx; color: #999;">📍</text>
+          </view>
+        </view>
+
+        <!-- 报酬说明 -->
+        <view class="form-item">
+          <text class="form-label">报酬说明</text>
+          <input class="form-input" placeholder="请输入报酬金额或其他形式，如：TFP、500元/小时等" />
+        </view>
+
+        <!-- 详细说明 -->
+        <view class="form-item">
+          <text class="form-label">详细说明</text>
+          <textarea
+            class="form-textarea"
+            placeholder="请详细描述拍摄计划、风格要求、注意事项等"
+            maxlength="500"
+          ></textarea>
+        </view>
+      </view>
+    </view>
+
+    <!-- 摄影作品 -->
+    <view class="content-panel works-panel" wx:if="{{publishType === 'works'}}">
+      <view class="panel-header">
+        <text class="panel-title">分享摄影作品</text>
+        <text class="panel-subtitle">展示你的摄影技艺，与社区分享创意</text>
+      </view>
+
+      <view class="form-section">
+        <!-- 图片上传 -->
+        <view class="form-item">
+          <text class="form-label">上传作品 <text class="required">*</text></text>
+          <view class="upload-section">
+            <!-- 使用新的图片上传组件 -->
+            <image-uploader
+              max-count="9"
+              quality="0.8"
+              enable-compress="{{true}}"
+              max-width="1080"
+              value="{{uploadedImages}}"
+              bind:change="onImageChange"
+            />
+          </view>
+          <view class="upload-tips">
+            <text>• 最多上传9张图片，自动压缩优化</text>
+            <text>• 支持JPG、PNG、WebP格式</text>
+            <text>• 建议上传高质量原图</text>
+          </view>
+        </view>
+
+        <!-- 作品标题 -->
+        <view class="form-item">
+          <text class="form-label">作品标题</text>
+          <input class="form-input" placeholder="为你的作品起一个吸引人的标题" />
+        </view>
+
+        <!-- 拍摄参数 -->
+        <view class="form-item">
+          <text class="form-label">拍摄参数</text>
+          <view class="camera-info">
+            <input class="param-input" placeholder="相机型号" />
+            <input class="param-input" placeholder="镜头" />
+            <input class="param-input" placeholder="光圈" />
+            <input class="param-input" placeholder="快门" />
+            <input class="param-input" placeholder="ISO" />
+          </view>
+        </view>
+
+        <!-- 拍摄地点 -->
+        <view class="form-item">
+          <text class="form-label">拍摄地点</text>
+          <view class="location-input" bindtap="gotoMap">
+            <text class="location-text">添加拍摄地点</text>
+            <text style="font-size: 24rpx; color: #999;">📍</text>
+          </view>
+        </view>
+
+        <!-- 作品标签 -->
+        <view class="form-item">
+          <text class="form-label">作品标签</text>
+          <view class="tags-section">
+            <view class="tag-item" wx:for="{{tags}}" wx:key="index">
+              <text>#{{item}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 作品描述 -->
+        <view class="form-item">
+          <text class="form-label">作品描述</text>
+          <textarea
+            class="form-textarea"
+            placeholder="分享你的创作灵感、拍摄故事或技术心得"
+            maxlength="500"
+          ></textarea>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作区域 -->
+  <view class="bottom-actions" wx:if="{{publishType}}">
+    <view class="action-buttons">
+      <view class="draft-btn" bindtap="saveDraft">
+        <text style="font-size: 24rpx; color: #666;">📄</text>
+        <text>存草稿</text>
+      </view>
+      <view class="publish-btn {{canPublish ? '' : 'disabled'}}" bindtap="onPublish">
+        <text style="font-size: 24rpx; color: #1a1a1a;">🚀</text>
+        <text>立即发布</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 全局消息组件 -->
+<t-message id="t-message" />

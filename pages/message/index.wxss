@@ -1,0 +1,167 @@
+/* 私信页面样式 - 优化布局间距 */
+page {
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* 消息页面容器 */
+.message-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  /* 底部为tabBar留出空间 */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 112rpx);
+}
+
+/* 自定义导航栏 - 极致紧凑布局 */
+.custom-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 极致减少间距，消除空白 */
+  padding-top: calc(env(safe-area-inset-top) + 8rpx);
+  padding-bottom: 2rpx;
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+  /* 最小化高度 */
+  min-height: calc(env(safe-area-inset-top) + 72rpx);
+  /* 添加轻微阴影增强层次感 */
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+}
+
+.nav-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+}
+
+.profile-btn {
+  width: 68rpx;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 3rpx 12rpx rgba(0,0,0,0.1);
+  border: 1rpx solid rgba(0,0,0,0.08);
+  /* 确保按钮完全在导航栏内容区域 */
+  flex-shrink: 0;
+}
+
+.profile-btn:active {
+  background: linear-gradient(135deg, #e8eaed 0%, #dadce0 100%);
+  transform: scale(0.88);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
+}
+
+.nav-bar {
+  border-bottom: 1rpx solid #e7e7e7;
+}
+
+.message-list {
+  /* 消息列表占据剩余空间，极致紧凑 */
+  flex: 1;
+  overflow-y: auto;
+  background-color: #fff;
+  /* 超激进方案：完全覆盖导航栏边框和间距 */
+  margin-top: -5rpx;
+  /* 完全消除顶部内边距 */
+  padding-top: 0rpx;
+  /* 确保消息项之间的间距合理 */
+  padding-bottom: 20rpx;
+  /* 确保消息列表在导航栏之上 */
+  position: relative;
+  z-index: 1;
+}
+
+.avatar {
+  border-radius: 50% !important;
+}
+
+.content > view {
+  width: 560rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content.unread > view {
+  width: 510rpx;
+}
+
+/* 消息项优化 */
+.t-cell {
+  /* 减少消息项的内边距，让布局更紧凑 */
+  padding-top: 24rpx !important;
+  padding-bottom: 24rpx !important;
+}
+
+/* 第一个消息项特殊处理 - 完全紧贴导航栏 */
+.t-cell:first-child {
+  padding-top: 4rpx !important;
+  margin-top: 0rpx !important;
+  /* 确保第一个消息项紧贴导航栏 */
+  border-top: none !important;
+}
+
+/* 最后一个消息项特殊处理 */
+.t-cell:last-child {
+  padding-bottom: 32rpx !important;
+}
+
+/* 优化头像大小和间距 */
+.avatar {
+  border-radius: 50% !important;
+  width: 96rpx !important;
+  height: 96rpx !important;
+}
+
+/* 优化消息内容区域 */
+.t-cell__content {
+  margin-left: 24rpx !important;
+}
+
+/* 极致间距优化 - 消除所有空白 */
+.message-page .custom-nav {
+  /* 进一步减少导航栏底部间距 */
+  padding-bottom: 0rpx !important;
+  /* 移除边框，避免视觉分割 */
+  border-bottom: none !important;
+}
+
+.message-page .message-list {
+  /* 极致负边距，完全消除空白 */
+  margin-top: -8rpx !important;
+  /* 添加顶部边框替代导航栏边框 */
+  border-top: 1rpx solid #f0f0f0;
+}
+
+/* 响应式优化 - 小屏幕设备 */
+@media (max-height: 667px) {
+  .custom-nav {
+    padding-top: calc(env(safe-area-inset-top) + 6rpx);
+    padding-bottom: 0rpx;
+    min-height: calc(env(safe-area-inset-top) + 64rpx);
+  }
+
+  .message-list {
+    margin-top: -10rpx !important;
+    padding-top: 0rpx;
+  }
+
+  .t-cell {
+    padding-top: 18rpx !important;
+    padding-bottom: 18rpx !important;
+  }
+
+  .t-cell:first-child {
+    padding-top: 2rpx !important;
+  }
+}

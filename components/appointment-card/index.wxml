@@ -1,0 +1,79 @@
+<view class="appointment-card" bindtap="onCardTap">
+  <!-- 用户信息 -->
+  <view class="card-header">
+    <view class="user-info" data-user-id="{{appointment.publisherId}}" bindtap="onUserTap">
+      <image class="user-avatar" src="{{appointment.publisherAvatar}}" />
+      <view class="user-details">
+        <text class="user-name">{{appointment.publisherName}}</text>
+        <text class="publish-time">{{appointment.createdAt}}</text>
+      </view>
+    </view>
+    <view class="appointment-type">
+      <text class="type-tag {{appointment.type === 'photographer_seek_model' ? 'photographer' : 'model'}}">
+        {{appointment.type === 'photographer_seek_model' ? '摄影师找模特' : '模特找摄影师'}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 约拍信息 -->
+  <view class="card-content">
+    <text class="appointment-title">{{appointment.title}}</text>
+    <text class="appointment-desc">{{appointment.description}}</text>
+
+    <!-- 示例图片 -->
+    <view
+      class="sample-images {{appointment.sampleImages.length === 1 ? 'single-image' : appointment.sampleImages.length === 2 ? 'two-images' : ''}}"
+      wx:if="{{appointment.sampleImages && appointment.sampleImages.length > 0}}"
+    >
+      <image
+        class="sample-image"
+        src="{{item}}"
+        mode="aspectFill"
+        wx:for="{{appointment.sampleImages}}"
+        wx:key="*this"
+      />
+    </view>
+
+    <!-- 标签 -->
+    <view class="style-tags" wx:if="{{appointment.style.length > 0}}">
+      <text class="style-tag" wx:for="{{appointment.style}}" wx:key="*this">{{item}}</text>
+    </view>
+  </view>
+
+  <!-- 约拍详情 -->
+  <view class="card-details">
+    <view class="detail-row">
+      <view class="detail-item">
+        <t-icon name="location" size="28rpx" color="#666" />
+        <text class="detail-text">{{appointment.location.city}} {{appointment.location.district}}</text>
+      </view>
+      <view class="detail-item">
+        <t-icon name="time" size="28rpx" color="#666" />
+        <text class="detail-text">{{appointment.schedule.date}}</text>
+      </view>
+    </view>
+    
+    <view class="detail-row">
+      <view class="detail-item">
+        <t-icon name="money" size="28rpx" color="#666" />
+        <text class="detail-text">{{budgetText}}</text>
+      </view>
+      <view class="detail-item">
+        <t-icon name="user-group" size="28rpx" color="#666" />
+        <text class="detail-text">{{appointment.applicantCount}}人申请</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="card-actions" wx:if="{{appointment.status === 'open'}}">
+    <t-button 
+      theme="primary" 
+      size="small"
+      data-appointment="{{appointment}}"
+      bindtap="onApplyTap"
+    >
+      立即申请
+    </t-button>
+  </view>
+</view>

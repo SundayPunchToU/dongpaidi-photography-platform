@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "约拍",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 100,
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-button": "tdesign-miniprogram/button/button",
+    "appointment-card": "/components/appointment-card/index",
+    "appointment-feed-card": "/components/appointment-feed-card/index",
+    "share-waterfall": "/components/share-waterfall/index"
+  }
+}

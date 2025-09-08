@@ -1,0 +1,4 @@
+<!--约拍聊天页面-->
+<view class="chat-page">
+  <text>约拍聊天</text>
+</view>

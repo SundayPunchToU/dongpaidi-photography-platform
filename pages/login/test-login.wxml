@@ -1,0 +1,204 @@
+<!-- 多平台登录测试页面 -->
+<view class="test-container">
+  <!-- 页面标题 -->
+  <view class="test-header">
+    <text class="test-title">多平台登录测试</text>
+    <text class="test-subtitle">当前平台: {{platformInfo.platform}}</text>
+  </view>
+
+  <!-- 当前登录状态 -->
+  <view class="status-section">
+    <view class="section-title">登录状态</view>
+    <view class="status-card">
+      <view class="status-item">
+        <text class="status-label">登录状态:</text>
+        <text class="status-value {{isLoggedIn ? 'success' : 'error'}}">
+          {{isLoggedIn ? '已登录' : '未登录'}}
+        </text>
+      </view>
+      <view class="status-item" wx:if="{{currentUser}}">
+        <text class="status-label">用户昵称:</text>
+        <text class="status-value">{{currentUser.nickname}}</text>
+      </view>
+      <view class="status-item" wx:if="{{currentUser}}">
+        <text class="status-label">用户ID:</text>
+        <text class="status-value">{{currentUser.id}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 平台信息 -->
+  <view class="platform-section">
+    <view class="section-title">平台信息</view>
+    <view class="platform-card">
+      <view class="platform-item">
+        <text class="platform-label">当前平台:</text>
+        <text class="platform-value">{{platformInfo.platform}}</text>
+      </view>
+      <view class="platform-item">
+        <text class="platform-label">支持登录方式:</text>
+        <text class="platform-value">{{platformInfo.supportedLoginMethods.join(', ')}}</text>
+      </view>
+      <t-button 
+        size="small" 
+        theme="default" 
+        variant="outline"
+        bindtap="onViewPlatformInfo"
+      >
+        查看详情
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 手机号登录测试 -->
+  <view class="test-section" wx:if="{{platformInfo.supportedLoginMethods.includes('phone')}}">
+    <view class="section-title">手机号登录测试</view>
+    <view class="test-form">
+      <t-input
+        value="{{testPhone}}"
+        placeholder="请输入测试手机号"
+        type="number"
+        maxlength="11"
+        bind:input="onPhoneInput"
+        t-class="test-input"
+      >
+        <view slot="label">手机号</view>
+      </t-input>
+      
+      <view class="input-row">
+        <t-input
+          value="{{testCode}}"
+          placeholder="请输入验证码"
+          type="number"
+          maxlength="6"
+          bind:input="onCodeInput"
+          t-class="test-input code-input"
+        >
+          <view slot="label">验证码</view>
+        </t-input>
+        <t-button
+          size="medium"
+          theme="primary"
+          variant="outline"
+          disabled="{{!testPhone || loading}}"
+          loading="{{loading}}"
+          bindtap="onTestSendCode"
+          t-class="send-code-btn"
+        >
+          发送验证码
+        </t-button>
+      </view>
+      
+      <t-button
+        size="large"
+        theme="primary"
+        block
+        disabled="{{!testPhone || !testCode || loading}}"
+        loading="{{loading}}"
+        bindtap="onTestPhoneLogin"
+        t-class="test-login-btn"
+      >
+        测试手机号登录
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 微信登录测试 -->
+  <view class="test-section" wx:if="{{platformInfo.supportedLoginMethods.includes('wechat')}}">
+    <view class="section-title">微信登录测试</view>
+    <view class="test-form">
+      <t-button
+        size="large"
+        theme="success"
+        block
+        disabled="{{loading}}"
+        loading="{{loading}}"
+        bindtap="onTestWechatLogin"
+        t-class="test-login-btn wechat-btn"
+      >
+        <t-icon name="logo-wechat" size="40rpx" color="#fff"></t-icon>
+        <text>测试微信登录</text>
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 游客登录测试 -->
+  <view class="test-section" wx:if="{{platformInfo.supportedLoginMethods.includes('guest')}}">
+    <view class="section-title">游客模式测试</view>
+    <view class="test-form">
+      <t-button
+        size="large"
+        theme="default"
+        block
+        disabled="{{loading}}"
+        loading="{{loading}}"
+        bindtap="onTestGuestLogin"
+        t-class="test-login-btn"
+      >
+        测试游客登录
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 登出测试 -->
+  <view class="test-section" wx:if="{{isLoggedIn}}">
+    <view class="section-title">登出测试</view>
+    <view class="test-form">
+      <t-button
+        size="large"
+        theme="danger"
+        variant="outline"
+        block
+        disabled="{{loading}}"
+        bindtap="onTestLogout"
+        t-class="test-login-btn"
+      >
+        测试登出
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 系统测试 -->
+  <view class="test-section">
+    <view class="section-title">系统测试</view>
+    <view class="test-form">
+      <t-button
+        size="large"
+        theme="warning"
+        block
+        disabled="{{loading}}"
+        loading="{{loading}}"
+        bindtap="onRunTests"
+        t-class="test-login-btn"
+      >
+        运行完整测试套件
+      </t-button>
+      
+      <t-button
+        size="medium"
+        theme="default"
+        variant="text"
+        block
+        disabled="{{testResults.length === 0}}"
+        bindtap="onViewTestResults"
+        t-class="view-results-btn"
+      >
+        查看测试结果
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 返回按钮 -->
+  <view class="back-section">
+    <t-button
+      size="large"
+      theme="default"
+      variant="outline"
+      block
+      bindtap="onGoBack"
+      t-class="back-btn"
+    >
+      返回登录页面
+    </t-button>
+  </view>
+</view>

@@ -1,0 +1,89 @@
+<!--作品上传页面-->
+<view class="upload-page">
+  <!-- 图片上传区域 -->
+  <view class="upload-section">
+    <view class="section-title">选择图片 ({{images.length}}/9)</view>
+    <view class="image-grid">
+      <view 
+        class="image-item"
+        wx:for="{{images}}"
+        wx:key="*this"
+      >
+        <image class="uploaded-image" src="{{item}}" mode="aspectFill" />
+        <view class="delete-btn" data-index="{{index}}" bindtap="onDeleteImage">
+          <t-icon name="close" size="24rpx" color="white" />
+        </view>
+      </view>
+      
+      <view class="add-image-btn" bindtap="onChooseImage" wx:if="{{images.length < 9}}">
+        <t-icon name="add" size="60rpx" color="#ccc" />
+        <text class="add-text">添加图片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 作品信息 -->
+  <view class="info-section">
+    <view class="form-item">
+      <text class="form-label">作品标题</text>
+      <t-input
+        value="{{title}}"
+        placeholder="给你的作品起个标题"
+        bind:input="onTitleInput"
+        maxlength="50"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">作品描述</text>
+      <t-textarea
+        value="{{description}}"
+        placeholder="分享你的拍摄故事和技巧"
+        bind:input="onDescriptionInput"
+        maxlength="500"
+        autosize
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">作品分类</text>
+      <t-picker
+        value="{{category}}"
+        options="{{categories}}"
+        keys="{{categoryKeys}}"
+        bind:change="onCategoryChange"
+      >
+        <t-input
+          slot="trigger"
+          value="{{category}}"
+          placeholder="选择作品分类"
+          readonly
+          suffix-icon="chevron-down"
+        />
+      </t-picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">拍摄地点</text>
+      <view class="location-section">
+        <t-button theme="outline" size="small" bindtap="onGetLocation">
+          <t-icon name="location" size="32rpx" />
+          获取当前位置
+        </t-button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 发布按钮 -->
+  <view class="publish-section">
+    <t-button 
+      theme="primary" 
+      size="large" 
+      loading="{{uploading}}"
+      disabled="{{uploading}}"
+      bindtap="onPublish"
+    >
+      {{uploading ? '发布中...' : '发布作品'}}
+    </t-button>
+  </view>
+</view>

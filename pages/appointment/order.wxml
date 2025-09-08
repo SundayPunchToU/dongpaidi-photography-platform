@@ -1,0 +1,161 @@
+<!-- 约拍订单页面 -->
+<view class="order-container">
+  <!-- 摄影师信息 -->
+  <view class="photographer-card" wx:if="{{photographerInfo}}">
+    <view class="photographer-info">
+      <image class="avatar" src="{{photographerInfo.avatar_url}}" mode="aspectFill" />
+      <view class="info">
+        <text class="name">{{photographerInfo.nickname}}</text>
+        <text class="level">{{photographerInfo.photographer_level}}</text>
+        <view class="stats">
+          <text class="stat">作品 {{photographerInfo.works_count || 0}}</text>
+          <text class="stat">粉丝 {{photographerInfo.followers_count || 0}}</text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="actions">
+      <t-button size="small" variant="outline" bindtap="onContactPhotographer">
+        联系TA
+      </t-button>
+      <t-button size="small" variant="outline" bindtap="onViewWorks">
+        查看作品
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 服务套餐选择 -->
+  <view class="section">
+    <view class="section-title">选择服务套餐</view>
+    <view class="packages">
+      <view 
+        class="package-item {{selectedPackage && selectedPackage.id === item.id ? 'selected' : ''}}"
+        wx:for="{{servicePackages}}"
+        wx:key="id"
+        data-package="{{item}}"
+        bindtap="onPackageSelect"
+      >
+        <view class="package-header">
+          <text class="package-name">{{item.name}}</text>
+          <text class="package-price">
+            {{item.price > 0 ? '¥' + item.price : '面议'}}
+          </text>
+        </view>
+        <view class="package-details">
+          <text class="detail">时长: {{item.duration}}</text>
+          <text class="detail">成片: {{item.photos}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 自定义金额输入 -->
+    <view class="custom-amount" wx:if="{{selectedPackage && selectedPackage.id === 4}}">
+      <t-input
+        placeholder="请输入金额"
+        type="digit"
+        value="{{orderForm.amount}}"
+        bind:input="onAmountInput"
+        t-class="amount-input"
+      >
+        <view slot="label">自定义金额</view>
+        <view slot="suffix">元</view>
+      </t-input>
+    </view>
+  </view>
+
+  <!-- 约拍信息 -->
+  <view class="section">
+    <view class="section-title">约拍信息</view>
+    
+    <!-- 约拍时间 -->
+    <view class="form-item">
+      <text class="label">约拍时间 *</text>
+      <picker
+        mode="multiSelector"
+        range="{{[dateRange, timeRange]}}"
+        bind:change="onTimeChange"
+      >
+        <view class="picker-value">
+          {{orderForm.appointmentTime || '请选择约拍时间'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 拍摄地点 -->
+    <view class="form-item">
+      <text class="label">拍摄地点 *</text>
+      <view class="location-picker" bindtap="onLocationTap">
+        <text class="location-text">
+          {{orderForm.location || '点击选择拍摄地点'}}
+        </text>
+        <t-icon name="location" size="32rpx" color="#999" />
+      </view>
+    </view>
+
+    <!-- 拍摄需求 -->
+    <view class="form-item">
+      <text class="label">拍摄需求 *</text>
+      <t-textarea
+        placeholder="请详细描述您的拍摄需求，如拍摄风格、主题、服装等"
+        value="{{orderForm.description}}"
+        maxlength="500"
+        data-field="description"
+        bind:input="onFormInput"
+        t-class="textarea"
+      />
+    </view>
+
+    <!-- 特殊要求 -->
+    <view class="form-item">
+      <text class="label">特殊要求</text>
+      <t-textarea
+        placeholder="如有特殊要求请在此说明（可选）"
+        value="{{orderForm.requirements}}"
+        maxlength="200"
+        data-field="requirements"
+        bind:input="onFormInput"
+        t-class="textarea"
+      />
+    </view>
+  </view>
+
+  <!-- 订单总结 -->
+  <view class="order-summary" wx:if="{{selectedPackage}}">
+    <view class="summary-item">
+      <text class="label">服务套餐</text>
+      <text class="value">{{selectedPackage.name}}</text>
+    </view>
+    <view class="summary-item">
+      <text class="label">服务时长</text>
+      <text class="value">{{selectedPackage.duration}}</text>
+    </view>
+    <view class="summary-item">
+      <text class="label">成片数量</text>
+      <text class="value">{{selectedPackage.photos}}</text>
+    </view>
+    <view class="summary-item total">
+      <text class="label">订单金额</text>
+      <text class="value price">¥{{orderForm.amount}}</text>
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-section">
+    <view class="tips">
+      <text>• 下单后请等待摄影师确认</text>
+      <text>• 确认后将扣除相应费用</text>
+      <text>• 如需取消请及时联系摄影师</text>
+    </view>
+    
+    <t-button
+      theme="primary"
+      size="large"
+      block
+      loading="{{submitting}}"
+      disabled="{{!selectedPackage || submitting}}"
+      bindtap="onSubmitOrder"
+    >
+      {{submitting ? '创建中...' : '确认下单'}}
+    </t-button>
+  </view>
+</view>

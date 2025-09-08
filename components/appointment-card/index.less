@@ -1,0 +1,176 @@
+.appointment-card {
+  background: white;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 0; // 瀑布流间距由父容器控制
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 1rpx 4rpx rgba(0,0,0,0.08);
+  }
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.user-avatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.publish-time {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.appointment-type {
+  margin-left: 16rpx;
+}
+
+.type-tag {
+  font-size: 18rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+
+  &.photographer {
+    background: #f0f9ff;
+    color: #0369a1;
+  }
+
+  &.model {
+    background: #fdf2f8;
+    color: #be185d;
+  }
+}
+
+.card-content {
+  margin-bottom: 16rpx;
+}
+
+.appointment-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12rpx;
+  line-height: 1.4;
+}
+
+.appointment-desc {
+  display: block;
+  font-size: 24rpx;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+// 示例图片
+.sample-images {
+  display: flex;
+  gap: 8rpx;
+  margin-bottom: 16rpx;
+  overflow: hidden;
+  border-radius: 12rpx;
+}
+
+.sample-image {
+  flex: 1;
+  height: 120rpx;
+  border-radius: 8rpx;
+  background: #f5f5f5;
+}
+
+// 根据图片数量调整高度的类名
+.sample-images.single-image .sample-image {
+  height: 160rpx;
+}
+
+.sample-images.two-images .sample-image {
+  height: 140rpx;
+}
+
+.style-tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 16rpx;
+}
+
+.style-tag {
+  background: #f8f8f8;
+  color: #666;
+  font-size: 20rpx;
+  padding: 6rpx 12rpx;
+  border-radius: 12rpx;
+  margin-right: 12rpx;
+  margin-bottom: 8rpx;
+  font-weight: 500;
+}
+
+.card-details {
+  margin-bottom: 20rpx;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.detail-text {
+  margin-left: 8rpx;
+  font-size: 22rpx;
+  color: #666;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  .t-button {
+    border-radius: 20rpx !important;
+    font-size: 24rpx !important;
+    padding: 12rpx 24rpx !important;
+  }
+}

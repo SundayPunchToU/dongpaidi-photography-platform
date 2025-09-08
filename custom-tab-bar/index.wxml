@@ -1,0 +1,50 @@
+<!-- 自定义导航栏 - 中间圆形发布按钮 -->
+<view class="custom-tab-bar">
+  <!-- 左侧两个标签 -->
+  <view
+    class="tab-item {{value === 'discover' ? 'active' : ''}}"
+    data-value="discover"
+    bindtap="handleTabTap"
+  >
+    <t-icon name="home" size="48rpx" color="{{value === 'discover' ? '#333' : '#999'}}" />
+    <text class="tab-text">发现</text>
+  </view>
+
+  <view
+    class="tab-item {{value === 'shoot' ? 'active' : ''}}"
+    data-value="shoot"
+    bindtap="handleTabTap"
+  >
+    <t-icon name="camera" size="48rpx" color="{{value === 'shoot' ? '#333' : '#999'}}" />
+    <text class="tab-text">约拍</text>
+  </view>
+
+  <!-- 中间圆形发布按钮 - 现代化设计 -->
+  <view class="publish-tab-container">
+    <view class="publish-tab-button" bindtap="handlePublishTap">
+      <view class="publish-content">
+        <t-icon name="add" size="32rpx" color="white" />
+        <text class="publish-button-text">发布</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 右侧两个标签 -->
+  <view
+    class="tab-item {{value === 'market' ? 'active' : ''}}"
+    data-value="market"
+    bindtap="handleTabTap"
+  >
+    <t-icon name="shop" size="48rpx" color="{{value === 'market' ? '#333' : '#999'}}" />
+    <text class="tab-text">市场</text>
+  </view>
+
+  <view
+    class="tab-item {{value === 'message' ? 'active' : ''}}"
+    data-value="message"
+    bindtap="handleTabTap"
+  >
+    <t-icon name="chat" size="48rpx" color="{{value === 'message' ? '#333' : '#999'}}" />
+    <text class="tab-text">私信</text>
+  </view>
+</view>

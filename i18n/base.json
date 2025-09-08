@@ -1,0 +1,11 @@
+{
+	"ios": {
+		"name": "CaMaster"
+	},
+	"android": {
+		"name": "CaMaster"
+	},
+	"common": {
+		"name": "CaMaster"
+	}
+}

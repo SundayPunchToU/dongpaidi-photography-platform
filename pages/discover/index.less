@@ -1,0 +1,687 @@
+/* 懂拍帝发现页 - 摄影专业视觉升级 */
+@import '/styles/theme-photography.less';
+
+.discover-page {
+  background: #fafafa; /* 立即生效的浅灰背景 */
+  min-height: 100vh;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 100rpx);
+}
+
+/* ================================
+   专业摄影搜索区域
+   ================================ */
+.search-section {
+  /* 柔和的深灰色渐变，添加暖色调过渡 */
+  background: linear-gradient(135deg,
+    #3a3a3a 0%,           /* 温和的深灰 */
+    #4a4a4a 30%,          /* 中性灰 */
+    #5a5a5a 70%,          /* 浅深灰 */
+    #4a4a4a 100%          /* 回到中性灰 */
+  );
+  padding: calc(env(safe-area-inset-top) + 20rpx) 24rpx 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+
+  /* 添加微妙的金色光晕作为过渡 */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1rpx;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(212, 175, 55, 0.3) 50%,
+      transparent 100%
+    );
+  }
+}
+
+.search-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  /* 更柔和的半透明背景，带有暖色调 */
+  background: linear-gradient(135deg,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 248, 220, 0.15) 100%  /* 添加微妙的暖色调 */
+  );
+  padding: 18rpx 24rpx;
+  border-radius: 50rpx;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(8rpx);
+  border: 1rpx solid rgba(255, 255, 255, 0.12);
+  position: relative;
+
+  /* 内部微妙高光 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 1rpx;
+    left: 20rpx;
+    right: 20rpx;
+    height: 1rpx;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%
+    );
+  }
+
+  &:active {
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0.18) 50%,
+      rgba(255, 248, 220, 0.22) 100%
+    );
+    transform: scale(0.99);
+    border-color: rgba(212, 175, 55, 0.25);
+    box-shadow: 0 0 0 4rpx rgba(212, 175, 55, 0.08);
+  }
+}
+
+.search-text {
+  margin-left: 12rpx;
+  /* 更柔和的文字颜色，带有微妙的暖色调 */
+  color: rgba(255, 252, 240, 0.88);
+  font-size: 28rpx;
+  font-weight: 400;
+  letter-spacing: 0.5rpx;
+}
+
+.upload-btn {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 更柔和的金色渐变，降低饱和度和亮度 */
+  background: linear-gradient(135deg,
+    #b8941f 0%,           /* 深金色 */
+    #d4af37 30%,          /* 标准金色 */
+    #e6c547 70%,          /* 亮金色 */
+    #c4a037 100%          /* 回到深金色 */
+  );
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* 更柔和的阴影，与深灰背景协调 */
+  box-shadow:
+    0 3rpx 12rpx rgba(180, 148, 31, 0.15),    /* 主阴影 */
+    0 1rpx 4rpx rgba(0, 0, 0, 0.1),           /* 深度阴影 */
+    inset 0 1rpx 2rpx rgba(255, 255, 255, 0.2); /* 内部高光 */
+  position: relative;
+
+  /* 微妙的边框增加精致感 */
+  border: 1rpx solid rgba(255, 255, 255, 0.1);
+
+  /* 柔和的内部光效 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 2rpx;
+    left: 2rpx;
+    right: 2rpx;
+    bottom: 2rpx;
+    border-radius: 50%;
+    background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.25) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+
+  &:active {
+    transform: scale(0.96);
+    /* 点击时的柔和阴影 */
+    box-shadow:
+      0 2rpx 8rpx rgba(180, 148, 31, 0.2),
+      0 1rpx 3rpx rgba(0, 0, 0, 0.15),
+      inset 0 1rpx 2rpx rgba(255, 255, 255, 0.3);
+
+    /* 点击时的微妙发光效果 */
+    &::after {
+      content: '';
+      position: absolute;
+      top: -6rpx;
+      left: -6rpx;
+      right: -6rpx;
+      bottom: -6rpx;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(212, 175, 55, 0.12) 0%,
+        rgba(212, 175, 55, 0.06) 50%,
+        transparent 80%
+      );
+      animation: gentle-glow 0.6s ease-out;
+    }
+  }
+}
+
+/* 柔和发光动画 */
+@keyframes gentle-glow {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+/* ================================
+   视觉升级提示横幅 - 立即可见效果
+   ================================ */
+.visual-upgrade-banner {
+  margin: 16rpx 24rpx;
+  /* 更柔和的金色渐变，降低饱和度 */
+  background: linear-gradient(135deg,
+    #c4a037 0%,           /* 深金色 */
+    #d4af37 25%,          /* 标准金色 */
+    #e6c547 75%,          /* 亮金色 */
+    #d4af37 100%          /* 回到标准金色 */
+  );
+  border-radius: 16rpx;
+  padding: 20rpx;
+  /* 更柔和的阴影，与整体风格协调 */
+  box-shadow:
+    0 3rpx 12rpx rgba(196, 160, 55, 0.18),
+    0 1rpx 4rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  /* 添加微妙的边框增加精致感 */
+  border: 1rpx solid rgba(255, 255, 255, 0.2);
+
+  /* 背景装饰 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+    position: relative;
+    z-index: 2;
+
+    .banner-icon {
+      font-size: 48rpx;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .banner-text {
+      flex: 1;
+
+      .banner-title {
+        font-size: 28rpx;
+        font-weight: 600;
+        /* 使用更柔和的深色，而非纯黑 */
+        color: #2a2a2a;
+        display: block;
+        margin-bottom: 4rpx;
+        text-shadow: 0 1rpx 2rpx rgba(255, 255, 255, 0.1);
+      }
+
+      .banner-desc {
+        font-size: 22rpx;
+        /* 更柔和的文字颜色 */
+        color: rgba(42, 42, 42, 0.75);
+        line-height: 1.4;
+      }
+    }
+
+    .banner-action {
+      /* 更柔和的按钮背景 */
+      background: linear-gradient(135deg,
+        rgba(42, 42, 42, 0.08) 0%,
+        rgba(42, 42, 42, 0.12) 100%
+      );
+      padding: 8rpx 16rpx;
+      border-radius: 20rpx;
+      transition: all 0.3s ease;
+      border: 1rpx solid rgba(42, 42, 42, 0.1);
+
+      .action-text {
+        font-size: 24rpx;
+        color: #2a2a2a;
+        font-weight: 500;
+      }
+
+      &:active {
+        background: linear-gradient(135deg,
+          rgba(42, 42, 42, 0.15) 0%,
+          rgba(42, 42, 42, 0.18) 100%
+        );
+        transform: scale(0.96);
+        box-shadow: inset 0 1rpx 2rpx rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+}
+
+/* 动画效果 */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10rpx) rotate(180deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* ================================
+   照片上传功能样式
+   ================================ */
+
+/* 上传进度遮罩层 */
+.upload-progress-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(8rpx);
+
+  .upload-progress-content {
+    background: #fff;
+    border-radius: 24rpx;
+    padding: 40rpx;
+    margin: 0 40rpx;
+    max-width: 600rpx;
+    width: 100%;
+    box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.3);
+
+    .upload-image-preview {
+      width: 200rpx;
+      height: 200rpx;
+      border-radius: 16rpx;
+      overflow: hidden;
+      margin: 0 auto 32rpx;
+      box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+
+      image {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .upload-progress-info {
+      text-align: center;
+
+      .upload-title {
+        font-size: 32rpx;
+        font-weight: 600;
+        color: #333;
+        display: block;
+        margin-bottom: 24rpx;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8rpx;
+        background: #f0f0f0;
+        border-radius: 4rpx;
+        overflow: hidden;
+        margin-bottom: 16rpx;
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(135deg, #d4af37 0%, #c4a037 100%);
+          border-radius: 4rpx;
+          transition: width 0.3s ease;
+          position: relative;
+
+          /* 进度条动画效果 */
+          &::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+              transparent 0%,
+              rgba(255, 255, 255, 0.3) 50%,
+              transparent 100%
+            );
+            animation: progress-shine 1.5s ease-in-out infinite;
+          }
+        }
+      }
+
+      .upload-percent {
+        font-size: 28rpx;
+        color: #d4af37;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+/* 上传成功提示 */
+.upload-success-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10000;
+  animation: success-bounce 0.6s ease-out;
+
+  .success-content {
+    background: linear-gradient(135deg, #d4af37 0%, #c4a037 100%);
+    padding: 24rpx 40rpx;
+    border-radius: 50rpx;
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+    box-shadow: 0 8rpx 32rpx rgba(212, 175, 55, 0.4);
+
+    .success-icon {
+      font-size: 32rpx;
+    }
+
+    .success-text {
+      font-size: 28rpx;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+
+/* 新上传作品标识 */
+.work-card.new-upload {
+  position: relative;
+
+  &::before {
+    content: '✨ 刚刚上传';
+    position: absolute;
+    top: 12rpx;
+    right: 12rpx;
+    background: linear-gradient(135deg, #d4af37 0%, #c4a037 100%);
+    color: #fff;
+    font-size: 20rpx;
+    padding: 4rpx 12rpx;
+    border-radius: 12rpx;
+    z-index: 2;
+    font-weight: 500;
+    box-shadow: 0 2rpx 8rpx rgba(212, 175, 55, 0.3);
+  }
+
+  /* 新上传作品的发光效果 */
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2rpx;
+    left: -2rpx;
+    right: -2rpx;
+    bottom: -2rpx;
+    background: linear-gradient(135deg,
+      rgba(212, 175, 55, 0.3) 0%,
+      rgba(212, 175, 55, 0.1) 50%,
+      rgba(212, 175, 55, 0.3) 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+    animation: new-work-glow 2s ease-in-out infinite alternate;
+  }
+}
+
+/* 动画效果 */
+@keyframes progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes success-bounce {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes new-work-glow {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* 专题标签区域 - 得物风格 */
+.topics-section {
+  background: white;
+  padding: 8rpx 0 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.topics-scroll {
+  width: 100%;
+}
+
+.topics-container {
+  display: flex;
+  padding: 0 20rpx;
+  gap: 32rpx;
+}
+
+.topic-tag {
+  position: relative;
+  padding: 8rpx 4rpx;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &.test-btn {
+    background: linear-gradient(135deg, #007aff 0%, #0056cc 100%);
+    color: white;
+    border-radius: 16rpx;
+    padding: 8rpx 16rpx;
+    margin-right: 16rpx;
+
+    .topic-text {
+      color: white !important;
+      font-weight: 600;
+    }
+  }
+
+  &.hot-tag {
+    .topic-text {
+      color: #333;
+      font-weight: 600;
+    }
+
+    .hot-dot {
+      display: block;
+    }
+  }
+
+  &.selected:not(.hot-tag) {
+    .topic-text {
+      color: #333;
+      font-weight: 600;
+    }
+  }
+}
+
+.topic-text {
+  font-size: 26rpx;
+  color: #999;
+  font-weight: 400;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.hot-dot {
+  position: absolute;
+  top: 2rpx;
+  right: -2rpx;
+  width: 8rpx;
+  height: 8rpx;
+  background: #ff3030;
+  border-radius: 50%;
+  display: none;
+}
+
+/* 内容滚动区域 */
+.content-scroll {
+  height: calc(100vh - 150rpx);
+}
+
+/* 首次加载状态 */
+.initial-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+}
+
+.loading-text {
+  margin-top: 30rpx;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 加载更多 */
+.load-more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.load-text {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 无更多内容 */
+.no-more {
+  text-align: center;
+  padding: 60rpx 40rpx;
+  color: #ccc;
+  font-size: 24rpx;
+}
+
+/* 底部安全区域 */
+.safe-area-bottom {
+  height: 120rpx;
+}
+
+/* 分类筛选浮动按钮 */
+.category-float-btn {
+  position: fixed;
+  bottom: 140rpx;
+  right: 30rpx;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 16rpx 24rpx;
+  border-radius: 50rpx;
+  font-size: 24rpx;
+  backdrop-filter: blur(10rpx);
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+
+  text {
+    margin-left: 8rpx;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+/* 分类选择弹窗 */
+.category-popup {
+  background: white;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 40rpx 30rpx;
+  padding-bottom: 40rpx;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.popup-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.close-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 50%;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30rpx;
+}
+
+.category-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  border-radius: 20rpx;
+  transition: all 0.2s ease;
+
+  &.selected {
+    background: #fff3f0;
+    color: #ff6b35;
+  }
+
+  &:active {
+    background: #f5f5f5;
+  }
+
+  text {
+    margin-top: 16rpx;
+    font-size: 24rpx;
+  }
+}

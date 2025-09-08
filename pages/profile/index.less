@@ -1,0 +1,381 @@
+/* 懂拍帝个人资料页面 - 摄影专业视觉升级 */
+@import '/styles/theme-photography.less';
+
+.photography-profile-page {
+  background: var(--dp-bg-secondary);
+  min-height: 100vh;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 120rpx);
+}
+
+/* ================================
+   专业摄影师头部区域
+   ================================ */
+.photographer-header {
+  background: var(--dp-gradient-dark);
+  padding: calc(env(safe-area-inset-top) + var(--dp-space-lg)) var(--dp-space-lg) var(--dp-space-xxl);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/images/camera-pattern.png') repeat;
+    opacity: 0.05;
+    pointer-events: none;
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 2;
+
+    .user-main-info {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--dp-space-lg);
+      margin-bottom: var(--dp-space-xl);
+
+      .user-avatar-container {
+        position: relative;
+
+        .user-avatar {
+          width: 160rpx;
+          height: 160rpx;
+          border-radius: var(--dp-radius-round);
+          border: 6rpx solid var(--dp-accent);
+          box-shadow: var(--dp-shadow-gold);
+        }
+
+        .avatar-badge {
+          position: absolute;
+          bottom: 8rpx;
+          right: 8rpx;
+          width: 48rpx;
+          height: 48rpx;
+          background: var(--dp-gradient-gold);
+          border-radius: var(--dp-radius-round);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 3rpx solid var(--dp-primary);
+        }
+      }
+
+      .user-details {
+        flex: 1;
+        color: var(--dp-text-inverse);
+
+        .user-name {
+          font-size: 48rpx;
+          font-weight: 600;
+          margin-bottom: var(--dp-space-xs);
+          letter-spacing: 1rpx;
+        }
+
+        .user-title {
+          font-size: 28rpx;
+          color: var(--dp-accent);
+          margin-bottom: var(--dp-space-sm);
+          font-weight: 500;
+        }
+
+        .user-location {
+          font-size: 24rpx;
+          color: rgba(255, 255, 255, 0.8);
+          margin-bottom: var(--dp-space-md);
+          display: flex;
+          align-items: center;
+          gap: 6rpx;
+        }
+
+        .user-specialties {
+          display: flex;
+          gap: var(--dp-space-xs);
+          flex-wrap: wrap;
+
+          .specialty-tag {
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--dp-accent);
+            padding: 6rpx var(--dp-space-sm);
+            border-radius: var(--dp-radius-medium);
+            font-size: 20rpx;
+            border: 1rpx solid rgba(212, 175, 55, 0.3);
+          }
+        }
+      }
+    }
+
+    /* 专业统计数据 */
+    .photographer-stats {
+      display: flex;
+      justify-content: space-around;
+      padding: var(--dp-space-lg) 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--dp-radius-large);
+      backdrop-filter: blur(10rpx);
+
+      .stat-item {
+        text-align: center;
+        color: var(--dp-text-inverse);
+
+        .stat-number {
+          font-size: 36rpx;
+          font-weight: 600;
+          color: var(--dp-accent);
+          display: block;
+          margin-bottom: 4rpx;
+        }
+
+        .stat-label {
+          font-size: 22rpx;
+          opacity: 0.9;
+        }
+      }
+    }
+  }
+}
+
+/* ================================
+   摄影作品集展示区域
+   ================================ */
+.portfolio-section {
+  background: var(--dp-bg-primary);
+  margin: var(--dp-space-md) var(--dp-space-lg);
+  border-radius: var(--dp-radius-xl);
+  box-shadow: var(--dp-shadow-medium);
+  overflow: hidden;
+
+  .portfolio-header {
+    padding: var(--dp-space-lg);
+    border-bottom: var(--dp-border-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .header-left {
+      .portfolio-title {
+        font-size: 32rpx;
+        font-weight: 600;
+        color: var(--dp-text-primary);
+        margin-bottom: 4rpx;
+      }
+
+      .portfolio-count {
+        font-size: 24rpx;
+        color: var(--dp-text-secondary);
+      }
+    }
+
+    .view-all-btn {
+      color: var(--dp-accent);
+      font-size: 26rpx;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4rpx;
+    }
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rpx;
+
+    .portfolio-item {
+      aspect-ratio: 1;
+      position: relative;
+      overflow: hidden;
+
+      .portfolio-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      &:active .portfolio-image {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+/* ================================
+   专业功能菜单区域
+   ================================ */
+.professional-menu {
+  background: var(--dp-bg-primary);
+  margin: var(--dp-space-md) var(--dp-space-lg);
+  border-radius: var(--dp-radius-xl);
+  box-shadow: var(--dp-shadow-light);
+  overflow: hidden;
+
+  .menu-item {
+    display: flex;
+    align-items: center;
+    padding: var(--dp-space-lg);
+    border-bottom: var(--dp-border-light);
+    transition: all 0.3s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:active {
+      background: var(--dp-bg-secondary);
+      transform: scale(0.98);
+    }
+
+    .menu-icon {
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: var(--dp-radius-large);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: var(--dp-space-lg);
+
+      &.earnings {
+        background: linear-gradient(135deg, #d4af37 0%, #ffd700 100%);
+      }
+
+      &.orders {
+        background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+      }
+
+      &.settings {
+        background: linear-gradient(135deg, #8c8c8c 0%, #bfbfbf 100%);
+      }
+
+      &.analytics {
+        background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+      }
+    }
+
+    .menu-content {
+      flex: 1;
+
+      .menu-title {
+        font-size: 30rpx;
+        font-weight: 500;
+        color: var(--dp-text-primary);
+        margin-bottom: 6rpx;
+      }
+
+      .menu-desc {
+        font-size: 24rpx;
+        color: var(--dp-text-secondary);
+        line-height: 1.4;
+      }
+    }
+
+    .menu-badge {
+      background: var(--dp-error);
+      color: var(--dp-text-inverse);
+      font-size: 20rpx;
+      padding: 4rpx 8rpx;
+      border-radius: var(--dp-radius-round);
+      margin-right: var(--dp-space-sm);
+      min-width: 32rpx;
+      text-align: center;
+    }
+
+    .menu-arrow {
+      color: var(--dp-text-tertiary);
+      transition: transform 0.3s ease;
+    }
+
+    &:active .menu-arrow {
+      transform: translateX(4rpx);
+    }
+  }
+}
+
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.action-btn {
+  width: 60rpx;
+  height: 60rpx;
+  background: #f5f5f5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15rpx;
+}
+
+.user-stats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: 30rpx;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.tab-section {
+  display: flex;
+  background: white;
+  margin-bottom: 20rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 30rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  border-bottom: 4rpx solid transparent;
+  
+  &.active {
+    color: #ff6b35;
+    border-bottom-color: #ff6b35;
+  }
+}
+
+.content-section {
+  padding: 0 20rpx;
+}
+
+.upload-prompt, .empty-appointments {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 100rpx 40rpx;
+  background: white;
+  border-radius: 20rpx;
+}
+
+.prompt-text {
+  font-size: 32rpx;
+  color: #666;
+  margin: 30rpx 0 10rpx;
+}
+
+.prompt-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 40rpx;
+}

@@ -1,0 +1,235 @@
+/* 小红书+得物风格瀑布流样式 */
+.waterfall-container {
+  display: flex;
+  padding: 16rpx 16rpx 20rpx;
+  gap: 8rpx;
+  background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  min-height: 100vh;
+}
+
+.waterfall-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.work-card {
+  background: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.06), 0 2rpx 8rpx rgba(0,0,0,0.04);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  margin-bottom: 8rpx;
+  border: 1rpx solid rgba(255,255,255,0.8);
+
+  /* 小红书风格卡片出现动画 */
+  animation: xiaohongshuFadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &:hover {
+    box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.12), 0 4rpx 16rpx rgba(0,0,0,0.08);
+    transform: translateY(-4rpx) scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.96) translateY(-2rpx);
+    box-shadow: 0 6rpx 24rpx rgba(0,0,0,0.15);
+    transition: all 0.15s ease;
+  }
+}
+
+@keyframes xiaohongshuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx) scale(0.9);
+    filter: blur(4rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+}
+
+.work-image {
+  width: 100%;
+  display: block;
+  border-radius: 20rpx 20rpx 0 0;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e9ecef 100%);
+
+  &:active {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+}
+
+.like-btn {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 64rpx;
+  height: 64rpx;
+  background: rgba(255,255,255,0.95);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  backdrop-filter: blur(20rpx);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  z-index: 3;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.1);
+  border: 2rpx solid rgba(255,255,255,0.8);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+  border: 1rpx solid rgba(255,255,255,0.8);
+
+  &.liked {
+    background: linear-gradient(135deg, #ff6b35 0%, #ff8a65 100%);
+    color: white;
+    box-shadow: 0 4rpx 16rpx rgba(255,107,53,0.3);
+    animation: likeAnimation 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    border: 1rpx solid rgba(255,107,53,0.3);
+  }
+
+  &:active {
+    transform: scale(0.88);
+  }
+}
+
+@keyframes likeAnimation {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.4);
+    filter: brightness(1.1);
+  }
+  60% {
+    transform: scale(1.1);
+    filter: brightness(1.05);
+  }
+  100% {
+    transform: scale(1.15);
+    filter: brightness(1);
+  }
+}
+
+/* 增强视觉层次 */
+.work-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, transparent 60%, rgba(0,0,0,0.02) 100%);
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 16rpx;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.work-card:hover::before {
+  opacity: 1;
+}
+
+.card-info {
+  padding: 20rpx 18rpx 20rpx;
+  position: relative;
+  z-index: 2;
+  text-align: left;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,1) 100%);
+  backdrop-filter: blur(10rpx);
+}
+
+.work-title {
+  display: -webkit-box;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.4;
+  margin-bottom: 12rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  text-align: left;
+  letter-spacing: 0.5rpx;
+  word-break: break-word;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8rpx;
+  transition: all 0.3s ease;
+  padding: 8rpx 0;
+  border-radius: 16rpx;
+
+  &:active {
+    opacity: 0.8;
+    background: rgba(0,0,0,0.03);
+    transform: scale(0.98);
+  }
+}
+
+.user-avatar {
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 50%;
+  margin-right: 12rpx;
+  border: 2rpx solid rgba(255,255,255,0.8);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.user-name {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+  text-align: left;
+  letter-spacing: 0.3rpx;
+  flex: 1;
+}
+
+.work-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  padding: 8rpx 0 4rpx;
+  margin-top: 8rpx;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  color: #999;
+  transition: all 0.3s ease;
+  padding: 6rpx 12rpx;
+  border-radius: 16rpx;
+  background: rgba(0,0,0,0.02);
+
+  &:active {
+    color: #ff6b35;
+    background: rgba(255,107,53,0.1);
+    transform: scale(0.95);
+  }
+}
+
+.stat-text {
+  margin-left: 8rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  letter-spacing: 0.2rpx;
+}

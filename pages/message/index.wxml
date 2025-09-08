@@ -1,0 +1,33 @@
+<wxs src="./index.wxs" module="utils" />
+
+<view class="message-page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav">
+    <text class="nav-title">全部消息</text>
+    <view class="profile-btn" bindtap="goToProfile">
+      <t-icon name="user" size="40rpx" color="#333" />
+    </view>
+  </view>
+  <scroll-view
+    class="message-list"
+    scroll-y
+    refresher-enabled
+    refresher-triggered="{{ loading }}"
+    bindrefresherrefresh="getMessageList"
+  >
+    <t-cell
+      wx:for="{{ messageList }}"
+      wx:key="index"
+      t-class-image="avatar"
+      t-class-description="content {{ utils.isRead(item.messages) ? '' : 'unread' }}"
+      image="{{ item.avatar }}"
+      title="{{ item.name }}"
+      description="{{ item.messages[item.messages.length - 1].content }}"
+      hover
+      bind:tap="toChat"
+      data-user-id="{{ item.userId }}"
+    >
+      <t-badge slot="right-icon" count="{{ utils.computeUnreadNum(item.messages) }}" class="wrapper" />
+    </t-cell>
+  </scroll-view>
+</view>

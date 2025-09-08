@@ -1,0 +1,26 @@
+<!-- 懂拍帝定制按钮组件 -->
+<view 
+  class="{{getButtonClass()}}"
+  style="{{customStyle}}"
+  bindtap="onButtonTap"
+>
+  <!-- 按钮内容 -->
+  <view class="dp-button-content">
+    <!-- 图标 -->
+    <t-icon 
+      wx:if="{{getIconName()}}"
+      class="dp-button-icon {{loading ? 'rotating' : ''}}"
+      name="{{getIconName()}}"
+      size="{{size === 'large' ? '32rpx' : size === 'small' ? '24rpx' : '28rpx'}}"
+    />
+    
+    <!-- 文本 -->
+    <text class="dp-button-text" wx:if="{{text}}">{{text}}</text>
+    
+    <!-- 插槽内容 -->
+    <slot wx:if="{{!text}}"></slot>
+  </view>
+  
+  <!-- 加载状态遮罩 -->
+  <view class="dp-button-loading-overlay" wx:if="{{loading}}"></view>
+</view>

@@ -1,0 +1,154 @@
+<!-- 懂拍帝发现页 - 摄影专业视觉升级 -->
+<view class="discover-page">
+  <!-- 专业摄影搜索栏 -->
+  <view class="search-section">
+    <view class="search-container" bindtap="onSearchTap">
+      <t-icon name="search" size="28rpx" color="rgba(255, 255, 255, 0.8)" />
+      <text class="search-text">发现摄影灵感</text>
+    </view>
+    <view class="upload-btn" bindtap="onUploadTap">
+      <t-icon name="camera" size="32rpx" color="#1a1a1a" />
+    </view>
+  </view>
+
+  <!-- 🎨 视觉升级提示横幅 -->
+  <view class="visual-upgrade-banner">
+    <view class="banner-content">
+      <text class="banner-icon">🎨</text>
+      <view class="banner-text">
+        <text class="banner-title">摄影专业视觉已升级</text>
+        <text class="banner-desc">全新黑金配色 · 专业摄影体验</text>
+      </view>
+      <view class="banner-action">
+        <text class="action-text">专业体验</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 📤 上传进度提示 -->
+  <view class="upload-progress-overlay" wx:if="{{uploading}}">
+    <view class="upload-progress-content">
+      <view class="upload-image-preview" wx:if="{{uploadingImage}}">
+        <image src="{{uploadingImage}}" mode="aspectFill" />
+      </view>
+      <view class="upload-progress-info">
+        <text class="upload-title">📷 正在上传作品</text>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{uploadProgress}}%"></view>
+        </view>
+        <text class="upload-percent">{{uploadProgress}}%</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 🎉 上传成功提示 -->
+  <view class="upload-success-toast" wx:if="{{showUploadSuccess}}">
+    <view class="success-content">
+      <text class="success-icon">🎉</text>
+      <text class="success-text">上传成功！</text>
+    </view>
+  </view>
+
+  <!-- 专题标签区域 -->
+  <view class="topics-section">
+    <scroll-view class="topics-scroll" scroll-x="true" show-scrollbar="{{false}}">
+      <view class="topics-container">
+
+
+        <view
+          class="topic-tag {{item.isHot ? 'hot-tag' : ''}} {{selectedTopic === item.id ? 'selected' : ''}}"
+          wx:for="{{topics}}"
+          wx:key="id"
+          data-topic="{{item}}"
+          bindtap="onTopicTap"
+        >
+          <text class="topic-text">{{item.name}}</text>
+          <view class="hot-dot" wx:if="{{item.isHot}}"></view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+
+
+  <!-- 作品瀑布流 -->
+  <scroll-view
+    class="content-scroll"
+    scroll-y="true"
+    bindscrolltolower="onReachBottom"
+    refresher-enabled="{{true}}"
+    refresher-triggered="{{refreshing}}"
+    bindrefresherrefresh="onRefresh"
+  >
+    <!-- 首次加载状态 -->
+    <view class="initial-loading" wx:if="{{loading && works.length === 0}}">
+      <t-loading theme="circular" size="60rpx" />
+      <text class="loading-text">发现精彩作品中...</text>
+    </view>
+
+    <!-- 瀑布流内容 -->
+    <photo-grid
+      wx:else
+      works="{{works}}"
+      bind:worktap="onWorkTap"
+      bind:like="onWorkLike"
+      bind:usertap="onUserTap"
+    />
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{loading && works.length > 0}}">
+      <t-loading theme="circular" size="32rpx" />
+      <text class="load-text">加载中...</text>
+    </view>
+
+    <!-- 无更多内容 -->
+    <view class="no-more" wx:if="{{!hasMore && works.length > 0}}">
+      <text>— 没有更多了 —</text>
+    </view>
+
+    <!-- 底部安全区域 -->
+    <view class="safe-area-bottom"></view>
+  </scroll-view>
+
+  <!-- 分类筛选浮动按钮 -->
+  <view class="category-float-btn" bindtap="onCategoryTap">
+    <t-icon name="filter" size="28rpx" />
+    <text>分类</text>
+  </view>
+</view>
+
+<!-- 分类选择弹窗 -->
+<t-popup
+  visible="{{showCategoryPopup}}"
+  placement="bottom"
+  bind:visible-change="onCategoryPopupChange"
+>
+  <view class="category-popup">
+    <view class="popup-header">
+      <text class="popup-title">选择分类</text>
+      <view class="close-btn" bindtap="onCloseCategoryPopup">
+        <t-icon name="close" size="32rpx" />
+      </view>
+    </view>
+    <view class="category-grid">
+      <view
+        class="category-option {{selectedCategory === 'all' ? 'selected' : ''}}"
+        data-category="all"
+        bindtap="onCategorySelect"
+      >
+        <t-icon name="view-module" size="48rpx" />
+        <text>全部</text>
+      </view>
+      <view
+        class="category-option {{selectedCategory === item.id ? 'selected' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="id"
+        data-category="{{item.id}}"
+        bindtap="onCategorySelect"
+      >
+        <t-icon name="{{item.icon}}" size="48rpx" />
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+</t-popup>

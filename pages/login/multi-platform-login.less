@@ -1,0 +1,202 @@
+/* 多平台登录页面样式 */
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 80rpx 60rpx 40rpx;
+  box-sizing: border-box;
+}
+
+/* 头部Logo区域 */
+.login-header {
+  text-align: center;
+  margin-bottom: 80rpx;
+
+  .logo {
+    width: 120rpx;
+    height: 120rpx;
+    border-radius: 24rpx;
+    margin-bottom: 24rpx;
+  }
+
+  .app-name {
+    display: block;
+    font-size: 48rpx;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 12rpx;
+  }
+
+  .app-slogan {
+    display: block;
+    font-size: 28rpx;
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* 登录方式选择 */
+.login-methods {
+  margin-bottom: 60rpx;
+
+  .method-tabs {
+    display: flex;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12rpx;
+    padding: 8rpx;
+  }
+
+  .method-tab {
+    flex: 1;
+    text-align: center;
+    padding: 24rpx 0;
+    font-size: 32rpx;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 8rpx;
+    transition: all 0.3s ease;
+
+    &.active {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-weight: 500;
+    }
+  }
+}
+
+/* 登录表单 */
+.login-form {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+  padding: 60rpx 40rpx;
+  margin-bottom: 40rpx;
+
+  .form-title {
+    font-size: 36rpx;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 16rpx;
+  }
+
+  .form-desc {
+    font-size: 28rpx;
+    color: #666;
+    text-align: center;
+    margin-bottom: 60rpx;
+  }
+}
+
+/* 输入框组 */
+.input-group {
+  margin-bottom: 40rpx;
+
+  .input-label {
+    display: flex;
+    align-items: center;
+    font-size: 32rpx;
+    color: #333;
+    
+    text {
+      margin-right: 8rpx;
+    }
+  }
+
+  .code-suffix {
+    display: flex;
+    align-items: center;
+
+    .suffix-line {
+      width: 2rpx;
+      height: 40rpx;
+      background: #e5e5e5;
+      margin-right: 20rpx;
+    }
+  }
+
+  .error-text {
+    font-size: 24rpx;
+    color: #ff4757;
+    margin-top: 12rpx;
+    margin-left: 24rpx;
+  }
+}
+
+/* 登录按钮 */
+.login-btn {
+  width: 100%;
+  height: 96rpx;
+  border-radius: 48rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+
+  &.wechat-btn {
+    background: #07c160;
+    color: #fff;
+
+    &:disabled {
+      background: #ccc;
+    }
+  }
+
+  &.phone-btn {
+    background: #667eea;
+    color: #fff;
+
+    &:disabled {
+      background: #ccc;
+    }
+  }
+}
+
+/* 游客登录 */
+.guest-login {
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+/* 用户协议 */
+.agreement-section {
+  margin-bottom: 40rpx;
+
+  .agreement-text {
+    font-size: 26rpx;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+
+    .link {
+      color: #fff;
+      text-decoration: underline;
+    }
+  }
+}
+
+/* 调试信息 */
+.debug-info {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-top: 40rpx;
+
+  text {
+    display: block;
+    font-size: 24rpx;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8rpx;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+/* TDesign组件样式覆盖 */
+.input-error {
+  --td-input-border-color: #ff4757 !important;
+}
+
+.agreement-checkbox {
+  --td-checkbox-color: rgba(255, 255, 255, 0.8) !important;
+}

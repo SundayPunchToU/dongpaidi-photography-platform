@@ -1,0 +1,175 @@
+<!-- 小红书风格详情页面 -->
+<view class="detail-page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar">
+    <view class="nav-left" bindtap="goBack">
+      <text style="font-size: 32rpx; color: #333;">←</text>
+    </view>
+    <view class="nav-actions">
+      <view class="nav-btn" bindtap="onShare">
+        <text style="font-size: 24rpx;">📤</text>
+      </view>
+      <view class="nav-btn" bindtap="onMore">
+        <text style="font-size: 24rpx;">⋯</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图片轮播区域 -->
+  <view class="image-section">
+    <swiper 
+      class="image-swiper" 
+      indicator-dots="{{images.length > 1}}"
+      indicator-color="rgba(255,255,255,0.5)"
+      indicator-active-color="#fff"
+      circular="{{true}}"
+      autoplay="{{false}}"
+    >
+      <swiper-item wx:for="{{images}}" wx:key="index">
+        <image 
+          class="detail-image" 
+          src="{{item}}" 
+          mode="aspectFill"
+          bindtap="previewImage"
+          data-index="{{index}}"
+        />
+      </swiper-item>
+    </swiper>
+    
+    <!-- 图片计数器 -->
+    <view class="image-counter" wx:if="{{images.length > 1}}">
+      <text>{{currentImageIndex + 1}}/{{images.length}}</text>
+    </view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content-section">
+    <!-- 标题和描述 -->
+    <view class="content-header">
+      <text class="content-title">{{workInfo.title}}</text>
+      <text class="content-desc">{{workInfo.description}}</text>
+    </view>
+
+    <!-- 标签区域 -->
+    <view class="tags-section" wx:if="{{workInfo.tags.length > 0}}">
+      <view class="tag-item" wx:for="{{workInfo.tags}}" wx:key="index">
+        <text>#{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 拍摄信息 -->
+    <view class="shooting-info" wx:if="{{workInfo.shootingInfo}}">
+      <view class="info-title">📷 拍摄信息</view>
+      <view class="info-grid">
+        <view class="info-item" wx:if="{{workInfo.shootingInfo.camera}}">
+          <text class="info-label">相机</text>
+          <text class="info-value">{{workInfo.shootingInfo.camera}}</text>
+        </view>
+        <view class="info-item" wx:if="{{workInfo.shootingInfo.lens}}">
+          <text class="info-label">镜头</text>
+          <text class="info-value">{{workInfo.shootingInfo.lens}}</text>
+        </view>
+        <view class="info-item" wx:if="{{workInfo.shootingInfo.aperture}}">
+          <text class="info-label">光圈</text>
+          <text class="info-value">{{workInfo.shootingInfo.aperture}}</text>
+        </view>
+        <view class="info-item" wx:if="{{workInfo.shootingInfo.shutter}}">
+          <text class="info-label">快门</text>
+          <text class="info-value">{{workInfo.shootingInfo.shutter}}</text>
+        </view>
+        <view class="info-item" wx:if="{{workInfo.shootingInfo.iso}}">
+          <text class="info-label">ISO</text>
+          <text class="info-value">{{workInfo.shootingInfo.iso}}</text>
+        </view>
+        <view class="info-item" wx:if="{{workInfo.location}}">
+          <text class="info-label">地点</text>
+          <text class="info-value">{{workInfo.location}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 作者信息 -->
+    <view class="author-section">
+      <view class="author-info" bindtap="viewProfile">
+        <image class="author-avatar" src="{{workInfo.author.avatar}}" />
+        <view class="author-details">
+          <text class="author-name">{{workInfo.author.name}}</text>
+          <text class="author-desc">{{workInfo.author.description}}</text>
+        </view>
+        <view class="follow-btn {{workInfo.author.isFollowed ? 'followed' : ''}}" bindtap="toggleFollow">
+          <text>{{workInfo.author.isFollowed ? '已关注' : '关注'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 互动统计 -->
+    <view class="interaction-stats">
+      <view class="stat-item">
+        <text class="stat-icon">👁️</text>
+        <text class="stat-text">{{workInfo.viewCount}}次浏览</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-icon">❤️</text>
+        <text class="stat-text">{{workInfo.likeCount}}个赞</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-icon">💬</text>
+        <text class="stat-text">{{workInfo.commentCount}}条评论</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-icon">⭐</text>
+        <text class="stat-text">{{workInfo.collectCount}}次收藏</text>
+      </view>
+    </view>
+
+    <!-- 评论区域 -->
+    <view class="comments-section">
+      <view class="comments-header">
+        <text class="comments-title">评论 ({{comments.length}})</text>
+      </view>
+      
+      <view class="comment-list">
+        <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+          <image class="comment-avatar" src="{{item.user.avatar}}" />
+          <view class="comment-content">
+            <view class="comment-header">
+              <text class="comment-user">{{item.user.name}}</text>
+              <text class="comment-time">{{item.timeAgo}}</text>
+            </view>
+            <text class="comment-text">{{item.content}}</text>
+            <view class="comment-actions">
+              <view class="comment-like {{item.isLiked ? 'liked' : ''}}" bindtap="likeComment" data-id="{{item.id}}">
+                <text class="like-icon">{{item.isLiked ? '❤️' : '🤍'}}</text>
+                <text class="like-count">{{item.likeCount}}</text>
+              </view>
+              <view class="comment-reply" bindtap="replyComment" data-id="{{item.id}}">
+                <text>回复</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-actions">
+    <view class="action-left">
+      <input class="comment-input" placeholder="写评论..." bindtap="showCommentModal" />
+    </view>
+    <view class="action-right">
+      <view class="action-btn like-action {{workInfo.isLiked ? 'liked' : ''}}" bindtap="toggleLike">
+        <text class="action-icon">{{workInfo.isLiked ? '❤️' : '🤍'}}</text>
+        <text class="action-text">{{workInfo.likeCount}}</text>
+      </view>
+      <view class="action-btn collect-action {{workInfo.isCollected ? 'collected' : ''}}" bindtap="toggleCollect">
+        <text class="action-icon">{{workInfo.isCollected ? '⭐' : '☆'}}</text>
+        <text class="action-text">收藏</text>
+      </view>
+      <view class="action-btn share-action" bindtap="onShare">
+        <text class="action-icon">📤</text>
+        <text class="action-text">分享</text>
+      </view>
+    </view>
+  </view>
+</view>

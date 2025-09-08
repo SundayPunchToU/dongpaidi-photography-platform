@@ -1,0 +1,53 @@
+<!--商城页面-->
+<view class="shop-page">
+  <!-- 轮播图 -->
+  <swiper class="banner-swiper" autoplay="{{true}}" interval="3000" circular="{{true}}">
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <t-image src="{{item.image}}" mode="aspectFill" class="banner-image" />
+    </swiper-item>
+  </swiper>
+
+  <!-- 分类导航 -->
+  <view class="categories-section">
+    <t-grid column="{{4}}" border="{{false}}">
+      <t-grid-item
+        wx:for="{{categories}}"
+        wx:key="id"
+        data-category="{{item}}"
+        bindtap="onCategoryTap"
+      >
+        <view class="category-item">
+          <t-icon name="{{item.icon}}" size="48rpx" color="#ffeb3b" />
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </t-grid-item>
+    </t-grid>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="products-section">
+    <view class="section-title">热门商品</view>
+    <view class="products-grid">
+      <view
+        class="product-card"
+        wx:for="{{products}}"
+        wx:key="id"
+        data-product="{{item}}"
+        bindtap="onProductTap"
+      >
+        <t-image src="{{item.image}}" mode="aspectFill" class="product-image" />
+        <view class="product-info">
+          <text class="product-name">{{item.name}}</text>
+          <view class="price-info">
+            <text class="current-price">¥{{item.price}}</text>
+            <text class="original-price" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
+          </view>
+          <view class="product-meta">
+            <text class="sales">已售{{item.sales}}</text>
+            <text class="rating">{{item.rating}}分</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

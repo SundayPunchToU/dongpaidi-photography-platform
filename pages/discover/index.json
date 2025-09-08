@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "发现",
+  "onReachBottomDistance": 100,
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "photo-grid": "/components/photo-grid/index"
+  }
+}

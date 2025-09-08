@@ -1,0 +1,60 @@
+<!-- 智能加载组件 -->
+<view class="smart-loading {{type}}" wx:if="{{visible}}">
+  <!-- 默认加载 -->
+  <view class="loading-default" wx:if="{{type === 'default'}}">
+    <view class="loading-spinner">
+      <view class="spinner-ring"></view>
+      <view class="spinner-dot"></view>
+    </view>
+    <text class="loading-text" wx:if="{{text}}">{{text}}</text>
+  </view>
+
+  <!-- 图片加载 -->
+  <view class="loading-image" wx:elif="{{type === 'image'}}">
+    <view class="image-placeholder">
+      <t-icon name="image" size="48rpx" color="#d4af37" />
+    </view>
+    <text class="loading-text">{{text || '加载图片中...'}}</text>
+  </view>
+
+  <!-- 上传加载 -->
+  <view class="loading-upload" wx:elif="{{type === 'upload'}}">
+    <view class="upload-progress">
+      <view class="progress-circle">
+        <view class="progress-bar" style="stroke-dasharray: {{progress * 2.51}}, 251;"></view>
+        <text class="progress-text">{{progress}}%</text>
+      </view>
+    </view>
+    <text class="loading-text">{{text || '上传中...'}}</text>
+  </view>
+
+  <!-- 支付加载 -->
+  <view class="loading-payment" wx:elif="{{type === 'payment'}}">
+    <view class="payment-icon">
+      <t-icon name="money" size="48rpx" color="#d4af37" />
+      <view class="payment-pulse"></view>
+    </view>
+    <text class="loading-text">{{text || '支付处理中...'}}</text>
+  </view>
+
+  <!-- 搜索加载 -->
+  <view class="loading-search" wx:elif="{{type === 'search'}}">
+    <view class="search-animation">
+      <t-icon name="search" size="48rpx" color="#d4af37" />
+      <view class="search-waves">
+        <view class="wave"></view>
+        <view class="wave"></view>
+        <view class="wave"></view>
+      </view>
+    </view>
+    <text class="loading-text">{{text || '搜索中...'}}</text>
+  </view>
+
+  <!-- 进度条 (可选) -->
+  <view class="progress-bar-container" wx:if="{{showProgress && type !== 'upload'}}">
+    <view class="progress-bar-bg">
+      <view class="progress-bar-fill" style="width: {{progress}}%;"></view>
+    </view>
+    <text class="progress-text">{{progress}}%</text>
+  </view>
+</view>

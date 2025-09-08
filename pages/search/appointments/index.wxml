@@ -1,0 +1,99 @@
+<!-- 约拍搜索页面 -->
+<view class="search-appointments-page">
+  <!-- 专业摄影导航栏 -->
+  <view class="photography-navbar">
+    <view class="nav-back" bindtap="goBack">
+      <t-icon name="chevron-left" size="32rpx" color="rgba(255, 252, 240, 0.9)" />
+    </view>
+    <text class="nav-title">搜索约拍</text>
+  </view>
+
+  <!-- 搜索头部 -->
+  <view class="search-header">
+    <view class="search-row">
+      <view class="search-input-wrapper">
+        <t-icon class="input-icon" name="calendar" size="28rpx" />
+        <input
+          class="search-input"
+          value="{{keyword}}"
+          placeholder="搜索约拍信息、地点、类型..."
+          bindinput="onSearchInput"
+          bindconfirm="performSearch"
+          confirm-type="search"
+          focus="{{autoFocus}}"
+        />
+      </view>
+      <view class="search-btn" bindtap="performSearch">
+        <text class="btn-text">搜索</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 筛选区域 -->
+  <view class="filter-section" wx:if="{{hasSearched}}">
+    <view class="filter-row">
+      <view class="filter-group">
+        <text class="filter-label">类型:</text>
+        <view class="filter-options">
+          <text class="filter-option {{filters.type === 'all' ? 'active' : ''}}" data-type="all" bindtap="onFilterChange">全部</text>
+          <text class="filter-option {{filters.type === 'portrait' ? 'active' : ''}}" data-type="portrait" bindtap="onFilterChange">人像</text>
+          <text class="filter-option {{filters.type === 'wedding' ? 'active' : ''}}" data-type="wedding" bindtap="onFilterChange">婚纱</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索建议区域 -->
+  <view class="search-suggestions" wx:if="{{!hasSearched}}">
+    <view class="suggestion-section">
+      <view class="section-title">🔥 热门约拍</view>
+      <view class="keyword-list">
+        <text
+          class="keyword-tag"
+          wx:for="{{hotKeywords}}"
+          wx:key="*this"
+          data-keyword="{{item}}"
+          bindtap="onHotKeywordTap"
+        >
+          {{item}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索结果区域 -->
+  <view class="search-results" wx:if="{{hasSearched}}">
+    <!-- 结果统计 -->
+    <view class="results-header" wx:if="{{!loading}}">
+      <text class="results-count">
+        找到 <text class="count-number">{{searchResults.length}}</text> 个约拍信息
+      </text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-section" wx:if="{{loading}}">
+      <smart-loading
+        type="search"
+        visible="{{true}}"
+        text="正在搜索约拍信息..."
+      />
+    </view>
+
+    <!-- 搜索结果列表 -->
+    <view class="results-list" wx:elif="{{searchResults.length > 0}}">
+      <appointment-card
+        wx:for="{{searchResults}}"
+        wx:key="id"
+        appointment="{{item}}"
+        bind:cardtap="onAppointmentTap"
+      />
+    </view>
+
+    <!-- 无结果状态 -->
+    <view class="no-results" wx:else>
+      <view class="no-results-icon"></view>
+      <text class="no-results-text">未找到相关约拍信息</text>
+      <text class="no-results-desc">试试调整搜索条件或浏览推荐约拍</text>
+    </view>
+  </view>
+</view>

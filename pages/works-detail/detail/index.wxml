@@ -1,0 +1,207 @@
+<!--作品详情页 - 得物风格-->
+<view class="work-detail-page">
+  <!-- 顶部导航栏 -->
+  <view class="custom-navbar">
+    <view class="nav-left" bindtap="onBackTap">
+      <t-icon name="chevron-left" size="48rpx" color="#333" />
+    </view>
+    <view class="nav-right">
+      <view class="nav-btn" bindtap="onShareTap">
+        <t-icon name="share" size="40rpx" color="#333" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 作品内容区域 -->
+  <scroll-view class="content-scroll" scroll-y="true" wx:if="{{!loading && workDetail}}">
+    <!-- 作品图片展示 -->
+    <view class="work-image-section">
+      <swiper
+        class="work-images"
+        indicator-dots="{{workDetail.images && workDetail.images.length > 1}}"
+        indicator-color="rgba(255,255,255,0.3)"
+        indicator-active-color="rgba(212,175,55,0.8)"
+        bindchange="onImageChange"
+        circular="{{true}}"
+      >
+        <swiper-item wx:for="{{workDetail.images || [workDetail.coverImage]}}" wx:key="*this">
+          <image
+            class="work-image"
+            src="{{item}}"
+            mode="aspectFill"
+            bindtap="onImagePreview"
+            data-index="{{index}}"
+            lazy-load="{{true}}"
+          />
+        </swiper-item>
+      </swiper>
+
+      <!-- 图片指示器 -->
+      <view class="image-indicator" wx:if="{{workDetail.images && workDetail.images.length > 1}}">
+        <text>{{currentImageIndex + 1}}/{{workDetail.images.length}}</text>
+      </view>
+
+      <!-- 图片操作按钮 -->
+      <view class="image-actions">
+        <view class="action-btn" bindtap="onImagePreview">
+          <text class="action-icon">🔍</text>
+        </view>
+        <view class="action-btn" bindtap="onShareImage">
+          <text class="action-icon">📤</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 作品信息主卡片 -->
+    <view class="work-main-card">
+      <!-- 用户信息 -->
+      <view class="user-section">
+        <view class="user-info" bindtap="onUserTap" data-user-id="{{workDetail.user.id}}">
+          <image class="user-avatar" src="{{workDetail.user.avatar}}" mode="aspectFill" />
+          <view class="user-details">
+            <text class="user-name">{{workDetail.user.name}}</text>
+            <view class="user-meta">
+              <text class="user-desc">{{workDetail.user.description || '摄影爱好者'}}</text>
+              <text class="publish-time">{{workDetail.publishTime}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="user-actions">
+          <view
+            class="follow-btn {{workDetail.user.isFollowed ? 'followed' : ''}}"
+            bindtap="onFollowTap"
+          >
+            <text class="follow-text">{{workDetail.user.isFollowed ? '已关注' : '+ 关注'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 作品标题和描述 -->
+      <view class="work-content">
+        <text class="work-title">{{workDetail.title}}</text>
+        <text class="work-description" wx:if="{{workDetail.description}}">{{workDetail.description}}</text>
+
+        <!-- 作品标签 -->
+        <view class="work-tags" wx:if="{{workDetail.tags && workDetail.tags.length > 0}}">
+          <text class="tag-item" wx:for="{{workDetail.tags}}" wx:key="*this">
+            #{{item}}
+          </text>
+        </view>
+
+        <!-- 拍摄地点 -->
+        <view class="work-location" wx:if="{{workDetail.location}}" bindtap="onLocationTap">
+          <text class="location-icon">📍</text>
+          <text class="location-text">{{workDetail.location}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 拍摄参数卡片 -->
+    <view class="params-card" wx:if="{{workDetail.params}}">
+      <view class="card-header">
+        <text class="card-title">📷 拍摄参数</text>
+      </view>
+      <view class="params-grid">
+        <view class="param-item" wx:if="{{workDetail.params.camera}}">
+          <text class="param-label">相机</text>
+          <text class="param-value">{{workDetail.params.camera}}</text>
+        </view>
+        <view class="param-item" wx:if="{{workDetail.params.lens}}">
+          <text class="param-label">镜头</text>
+          <text class="param-value">{{workDetail.params.lens}}</text>
+        </view>
+        <view class="param-item" wx:if="{{workDetail.params.aperture}}">
+          <text class="param-label">光圈</text>
+          <text class="param-value">{{workDetail.params.aperture}}</text>
+        </view>
+        <view class="param-item" wx:if="{{workDetail.params.shutter}}">
+          <text class="param-label">快门</text>
+          <text class="param-value">{{workDetail.params.shutter}}</text>
+        </view>
+        <view class="param-item" wx:if="{{workDetail.params.iso}}">
+          <text class="param-label">ISO</text>
+          <text class="param-value">{{workDetail.params.iso}}</text>
+        </view>
+        <view class="param-item" wx:if="{{workDetail.params.focal}}">
+          <text class="param-label">焦距</text>
+          <text class="param-value">{{workDetail.params.focal}}</text>
+        </view>
+        <view class="param-item" wx:if="{{workDetail.params.location}}">
+          <text class="param-label">拍摄地点</text>
+          <text class="param-value">{{workDetail.params.location}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 相关搜索 -->
+    <view class="related-search" wx:if="{{workDetail.relatedTags}}">
+      <view class="search-header">
+        <t-icon name="search" size="32rpx" color="#666" />
+        <text class="search-title">相关搜索 · {{workDetail.category}}推荐</text>
+        <t-icon name="chevron-right" size="32rpx" color="#999" />
+      </view>
+    </view>
+
+    <!-- 评论区域 -->
+    <view class="comments-section">
+      <view class="comments-header">
+        <text class="comments-title">评论 {{workDetail.stats.comments}}</text>
+        <view class="comments-tabs">
+          <text class="tab-item {{commentTab === 'hot' ? 'active' : ''}}" bindtap="onCommentTabTap" data-tab="hot">热门</text>
+          <text class="tab-item {{commentTab === 'latest' ? 'active' : ''}}" bindtap="onCommentTabTap" data-tab="latest">最新</text>
+        </view>
+      </view>
+
+      <!-- 评论列表 -->
+      <view class="comments-list">
+        <view class="comment-item" wx:for="{{comments}}" wx:key="id">
+          <image class="comment-avatar" src="{{item.user.avatar}}" />
+          <view class="comment-content">
+            <view class="comment-header">
+              <text class="comment-user">{{item.user.name}}</text>
+              <text class="comment-time">{{item.timeText}}</text>
+            </view>
+            <text class="comment-text">{{item.content}}</text>
+            <view class="comment-actions">
+              <view class="comment-like {{item.isLiked ? 'liked' : ''}}" bindtap="onCommentLike" data-comment="{{item}}">
+                <t-icon name="thumb-up" size="24rpx" />
+                <text wx:if="{{item.likes > 0}}">{{item.likes}}</text>
+              </view>
+              <text class="comment-reply" bindtap="onCommentReply" data-comment="{{item}}">回复</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部安全区域 -->
+    <view class="safe-area-bottom"></view>
+  </scroll-view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-action-bar" wx:if="{{!loading && workDetail}}">
+    <view class="comment-input" bindtap="onCommentInputTap">
+      <text class="input-placeholder">说点什么...</text>
+    </view>
+    <view class="action-buttons">
+      <view class="action-btn {{workDetail.isLiked ? 'liked' : ''}}" bindtap="onLikeTap">
+        <t-icon name="thumb-up" size="44rpx" />
+        <text class="action-count">{{workDetail.stats.likes}}</text>
+      </view>
+      <view class="action-btn {{workDetail.isCollected ? 'collected' : ''}}" bindtap="onCollectTap">
+        <t-icon name="star" size="44rpx" />
+        <text class="action-count">{{workDetail.stats.collections}}</text>
+      </view>
+      <view class="action-btn" bindtap="onCommentTap">
+        <t-icon name="chat" size="44rpx" />
+        <text class="action-count">{{workDetail.stats.comments}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="60rpx" />
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

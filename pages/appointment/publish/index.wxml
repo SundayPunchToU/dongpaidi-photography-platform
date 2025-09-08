@@ -1,0 +1,120 @@
+<!--发布约拍页面-->
+<view class="publish-appointment-page">
+  <!-- 约拍类型 -->
+  <view class="form-section">
+    <view class="section-title">我是</view>
+    <t-radio-group value="{{type}}" bind:change="onTypeChange">
+      <t-radio value="photographer_seek_model" label="摄影师，寻找模特" />
+      <t-radio value="model_seek_model" label="模特，寻找摄影师" />
+    </t-radio-group>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">约拍标题</text>
+      <t-input
+        value="{{title}}"
+        placeholder="简单描述你的约拍需求"
+        bind:input="onTitleInput"
+        maxlength="50"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">详细描述</text>
+      <t-textarea
+        value="{{description}}"
+        placeholder="详细描述拍摄需求、风格、要求等"
+        bind:input="onDescriptionInput"
+        maxlength="500"
+        autosize
+      />
+    </view>
+  </view>
+
+  <!-- 拍摄风格 -->
+  <view class="form-section">
+    <view class="section-title">拍摄风格</view>
+    <view class="style-tags">
+      <view 
+        class="style-tag {{style.includes(item) ? 'selected' : ''}}"
+        wx:for="{{styleOptions}}"
+        wx:key="*this"
+        data-style="{{item}}"
+        bindtap="onStyleToggle"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 时间安排 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">拍摄日期</text>
+      <t-date-time-picker
+        value="{{schedule.date}}"
+        mode="date"
+        bind:change="onDateChange"
+      >
+        <t-input
+          slot="trigger"
+          value="{{schedule.date}}"
+          placeholder="选择拍摄日期"
+          readonly
+          suffix-icon="calendar"
+        />
+      </t-date-time-picker>
+    </view>
+
+    <view class="form-item">
+      <text class="form-label">预计时长</text>
+      <t-stepper
+        value="{{schedule.duration}}"
+        min="1"
+        max="12"
+        bind:change="onDurationChange"
+      />
+      <text class="duration-unit">小时</text>
+    </view>
+  </view>
+
+  <!-- 预算范围 -->
+  <view class="form-section">
+    <view class="section-title">预算范围</view>
+    <view class="budget-inputs" wx:if="{{!budget.negotiable}}">
+      <t-input
+        value="{{budget.min}}"
+        placeholder="最低预算"
+        type="number"
+        bind:input="onBudgetMinInput"
+      />
+      <text class="budget-separator">-</text>
+      <t-input
+        value="{{budget.max}}"
+        placeholder="最高预算"
+        type="number"
+        bind:input="onBudgetMaxInput"
+      />
+    </view>
+    <t-switch
+      value="{{budget.negotiable}}"
+      label="面议"
+      bind:change="onNegotiableChange"
+    />
+  </view>
+
+  <!-- 发布按钮 -->
+  <view class="publish-section">
+    <t-button 
+      theme="primary" 
+      size="large"
+      loading="{{publishing}}"
+      disabled="{{publishing}}"
+      bindtap="onPublish"
+    >
+      {{publishing ? '发布中...' : '发布约拍'}}
+    </t-button>
+  </view>
+</view>

@@ -1,0 +1,15 @@
+<!--商品分类页-->
+<view class="category-page">
+  <view class="category-list">
+    <view 
+      class="category-item"
+      wx:for="{{categories}}"
+      wx:key="id"
+      data-category="{{item}}"
+      bindtap="onCategoryTap"
+    >
+      <text class="category-name">{{item.name}}</text>
+      <text class="category-count">{{item.count}}件商品</text>
+    </view>
+  </view>
+</view>

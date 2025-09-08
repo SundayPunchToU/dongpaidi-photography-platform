@@ -1,0 +1,21 @@
+<!--作品分类页面-->
+<view class="category-page">
+  <view class="category-list">
+    <view 
+      class="category-item"
+      wx:for="{{categories}}"
+      wx:key="id"
+      data-category="{{item}}"
+      bindtap="onCategoryTap"
+    >
+      <view class="category-icon">
+        <t-icon name="{{item.icon}}" size="60rpx" />
+      </view>
+      <view class="category-info">
+        <text class="category-name">{{item.name}}</text>
+        <text class="category-count">{{item.count}}个作品</text>
+      </view>
+      <t-icon name="chevron-right" size="32rpx" color="#ccc" />
+    </view>
+  </view>
+</view>

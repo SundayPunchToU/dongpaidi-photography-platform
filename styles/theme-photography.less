@@ -1,0 +1,703 @@
+/* 懂拍帝摄影专业主题系统 - 微信小程序兼容版本 */
+
+/* ================================
+   摄影专业色彩体系 - LESS变量
+   ================================ */
+
+// 主色调 - 经典摄影黑金配色
+@dp-primary: #1a1a1a;        // 深邃黑 - 专业相机色
+@dp-accent: #d4af37;         // 摄影金 - 高端器材色
+@dp-secondary: #2c2c2c;      // 炭灰色 - 镜头色
+@dp-tertiary: #f8f8f8;       // 浅灰 - 柔光色
+
+// 功能色彩 - 保持专业感
+@dp-success: #52c41a;        // 成功绿
+@dp-warning: #faad14;        // 警告橙
+@dp-error: #ff4d4f;          // 错误红
+@dp-info: #1890ff;           // 信息蓝
+
+// 中性色阶 - 摄影灰度系统
+@dp-bg-primary: #ffffff;     // 纯白背景
+@dp-bg-secondary: #fafafa;   // 浅灰背景
+@dp-bg-tertiary: #f5f5f5;    // 中灰背景
+@dp-bg-dark: #1a1a1a;        // 深色背景
+@dp-text-primary: #262626;   // 主文字
+@dp-text-secondary: #595959; // 次文字
+@dp-text-tertiary: #8c8c8c;  // 三级文字
+@dp-text-disabled: #bfbfbf;  // 禁用文字
+@dp-text-inverse: #ffffff;   // 反色文字
+
+// 专业阴影系统
+@dp-shadow-light: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+@dp-shadow-medium: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
+@dp-shadow-heavy: 0 8rpx 32rpx rgba(0, 0, 0, 0.18);
+@dp-shadow-gold: 0 4rpx 16rpx rgba(212, 175, 55, 0.3);
+@dp-shadow-inset: inset 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+
+// 边框系统
+@dp-border-light: 1rpx solid #f0f0f0;
+@dp-border-medium: 1rpx solid #d9d9d9;
+@dp-border-dark: 1rpx solid #434343;
+@dp-border-accent: 2rpx solid @dp-accent;
+
+// 圆角系统
+@dp-radius-small: 8rpx;
+@dp-radius-medium: 12rpx;
+@dp-radius-large: 16rpx;
+@dp-radius-xl: 24rpx;
+@dp-radius-round: 50%;
+
+// 间距系统
+@dp-space-xs: 8rpx;
+@dp-space-sm: 16rpx;
+@dp-space-md: 24rpx;
+@dp-space-lg: 32rpx;
+@dp-space-xl: 48rpx;
+@dp-space-xxl: 64rpx;
+
+/* ================================
+   摄影专业字体系统
+   ================================ */
+.dp-typography {
+  /* 标题层次 - 体现摄影专业性 */
+  &-h1 {
+    font-size: 48rpx;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--dp-text-primary);
+    letter-spacing: -0.5rpx;
+  }
+
+  &-h2 {
+    font-size: 36rpx;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--dp-text-primary);
+    letter-spacing: -0.3rpx;
+  }
+
+  &-h3 {
+    font-size: 32rpx;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--dp-text-primary);
+  }
+
+  &-h4 {
+    font-size: 28rpx;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--dp-text-secondary);
+  }
+
+  /* 正文层次 - 优化阅读体验 */
+  &-body-large {
+    font-size: 32rpx;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--dp-text-primary);
+  }
+
+  &-body {
+    font-size: 28rpx;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--dp-text-primary);
+  }
+
+  &-body-small {
+    font-size: 24rpx;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--dp-text-secondary);
+  }
+
+  &-caption {
+    font-size: 20rpx;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--dp-text-tertiary);
+  }
+
+  /* 特殊字体样式 */
+  &-accent {
+    color: var(--dp-accent);
+    font-weight: 500;
+  }
+
+  &-inverse {
+    color: var(--dp-text-inverse);
+  }
+
+  &-gradient {
+    background: var(--dp-gradient-gold);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+  }
+}
+
+/* ================================
+   摄影专业按钮系统
+   ================================ */
+.dp-button {
+  border-radius: var(--dp-radius-medium);
+  padding: var(--dp-space-sm) var(--dp-space-lg);
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+
+  /* 主要按钮 - 摄影金渐变 */
+  &-primary {
+    background: var(--dp-gradient-gold);
+    color: var(--dp-primary);
+    border: none;
+    box-shadow: var(--dp-shadow-gold);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    &:active {
+      transform: scale(0.98);
+      box-shadow: var(--dp-shadow-medium);
+
+      &::before {
+        left: 100%;
+      }
+    }
+  }
+
+  /* 次要按钮 - 深色渐变 */
+  &-secondary {
+    background: var(--dp-gradient-dark);
+    color: var(--dp-text-inverse);
+    border: none;
+    box-shadow: var(--dp-shadow-medium);
+
+    &:active {
+      transform: scale(0.98);
+      background: var(--dp-secondary);
+    }
+  }
+
+  /* 轮廓按钮 - 专业边框 */
+  &-outline {
+    background: transparent;
+    color: var(--dp-accent);
+    border: var(--dp-border-accent);
+
+    &:active {
+      background: var(--dp-accent);
+      color: var(--dp-primary);
+      transform: scale(0.98);
+    }
+  }
+
+  /* 文字按钮 - 简约风格 */
+  &-text {
+    background: transparent;
+    color: var(--dp-accent);
+    border: none;
+    padding: var(--dp-space-sm);
+
+    &:active {
+      background: rgba(212, 175, 55, 0.1);
+      border-radius: var(--dp-radius-small);
+    }
+  }
+
+  /* 危险按钮 */
+  &-danger {
+    background: var(--dp-error);
+    color: var(--dp-text-inverse);
+    border: none;
+
+    &:active {
+      background: #d9363e;
+      transform: scale(0.98);
+    }
+  }
+
+  /* 按钮尺寸 */
+  &-large {
+    padding: var(--dp-space-md) var(--dp-space-xl);
+    font-size: 32rpx;
+    border-radius: var(--dp-radius-large);
+  }
+
+  &-small {
+    padding: var(--dp-space-xs) var(--dp-space-md);
+    font-size: 24rpx;
+    border-radius: var(--dp-radius-small);
+  }
+
+  /* 禁用状态 */
+  &:disabled,
+  &-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    transform: none !important;
+  }
+}
+
+/* ================================
+   摄影专业卡片系统
+   ================================ */
+.dp-card {
+  background: var(--dp-bg-primary);
+  border-radius: var(--dp-radius-large);
+  box-shadow: var(--dp-shadow-light);
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4rpx;
+    background: var(--dp-gradient-gold);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  &:active {
+    transform: translateY(-8rpx);
+    box-shadow: var(--dp-shadow-heavy);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  /* 作品卡片 - 摄影作品展示 */
+  &-work {
+    .work-image {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 120rpx;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+        pointer-events: none;
+      }
+    }
+
+    .work-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--dp-space-md);
+      color: var(--dp-text-inverse);
+      z-index: 2;
+
+      .work-title {
+        font-size: 28rpx;
+        font-weight: 500;
+        margin-bottom: var(--dp-space-xs);
+        text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+      }
+
+      .work-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .author {
+          display: flex;
+          align-items: center;
+          gap: var(--dp-space-xs);
+
+          .avatar {
+            width: 48rpx;
+            height: 48rpx;
+            border-radius: var(--dp-radius-round);
+            border: 2rpx solid rgba(255, 255, 255, 0.8);
+          }
+
+          .name {
+            font-size: 24rpx;
+            font-weight: 400;
+            text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+          }
+        }
+
+        .stats {
+          display: flex;
+          align-items: center;
+          gap: var(--dp-space-sm);
+
+          .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4rpx;
+
+            .icon {
+              width: 24rpx;
+              height: 24rpx;
+            }
+
+            .count {
+              font-size: 20rpx;
+              text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* 摄影师卡片 - 专业展示 */
+  &-photographer {
+    padding: var(--dp-space-lg);
+    background: var(--dp-gradient-light);
+
+    .photographer-header {
+      display: flex;
+      align-items: center;
+      gap: var(--dp-space-md);
+      margin-bottom: var(--dp-space-md);
+
+      .avatar {
+        width: 120rpx;
+        height: 120rpx;
+        border-radius: var(--dp-radius-round);
+        border: 4rpx solid var(--dp-accent);
+        box-shadow: var(--dp-shadow-gold);
+      }
+
+      .info {
+        flex: 1;
+
+        .name {
+          font-size: 32rpx;
+          font-weight: 600;
+          color: var(--dp-text-primary);
+          margin-bottom: var(--dp-space-xs);
+        }
+
+        .level {
+          font-size: 24rpx;
+          color: var(--dp-accent);
+          background: rgba(212, 175, 55, 0.15);
+          padding: 6rpx var(--dp-space-sm);
+          border-radius: var(--dp-radius-medium);
+          display: inline-flex;
+          align-items: center;
+          gap: 6rpx;
+
+          .level-icon {
+            width: 20rpx;
+            height: 20rpx;
+          }
+        }
+
+        .specialties {
+          margin-top: var(--dp-space-xs);
+          display: flex;
+          gap: var(--dp-space-xs);
+          flex-wrap: wrap;
+
+          .specialty-tag {
+            font-size: 20rpx;
+            color: var(--dp-text-tertiary);
+            background: var(--dp-bg-tertiary);
+            padding: 4rpx var(--dp-space-xs);
+            border-radius: var(--dp-radius-small);
+          }
+        }
+      }
+    }
+
+    .photographer-stats {
+      display: flex;
+      justify-content: space-around;
+      padding: var(--dp-space-md) 0;
+      border-top: var(--dp-border-light);
+      border-bottom: var(--dp-border-light);
+      margin: var(--dp-space-md) 0;
+
+      .stat-item {
+        text-align: center;
+
+        .number {
+          font-size: 32rpx;
+          font-weight: 600;
+          color: var(--dp-accent);
+          display: block;
+          margin-bottom: 4rpx;
+        }
+
+        .label {
+          font-size: 20rpx;
+          color: var(--dp-text-tertiary);
+        }
+      }
+    }
+
+    .photographer-actions {
+      display: flex;
+      gap: var(--dp-space-sm);
+
+      .action-btn {
+        flex: 1;
+        text-align: center;
+        padding: var(--dp-space-sm);
+        border-radius: var(--dp-radius-medium);
+        font-size: 24rpx;
+        transition: all 0.3s ease;
+
+        &.primary {
+          background: var(--dp-accent);
+          color: var(--dp-primary);
+        }
+
+        &.secondary {
+          background: var(--dp-bg-tertiary);
+          color: var(--dp-text-secondary);
+        }
+
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+}
+
+/* ================================
+   摄影专业表单系统
+   ================================ */
+.dp-form {
+  .form-item {
+    margin-bottom: var(--dp-space-lg);
+
+    .form-label {
+      font-size: 28rpx;
+      font-weight: 500;
+      color: var(--dp-text-primary);
+      margin-bottom: var(--dp-space-sm);
+      display: block;
+
+      .required {
+        color: var(--dp-error);
+        margin-left: 4rpx;
+      }
+    }
+
+    .form-input {
+      background: var(--dp-bg-secondary);
+      border: 2rpx solid transparent;
+      border-radius: var(--dp-radius-medium);
+      padding: var(--dp-space-md);
+      font-size: 28rpx;
+      color: var(--dp-text-primary);
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+
+      &:focus {
+        border-color: var(--dp-accent);
+        background: var(--dp-bg-primary);
+        box-shadow: 0 0 0 6rpx rgba(212, 175, 55, 0.15);
+        transform: translateY(-2rpx);
+      }
+
+      &::placeholder {
+        color: var(--dp-text-tertiary);
+      }
+    }
+
+    .form-textarea {
+      min-height: 120rpx;
+      resize: none;
+    }
+
+    .form-error {
+      font-size: 24rpx;
+      color: var(--dp-error);
+      margin-top: var(--dp-space-xs);
+      display: flex;
+      align-items: center;
+      gap: 6rpx;
+
+      .error-icon {
+        width: 20rpx;
+        height: 20rpx;
+      }
+    }
+
+    .form-help {
+      font-size: 24rpx;
+      color: var(--dp-text-tertiary);
+      margin-top: var(--dp-space-xs);
+    }
+  }
+
+  /* 表单组合 */
+  .form-group {
+    background: var(--dp-bg-primary);
+    border-radius: var(--dp-radius-large);
+    padding: var(--dp-space-lg);
+    margin-bottom: var(--dp-space-lg);
+    box-shadow: var(--dp-shadow-light);
+
+    .group-title {
+      font-size: 32rpx;
+      font-weight: 600;
+      color: var(--dp-text-primary);
+      margin-bottom: var(--dp-space-md);
+      padding-bottom: var(--dp-space-sm);
+      border-bottom: var(--dp-border-light);
+
+      .title-icon {
+        width: 32rpx;
+        height: 32rpx;
+        margin-right: var(--dp-space-xs);
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+/* ================================
+   摄影专业特效系统
+   ================================ */
+.dp-effects {
+  /* 毛玻璃效果 */
+  &-glass {
+    backdrop-filter: blur(20rpx);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1rpx solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* 发光效果 */
+  &-glow {
+    box-shadow: 0 0 20rpx rgba(212, 175, 55, 0.4);
+  }
+
+  /* 浮动效果 */
+  &-float {
+    animation: dp-float 3s ease-in-out infinite;
+  }
+
+  /* 脉冲效果 */
+  &-pulse {
+    animation: dp-pulse 2s ease-in-out infinite;
+  }
+}
+
+/* 动画定义 */
+@keyframes dp-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8rpx); }
+}
+
+@keyframes dp-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes dp-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ================================
+   响应式适配系统
+   ================================ */
+
+/* 小屏设备适配 */
+@media (max-width: 750rpx) {
+  :root {
+    --dp-space-xs: 6rpx;
+    --dp-space-sm: 12rpx;
+    --dp-space-md: 20rpx;
+    --dp-space-lg: 28rpx;
+    --dp-space-xl: 40rpx;
+  }
+
+  .dp-typography {
+    &-h1 { font-size: 40rpx; }
+    &-h2 { font-size: 32rpx; }
+    &-h3 { font-size: 28rpx; }
+    &-h4 { font-size: 26rpx; }
+    &-body-large { font-size: 28rpx; }
+    &-body { font-size: 26rpx; }
+  }
+
+  .dp-card {
+    border-radius: var(--dp-radius-medium);
+
+    &-photographer {
+      padding: var(--dp-space-md);
+
+      .photographer-header {
+        gap: var(--dp-space-sm);
+
+        .avatar {
+          width: 96rpx;
+          height: 96rpx;
+        }
+      }
+    }
+  }
+
+  .dp-button {
+    padding: var(--dp-space-sm) var(--dp-space-md);
+    font-size: 26rpx;
+
+    &-large {
+      padding: var(--dp-space-md) var(--dp-space-lg);
+      font-size: 28rpx;
+    }
+  }
+}
+
+/* 大屏设备适配 */
+@media (min-width: 1200rpx) {
+  .container {
+    max-width: 1200rpx;
+    margin: 0 auto;
+  }
+
+  .dp-card {
+    &-work {
+      .work-image {
+        aspect-ratio: 4/5; /* 大屏使用更宽的比例 */
+      }
+    }
+  }
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dp-bg-primary: #1a1a1a;
+    --dp-bg-secondary: #2c2c2c;
+    --dp-bg-tertiary: #3c3c3c;
+    --dp-text-primary: #ffffff;
+    --dp-text-secondary: #d9d9d9;
+    --dp-text-tertiary: #8c8c8c;
+  }
+}

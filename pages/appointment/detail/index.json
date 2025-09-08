@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "约拍详情",
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading"
+  }
+}

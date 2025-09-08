@@ -1,0 +1,243 @@
+<!-- 相机市场页面 -->
+<view class="market-page">
+  <!-- 顶部搜索栏 -->
+  <view class="search-section">
+    <view class="search-container">
+      <t-icon name="search" size="32rpx" color="#999" />
+      <input
+        class="search-input"
+        placeholder="搜索相机型号、品牌..."
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+        confirm-type="search"
+      />
+    </view>
+  </view>
+
+  <!-- 标签页导航 - 与首页topics-section保持一致 -->
+  <view class="tabs-section">
+    <view class="tabs-container">
+      <view
+        class="tab-item {{activeTab === index ? 'active' : ''}}"
+        wx:for="{{tabs}}"
+        wx:key="id"
+        data-index="{{index}}"
+        bindtap="onTabChange"
+      >
+        <text class="tab-text">{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 标签页内容 -->
+  <view class="tab-content">
+    <!-- 推荐相机 - 博物馆风格展示 -->
+    <view class="tab-panel museum-style" wx:if="{{activeTab === 0}}">
+      <view class="museum-header">
+        <text class="museum-title">精选相机典藏</text>
+        <text class="museum-subtitle">Professional Camera Collection</text>
+      </view>
+
+      <!-- 顶级相机集合展示横幅 -->
+      <view class="camera-collection-banner">
+        <view class="banner-container">
+          <image
+            class="collection-image"
+            src="https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?w=1000&h=400&fit=crop&q=95"
+            mode="aspectFill"
+          />
+          <view class="banner-overlay">
+            <view class="collection-info">
+              <text class="collection-title">世界顶级相机品牌典藏</text>
+              <text class="collection-subtitle">Canon · Sony · Nikon · Leica · Hasselblad · Phase One</text>
+              <text class="collection-description">汇聚全球摄影器材巅峰之作，每一台都是光影艺术的传承</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="museum-gallery">
+        <view
+          class="exhibit-card"
+          wx:for="{{recommendedCameras}}"
+          wx:key="id"
+          data-camera="{{item}}"
+          bindtap="onCameraClick"
+        >
+          <!-- 展品图片区域 -->
+          <view class="exhibit-image-container">
+            <image class="exhibit-image" src="{{item.image}}" mode="aspectFit" />
+            <view class="exhibit-spotlight"></view>
+          </view>
+
+          <!-- 展品说明牌 -->
+          <view class="exhibit-placard">
+            <view class="placard-header">
+              <text class="exhibit-name">{{item.name}}</text>
+              <text class="exhibit-brand">{{item.brand}}</text>
+            </view>
+
+            <text class="exhibit-description">{{item.reason}}</text>
+
+            <!-- 技术参数 -->
+            <view class="technical-specs">
+              <text class="specs-title">Technical Specifications</text>
+              <view class="specs-list">
+                <text class="spec-item" wx:for="{{item.features}}" wx:key="*this" wx:for-item="feature">• {{feature}}</text>
+              </view>
+            </view>
+
+            <!-- 价格和评价 -->
+            <view class="exhibit-footer">
+              <view class="price-section">
+                <text class="current-price">¥{{item.price}}</text>
+                <text class="original-price" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
+              </view>
+              <view class="rating-section">
+                <view class="stars">
+                  <t-icon name="star-filled" size="28rpx" color="#d4af37" />
+                  <text class="rating-value">{{item.rating}}</text>
+                </view>
+                <text class="review-count">{{item.reviewCount}} reviews</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 相机交易 - 闲鱼风格 -->
+    <view class="tab-panel xianyu-style" wx:if="{{activeTab === 1}}">
+      <!-- 筛选和发布区域 -->
+      <view class="xianyu-header">
+        <view class="filter-section">
+          <view class="filter-btn">
+            <t-icon name="filter" size="28rpx" color="#666" />
+            <text>筛选</text>
+          </view>
+          <view class="sort-btn">
+            <t-icon name="swap" size="28rpx" color="#666" />
+            <text>排序</text>
+          </view>
+        </view>
+        <view class="publish-btn" bindtap="onPublishTrade">
+          <t-icon name="add" size="28rpx" color="#ff7875" />
+          <text>发布</text>
+        </view>
+      </view>
+
+      <!-- 商品列表 -->
+      <view class="xianyu-list">
+        <view
+          class="xianyu-item"
+          wx:for="{{tradeCameras}}"
+          wx:key="id"
+          data-camera="{{item}}"
+          bindtap="onCameraClick"
+        >
+          <image class="item-image" src="{{item.image}}" mode="aspectFill" />
+          <view class="item-content">
+            <view class="item-header">
+              <text class="item-title">{{item.name}}</text>
+              <view class="condition-tag {{item.type}}">{{item.condition}}</view>
+            </view>
+
+            <view class="item-price">
+              <text class="current-price">¥{{item.price}}</text>
+              <text class="original-price" wx:if="{{item.originalPrice}}">¥{{item.originalPrice}}</text>
+            </view>
+
+            <view class="item-tags">
+              <text class="tag" wx:for="{{item.tags}}" wx:key="*this" wx:for-item="tag">{{tag}}</text>
+            </view>
+
+            <view class="item-footer">
+              <view class="seller-section">
+                <text class="seller-name">{{item.seller}}</text>
+                <view class="seller-rating">
+                  <t-icon name="star-filled" size="20rpx" color="#ff7875" />
+                  <text>{{item.sellerRating}}</text>
+                </view>
+              </view>
+              <view class="location-time">
+                <text class="location">{{item.location}}</text>
+                <text class="publish-time">{{item.publishTime}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 相机租赁 - 闲鱼风格 -->
+    <view class="tab-panel xianyu-style" wx:if="{{activeTab === 2}}">
+      <!-- 筛选和发布区域 -->
+      <view class="xianyu-header">
+        <view class="filter-section">
+          <view class="filter-btn">
+            <t-icon name="filter" size="28rpx" color="#666" />
+            <text>筛选</text>
+          </view>
+          <view class="sort-btn">
+            <t-icon name="time" size="28rpx" color="#666" />
+            <text>租期</text>
+          </view>
+        </view>
+        <view class="publish-btn" bindtap="onPublishRental">
+          <t-icon name="add" size="28rpx" color="#52c41a" />
+          <text>发布</text>
+        </view>
+      </view>
+
+      <!-- 租赁列表 -->
+      <view class="xianyu-list">
+        <view
+          class="xianyu-item rental"
+          wx:for="{{rentalCameras}}"
+          wx:key="id"
+          data-camera="{{item}}"
+          bindtap="onCameraClick"
+        >
+          <image class="item-image" src="{{item.image}}" mode="aspectFill" />
+          <view class="item-content">
+            <view class="item-header">
+              <text class="item-title">{{item.name}}</text>
+              <view class="rental-tag">可租赁</view>
+            </view>
+
+            <view class="rental-price-section">
+              <text class="rental-price">¥{{item.price}}</text>
+              <text class="price-unit">/天</text>
+              <text class="deposit-info">押金¥{{item.deposit}}</text>
+            </view>
+
+            <view class="rental-period-info">
+              <text class="period">{{item.rentalPeriod}}</text>
+              <text class="rent-count">已租{{item.rentCount}}次</text>
+            </view>
+
+            <view class="item-footer">
+              <view class="shop-section">
+                <text class="shop-name">{{item.shop}}</text>
+                <view class="shop-rating">
+                  <t-icon name="star-filled" size="20rpx" color="#52c41a" />
+                  <text>{{item.shopRating}}</text>
+                </view>
+              </view>
+              <view class="location-info">
+                <text class="location">{{item.location}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-section" wx:if="{{loading}}">
+    <t-loading theme="circular" size="40rpx" />
+    <text class="loading-text">加载中...</text>
+  </view>
+</view>

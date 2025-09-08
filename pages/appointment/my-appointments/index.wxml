@@ -1,0 +1,4 @@
+<!--我的约拍页面-->
+<view class="my-appointments-page">
+  <text>我的约拍</text>
+</view>

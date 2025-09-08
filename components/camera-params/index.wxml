@@ -1,0 +1,44 @@
+<!-- 相机参数组件 -->
+<view class="camera-params {{mode}}">
+  <!-- 显示模式 -->
+  <view class="params-display" wx:if="{{mode === 'display' || mode === 'compact'}}">
+    <view 
+      class="param-item"
+      wx:for="{{getDisplayParams()}}"
+      wx:key="key"
+      data-param="{{item}}"
+      bindtap="onParamTap"
+    >
+      <view class="param-icon" style="background-color: {{item.color}};">
+        <t-icon name="{{item.icon}}" size="24rpx" color="#fff" />
+      </view>
+      <view class="param-content">
+        <text class="param-label">{{item.label}}</text>
+        <text class="param-value">{{item.displayValue}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑模式 -->
+  <view class="params-edit" wx:elif="{{mode === 'edit'}}">
+    <view 
+      class="edit-item"
+      wx:for="{{getDisplayParams()}}"
+      wx:key="key"
+    >
+      <view class="edit-label">
+        <t-icon name="{{item.icon}}" size="20rpx" color="{{item.color}}" />
+        <text class="label-text">{{item.label}}</text>
+      </view>
+      <input 
+        class="edit-input"
+        type="{{item.key === 'iso' ? 'number' : 'digit'}}"
+        value="{{item.value}}"
+        placeholder="请输入{{item.label}}"
+        data-param="{{item.key}}"
+        bind:input="onParamInput"
+      />
+      <text class="edit-unit">{{item.unit}}</text>
+    </view>
+  </view>
+</view>

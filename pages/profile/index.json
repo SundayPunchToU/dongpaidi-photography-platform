@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "我的",
+  "enablePullDownRefresh": true,
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "photo-grid": "/components/photo-grid/index",
+    "appointment-card": "/components/appointment-card/index"
+  }
+}

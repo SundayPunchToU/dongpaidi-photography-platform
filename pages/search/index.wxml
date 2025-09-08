@@ -1,0 +1,115 @@
+<!-- 摄影专业搜索页面 -->
+<view class="search-page">
+  <!-- 专业摄影导航栏 -->
+  <view class="photography-navbar">
+    <view class="nav-back" bindtap="goBack">
+      <t-icon name="chevron-left" size="32rpx" color="rgba(255, 252, 240, 0.9)" />
+    </view>
+    <text class="nav-title">搜索发现</text>
+    <view class="nav-placeholder"></view>
+  </view>
+
+  <!-- 专业搜索输入区域 -->
+  <view class="search-input-section">
+    <view class="search-input-wrapper">
+      <t-icon class="search-icon" name="search" size="32rpx" />
+      <input
+        class="search-input"
+        value="{{searchValue}}"
+        placeholder="搜索摄影作品、摄影师、约拍信息..."
+        placeholder-class="search-placeholder"
+        bindinput="onSearchInput"
+        bindconfirm="handleSubmit"
+        confirm-type="search"
+        focus="{{autoFocus}}"
+      />
+      <view class="clear-btn" wx:if="{{searchValue}}" bindtap="clearSearch">
+        <t-icon name="close" size="20rpx" color="#999" />
+      </view>
+    </view>
+  </view>
+  <!-- 搜索内容区域 -->
+  <view class="search-content">
+    <!-- 快捷搜索建议 -->
+    <view class="quick-suggestions" wx:if="{{!searchValue}}">
+      <text class="suggestions-title">🎯 快速发现</text>
+      <view class="suggestion-grid">
+        <view class="suggestion-item" bindtap="onQuickSearch" data-type="works">
+          <text class="suggestion-icon">📷</text>
+          <text class="suggestion-text">摄影作品</text>
+        </view>
+        <view class="suggestion-item" bindtap="onQuickSearch" data-type="photographers">
+          <text class="suggestion-icon">👨‍🎨</text>
+          <text class="suggestion-text">摄影师</text>
+        </view>
+        <view class="suggestion-item" bindtap="onQuickSearch" data-type="appointments">
+          <text class="suggestion-icon">📅</text>
+          <text class="suggestion-text">约拍信息</text>
+        </view>
+        <view class="suggestion-item" bindtap="onQuickSearch" data-type="tutorials">
+          <text class="suggestion-icon">🎓</text>
+          <text class="suggestion-text">摄影教程</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 搜索历史 -->
+    <view class="content-section" wx:if="{{historyWords.length > 0 && !searchValue}}">
+      <view class="section-header">
+        <text class="section-title">搜索历史</text>
+        <view class="clear-action" bindtap="handleClearHistory">
+          <text class="clear-text">清空</text>
+        </view>
+      </view>
+      <view class="keyword-tags">
+        <text
+          class="keyword-tag history"
+          wx:for="{{historyWords}}"
+          wx:key="*this"
+          data-keyword="{{item}}"
+          bindtap="handleHistoryTap"
+          bindlongpress="deleteCurr"
+          data-index="{{index}}"
+        >
+          {{item}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 热门搜索 -->
+    <view class="content-section" wx:if="{{popularWords.length > 0 && !searchValue}}">
+      <view class="section-header">
+        <text class="section-title">热门搜索</text>
+      </view>
+      <view class="keyword-tags">
+        <text
+          class="keyword-tag popular"
+          wx:for="{{popularWords}}"
+          wx:key="*this"
+          data-keyword="{{item}}"
+          bindtap="handlePopularTap"
+          data-index="{{index}}"
+        >
+          {{item}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!historyWords.length && !popularWords.length && !searchValue}}">
+      <view class="empty-icon"></view>
+      <text class="empty-title">开始您的摄影发现之旅</text>
+      <text class="empty-desc">搜索作品、摄影师或约拍信息\n发现更多摄影灵感</text>
+    </view>
+  </view>
+  <t-dialog
+    visible="{{dialogShow}}"
+    content="{{dialog.message}}"
+    bindconfirm="confirm"
+    bind:close="close"
+    confirm-btn="确定"
+    cancel-btn="{{dialog.showCancelButton ? '取消' : null}}"
+    t-class-confirm="dialog__button-confirm"
+    t-class-cancel="dialog__button-cancel"
+  />
+</view>

@@ -1,0 +1,126 @@
+/* 相机参数组件样式 */
+@import '/styles/theme-photography.less';
+
+.camera-params {
+  &.display {
+    .params-display {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--dp-space-sm);
+      
+      .param-item {
+        display: flex;
+        align-items: center;
+        gap: var(--dp-space-xs);
+        padding: var(--dp-space-sm);
+        background: var(--dp-bg-primary);
+        border-radius: var(--dp-radius-medium);
+        box-shadow: var(--dp-shadow-light);
+        transition: all 0.3s ease;
+        
+        &:active {
+          transform: scale(0.98);
+          box-shadow: var(--dp-shadow-medium);
+        }
+        
+        .param-icon {
+          width: 48rpx;
+          height: 48rpx;
+          border-radius: var(--dp-radius-round);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .param-content {
+          .param-label {
+            font-size: 20rpx;
+            color: var(--dp-text-tertiary);
+            display: block;
+          }
+          
+          .param-value {
+            font-size: 24rpx;
+            font-weight: 500;
+            color: var(--dp-text-primary);
+          }
+        }
+      }
+    }
+  }
+  
+  &.compact {
+    .params-display {
+      display: flex;
+      gap: var(--dp-space-xs);
+      
+      .param-item {
+        flex: 1;
+        flex-direction: column;
+        text-align: center;
+        padding: var(--dp-space-xs);
+        
+        .param-icon {
+          width: 32rpx;
+          height: 32rpx;
+          margin: 0 auto var(--dp-space-xs);
+        }
+        
+        .param-content {
+          .param-label {
+            font-size: 18rpx;
+          }
+          
+          .param-value {
+            font-size: 20rpx;
+          }
+        }
+      }
+    }
+  }
+  
+  &.edit {
+    .params-edit {
+      .edit-item {
+        display: flex;
+        align-items: center;
+        gap: var(--dp-space-sm);
+        margin-bottom: var(--dp-space-md);
+        
+        .edit-label {
+          display: flex;
+          align-items: center;
+          gap: 6rpx;
+          min-width: 120rpx;
+          
+          .label-text {
+            font-size: 26rpx;
+            color: var(--dp-text-primary);
+          }
+        }
+        
+        .edit-input {
+          flex: 1;
+          padding: var(--dp-space-sm);
+          background: var(--dp-bg-secondary);
+          border: 2rpx solid transparent;
+          border-radius: var(--dp-radius-medium);
+          font-size: 26rpx;
+          color: var(--dp-text-primary);
+          
+          &:focus {
+            border-color: var(--dp-accent);
+            background: var(--dp-bg-primary);
+          }
+        }
+        
+        .edit-unit {
+          font-size: 24rpx;
+          color: var(--dp-text-secondary);
+          min-width: 60rpx;
+          text-align: right;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,209 @@
+.login {
+  &__title {
+    color: rgba(0, 0, 0, 0.9);
+    font-size: 56rpx;
+    font-weight: 600;
+    line-height: 72rpx;
+    padding: 16rpx 32rpx 40rpx;
+  }
+
+  &__input {
+    .input-label {
+      display: flex;
+      padding-right: 32rpx;
+      box-sizing: border-box;
+      border-right: 1rpx solid #e7e7e7;
+    }
+
+    .input-icon {
+      margin-left: 8rpx;
+    }
+  }
+
+  &__tips {
+    color: rgba(0, 0, 0, 0.4);
+    font-size: 24rpx;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 40rpx;
+    margin: 24rpx 32rpx 32rpx;
+  }
+
+  &__button {
+    margin: 0 32rpx;
+  }
+
+  &__password--forget {
+    display: flex;
+    font-size: 24rpx;
+    align-items: center;
+    margin: 32rpx;
+    line-height: 40rpx;
+  }
+
+  &__others {
+    margin: 64rpx 32rpx auto 32rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    &-label {
+      min-width: 96rpx;
+      color: rgba(0, 0, 0, 0.6);
+      font-size: 24rpx;
+      line-height: 40rpx;
+    }
+
+    &-buttons {
+      flex: 1;
+      margin-left: 32rpx;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      .button {
+        margin: 0 !important;
+
+        &:not(:last-child) {
+          margin-right: 32rpx !important;
+        }
+      }
+    }
+  }
+
+  // 覆盖组件样式
+  .radio-class {
+    --td-radio-icon-size: 32rpx;
+    --td-radio-label-line-height: 40rpx;
+
+    align-items: center;
+  }
+
+  .radio-class-icon {
+    margin-top: 0 !important;
+  }
+
+  .radio-class-label {
+    margin-left: 8rpx !important;
+    font-size: 24rpx !important;
+    line-height: 40rpx !important;
+  }
+}
+
+/* 多平台登录样式 */
+.login__multi-platform,
+.login__wechat {
+  margin-top: 60rpx;
+
+  .divider {
+    position: relative;
+    text-align: center;
+    margin: 40rpx 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2rpx;
+      background: var(--td-border-color);
+      z-index: 1;
+    }
+
+    text {
+      position: relative;
+      background: var(--td-bg-color-page);
+      padding: 0 32rpx;
+      font-size: 28rpx;
+      color: var(--td-text-color-secondary);
+      z-index: 2;
+    }
+  }
+
+  .multi-platform-btn {
+    --td-button-default-color: var(--td-brand-color) !important;
+    --td-button-default-border-color: var(--td-brand-color) !important;
+  }
+
+  .wechat-login-btn {
+    --td-button-primary-bg-color: #07c160 !important;
+    --td-button-primary-border-color: #07c160 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16rpx;
+  }
+}
+
+/* 测试入口样式 */
+.login__test-entry {
+  margin-top: 40rpx;
+  text-align: center;
+
+  .divider {
+    position: relative;
+    margin: 20rpx 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2rpx;
+      background: var(--td-border-color);
+      z-index: 1;
+    }
+
+    text {
+      position: relative;
+      background: var(--td-bg-color-page);
+      padding: 0 24rpx;
+      font-size: 24rpx;
+      color: var(--td-text-color-placeholder);
+      z-index: 2;
+    }
+  }
+
+  .test-entry-btn {
+    --td-button-default-color: var(--td-text-color-placeholder) !important;
+    font-size: 26rpx !important;
+  }
+}
+
+/* 测试入口样式 */
+.login__test-entry {
+  margin-top: 40rpx;
+  text-align: center;
+
+  .divider {
+    position: relative;
+    margin: 20rpx 0;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2rpx;
+      background: var(--td-border-color);
+      z-index: 1;
+    }
+
+    text {
+      position: relative;
+      background: var(--td-bg-color-page);
+      padding: 0 24rpx;
+      font-size: 24rpx;
+      color: var(--td-text-color-placeholder);
+      z-index: 2;
+    }
+  }
+
+  .test-entry-btn {
+    --td-button-default-color: var(--td-text-color-placeholder) !important;
+    font-size: 26rpx !important;
+  }
+}

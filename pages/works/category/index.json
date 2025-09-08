@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "作品分类",
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon"
+  }
+}

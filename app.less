@@ -1,0 +1,95 @@
+/**懂拍帝摄影专业主题系统**/
+
+/* 导入摄影专业主题 */
+@import './styles/theme-photography.less';
+
+/* 全局页面样式 */
+page {
+  background: @dp-bg-secondary;
+  color: @dp-text-primary;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  background: @dp-bg-primary;
+}
+
+/* 全局容器样式 */
+.container {
+  padding: 0 32rpx;
+  background: @dp-bg-primary;
+}
+
+.container-fluid {
+  padding: 0;
+  background: @dp-bg-primary;
+}
+
+/* 全局安全区域适配 */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ================================
+   全局工具类
+   ================================ */
+
+/* 文本工具类 */
+.text-primary { color: @dp-text-primary !important; }
+.text-secondary { color: @dp-text-secondary !important; }
+.text-tertiary { color: @dp-text-tertiary !important; }
+.text-accent { color: @dp-accent !important; }
+.text-inverse { color: @dp-text-inverse !important; }
+
+/* 背景工具类 */
+.bg-primary { background: @dp-bg-primary !important; }
+.bg-secondary { background: @dp-bg-secondary !important; }
+.bg-tertiary { background: @dp-bg-tertiary !important; }
+.bg-dark { background: @dp-bg-dark !important; }
+
+/* 间距工具类 */
+.p-xs { padding: @dp-space-xs !important; }
+.p-sm { padding: @dp-space-sm !important; }
+.p-md { padding: @dp-space-md !important; }
+.p-lg { padding: @dp-space-lg !important; }
+.p-xl { padding: @dp-space-xl !important; }
+
+.m-xs { margin: @dp-space-xs !important; }
+.m-sm { margin: @dp-space-sm !important; }
+.m-md { margin: @dp-space-md !important; }
+.m-lg { margin: @dp-space-lg !important; }
+.m-xl { margin: @dp-space-xl !important; }
+
+/* 圆角工具类 */
+.rounded-sm { border-radius: @dp-radius-small !important; }
+.rounded-md { border-radius: @dp-radius-medium !important; }
+.rounded-lg { border-radius: @dp-radius-large !important; }
+.rounded-xl { border-radius: @dp-radius-xl !important; }
+.rounded-full { border-radius: @dp-radius-round !important; }
+
+/* 阴影工具类 */
+.shadow-light { box-shadow: @dp-shadow-light !important; }
+.shadow-medium { box-shadow: @dp-shadow-medium !important; }
+.shadow-heavy { box-shadow: @dp-shadow-heavy !important; }
+.shadow-gold { box-shadow: @dp-shadow-gold !important; }
+
+/* 布局工具类 */
+.flex { display: flex !important; }
+.flex-col { flex-direction: column !important; }
+.items-center { align-items: center !important; }
+.justify-center { justify-content: center !important; }
+.justify-between { justify-content: space-between !important; }
+
+/* 位置工具类 */
+.relative { position: relative !important; }
+.absolute { position: absolute !important; }
+.fixed { position: fixed !important; }
+
+/* 显示隐藏 */
+.hidden { display: none !important; }
+.visible { display: block !important; }

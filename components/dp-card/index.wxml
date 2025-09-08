@@ -1,0 +1,171 @@
+<!-- 懂拍帝定制卡片组件 -->
+<view 
+  class="{{getCardClass()}}"
+  style="{{customStyle}}"
+  bindtap="onCardTap"
+>
+  <!-- 默认卡片 -->
+  <view wx:if="{{type === 'default'}}">
+    <slot></slot>
+  </view>
+
+  <!-- 作品卡片 -->
+  <view wx:elif="{{type === 'work'}}" class="work-card-content">
+    <view class="work-image-container">
+      <image 
+        class="work-image" 
+        src="{{data.cover_url}}" 
+        mode="aspectFill"
+        lazy-load="{{true}}"
+      />
+      
+      <!-- 作品标签 -->
+      <view class="work-tags" wx:if="{{data.category}}">
+        <view class="tag-item">{{data.category}}</view>
+      </view>
+      
+      <!-- 互动按钮 -->
+      <view class="interaction-buttons">
+        <view 
+          class="interaction-btn {{data.is_liked ? 'liked' : ''}}"
+          bindtap="onWorkLike"
+          catchtap="onWorkLike"
+        >
+          <t-icon 
+            name="{{data.is_liked ? 'heart-filled' : 'heart'}}" 
+            size="24rpx" 
+            color="#fff" 
+          />
+        </view>
+        <view 
+          class="interaction-btn"
+          bindtap="onWorkComment"
+          catchtap="onWorkComment"
+        >
+          <t-icon name="chat" size="24rpx" color="#fff" />
+        </view>
+        <view 
+          class="interaction-btn"
+          bindtap="onWorkShare"
+          catchtap="onWorkShare"
+        >
+          <t-icon name="share" size="24rpx" color="#fff" />
+        </view>
+      </view>
+      
+      <!-- 悬浮信息 -->
+      <view class="work-overlay">
+        <view class="overlay-content">
+          <text class="work-title">{{data.title}}</text>
+          <view class="work-author">
+            <image class="author-avatar" src="{{data.author.avatar_url}}" mode="aspectFill" />
+            <text class="author-name">{{data.author.nickname}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 作品信息 -->
+    <view class="work-info">
+      <view class="work-stats">
+        <view class="stats-left">
+          <view class="stat-item">
+            <t-icon class="stat-icon" name="eye" size="24rpx" />
+            <text class="stat-count">{{formatCount(data.views_count)}}</text>
+          </view>
+          <view class="stat-item">
+            <t-icon class="stat-icon" name="heart" size="24rpx" />
+            <text class="stat-count">{{formatCount(data.likes_count)}}</text>
+          </view>
+        </view>
+        <text class="work-time">{{formatTime(data.created_at)}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 摄影师卡片 -->
+  <view wx:elif="{{type === 'photographer'}}" class="photographer-card-content">
+    <view class="photographer-header">
+      <view class="photographer-avatar-container">
+        <image class="photographer-avatar" src="{{data.avatar_url}}" mode="aspectFill" />
+        <view class="level-badge">
+          <t-icon name="{{data.level_icon}}" size="20rpx" color="#1a1a1a" />
+        </view>
+      </view>
+      
+      <view class="photographer-info">
+        <text class="photographer-name">{{data.nickname}}</text>
+        <text class="photographer-level">{{data.level_title}}</text>
+        <view class="photographer-specialties">
+          <text 
+            class="specialty-tag" 
+            wx:for="{{data.specialties}}" 
+            wx:key="*this"
+          >
+            {{item}}
+          </text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="photographer-stats">
+      <view class="stat-item">
+        <text class="stat-number">{{formatCount(data.works_count)}}</text>
+        <text class="stat-label">作品</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{formatCount(data.followers_count)}}</text>
+        <text class="stat-label">粉丝</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{data.rating}}</text>
+        <text class="stat-label">评分</text>
+      </view>
+    </view>
+    
+    <view class="photographer-actions">
+      <view 
+        class="action-btn secondary"
+        bindtap="onPhotographerMessage"
+        catchtap="onPhotographerMessage"
+      >
+        <t-icon name="chat" size="20rpx" />
+        <text>私信</text>
+      </view>
+      <view 
+        class="action-btn primary"
+        bindtap="onPhotographerFollow"
+        catchtap="onPhotographerFollow"
+      >
+        <t-icon name="{{data.is_following ? 'heart-filled' : 'heart'}}" size="20rpx" />
+        <text>{{data.is_following ? '已关注' : '关注'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 模特卡片 -->
+  <view wx:elif="{{type === 'model'}}" class="model-card-content">
+    <view class="model-header">
+      <image class="model-avatar" src="{{data.avatar_url}}" mode="aspectFill" />
+      <view class="model-info">
+        <text class="model-name">{{data.nickname}}</text>
+        <text class="model-category">{{data.category_title}}</text>
+        <view class="model-tags">
+          <text 
+            class="model-tag" 
+            wx:for="{{data.shooting_styles}}" 
+            wx:key="*this"
+          >
+            {{item}}
+          </text>
+        </view>
+      </view>
+    </view>
+    
+    <view class="model-measurements" wx:if="{{data.body_measurements}}">
+      <text class="measurements-text">
+        {{data.body_measurements.height}}cm / {{data.body_measurements.weight}}kg
+      </text>
+    </view>
+  </view>
+</view>

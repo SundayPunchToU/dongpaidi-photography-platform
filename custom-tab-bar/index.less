@@ -1,0 +1,165 @@
+/* 自定义导航栏样式 - 中间圆形发布按钮 */
+.custom-tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1rpx solid #f0f0f0;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+  padding: 16rpx 0 calc(16rpx + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  z-index: 1000;
+}
+
+/* 普通标签项 */
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 16rpx;
+  transition: all 0.2s ease;
+  flex: 1;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.tab-text {
+  font-size: 28rpx; /* 增大字体 */
+  color: #999;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.tab-item.active .tab-text {
+  color: #333;
+  font-weight: 600;
+}
+
+/* 中间圆形发布按钮 - 现代化设计 */
+.publish-tab-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+
+  /* 现代化光环效果 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -20rpx;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120rpx;
+    height: 120rpx;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 122, 255, 0.1) 0%, rgba(88, 86, 214, 0.05) 50%, transparent 80%);
+    animation: modernPulse 4s ease-in-out infinite;
+  }
+}
+
+@keyframes modernPulse {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translateX(-50%) scale(1.05);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.1);
+    opacity: 0.1;
+  }
+  75% {
+    transform: translateX(-50%) scale(1.05);
+    opacity: 0.2;
+  }
+}
+
+.publish-tab-button {
+  width: 80rpx;
+  height: 80rpx;
+  /* 现代灰色设计 - 平衡专业感与亲和力 */
+  background: linear-gradient(135deg, #6c7b7f 0%, #4a5568 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 柔和的多层阴影 - 营造轻盈悬浮感 */
+  box-shadow:
+    0 8rpx 32rpx rgba(108, 123, 127, 0.25),
+    0 4rpx 16rpx rgba(74, 85, 104, 0.15),
+    0 2rpx 8rpx rgba(0, 0, 0, 0.08),
+    inset 0 1rpx 2rpx rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  top: -10rpx;
+  /* 柔和的边框 - 增加精致感 */
+  border: 1rpx solid rgba(255, 255, 255, 0.25);
+
+  /* 柔和的内部高光效果 - 增加立体感 */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 6rpx;
+    left: 6rpx;
+    right: 6rpx;
+    height: 18rpx;
+    background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.15) 50%,
+      transparent 100%);
+    border-radius: 50% 50% 50% 50% / 100% 100% 0% 0%;
+    pointer-events: none;
+  }
+
+  /* 点击反馈 - 自然的按压效果 */
+  &:active {
+    transform: scale(0.92) translateY(1rpx);
+    background: linear-gradient(135deg, #5a6b70 0%, #3d4852 100%);
+    box-shadow:
+      0 4rpx 16rpx rgba(108, 123, 127, 0.3),
+      0 2rpx 8rpx rgba(74, 85, 104, 0.2),
+      inset 0 2rpx 6rpx rgba(0, 0, 0, 0.15),
+      inset 0 -1rpx 2rpx rgba(255, 255, 255, 0.1);
+  }
+
+  /* 悬停效果 - 轻盈的浮起感 */
+  &:hover {
+    transform: translateY(-2rpx);
+    box-shadow:
+      0 12rpx 48rpx rgba(108, 123, 127, 0.3),
+      0 6rpx 24rpx rgba(74, 85, 104, 0.2),
+      0 3rpx 12rpx rgba(0, 0, 0, 0.1),
+      inset 0 1rpx 3rpx rgba(255, 255, 255, 0.25);
+  }
+}
+
+/* 发布按钮内容 - 现代化设计 */
+.publish-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rpx; /* 减小间距，更紧凑 */
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.publish-button-text {
+  font-size: 20rpx; /* 稍微增大字体 */
+  color: white;
+  font-weight: 600; /* 增加字重 */
+  line-height: 1;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.4); /* 增强文字阴影 */
+  letter-spacing: 0.5rpx; /* 增加字间距，更现代 */
+}

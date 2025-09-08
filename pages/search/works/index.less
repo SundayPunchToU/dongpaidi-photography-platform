@@ -1,0 +1,350 @@
+/* 摄影作品搜索页面 - 专业视觉设计 */
+@import '/styles/theme-photography.less';
+
+.search-works-page {
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+/* ================================
+   专业摄影导航栏
+   ================================ */
+.photography-navbar {
+  background: linear-gradient(135deg, 
+    #3a3a3a 0%,
+    #4a4a4a 30%,
+    #5a5a5a 70%,
+    #4a4a4a 100%
+  );
+  padding: calc(env(safe-area-inset-top) + 20rpx) 24rpx 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+  
+  .nav-back {
+    width: 64rpx;
+    height: 64rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    
+    &:active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0.95);
+    }
+  }
+  
+  .nav-title {
+    flex: 1;
+    font-size: 32rpx;
+    font-weight: 600;
+    color: rgba(255, 252, 240, 0.95);
+    text-align: center;
+  }
+}
+
+/* ================================
+   搜索头部区域
+   ================================ */
+.search-header {
+  background: #fff;
+  padding: 24rpx 30rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+    
+    .search-input-wrapper {
+      flex: 1;
+      position: relative;
+      
+      .search-input {
+        width: 100%;
+        height: 80rpx;
+        background: #f8f9fa;
+        border: 2rpx solid rgba(212, 175, 55, 0.15);
+        border-radius: 40rpx;
+        padding: 0 20rpx 0 56rpx;
+        font-size: 28rpx;
+        color: #333;
+        transition: all 0.3s ease;
+        
+        &:focus {
+          border-color: rgba(212, 175, 55, 0.4);
+          background: #fff;
+          box-shadow: 0 0 0 6rpx rgba(212, 175, 55, 0.08);
+        }
+      }
+      
+      .input-icon {
+        position: absolute;
+        left: 20rpx;
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba(212, 175, 55, 0.6);
+      }
+    }
+    
+    .search-btn {
+      padding: 20rpx 32rpx;
+      background: linear-gradient(135deg, #d4af37 0%, #c4a037 100%);
+      border-radius: 40rpx;
+      transition: all 0.3s ease;
+      box-shadow: 0 2rpx 8rpx rgba(212, 175, 55, 0.2);
+      
+      .btn-text {
+        font-size: 28rpx;
+        color: #fff;
+        font-weight: 500;
+      }
+      
+      &:active {
+        transform: scale(0.96);
+        box-shadow: 0 2rpx 8rpx rgba(212, 175, 55, 0.3);
+      }
+    }
+  }
+}
+
+/* ================================
+   筛选区域
+   ================================ */
+.filter-section {
+  background: #fff;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  
+  .filter-tabs {
+    display: flex;
+    gap: 24rpx;
+    
+    .filter-tab {
+      padding: 12rpx 24rpx;
+      border-radius: 20rpx;
+      font-size: 26rpx;
+      transition: all 0.3s ease;
+      
+      &.active {
+        background: linear-gradient(135deg, 
+          rgba(212, 175, 55, 0.15) 0%, 
+          rgba(212, 175, 55, 0.08) 100%
+        );
+        color: #d4af37;
+        font-weight: 500;
+      }
+      
+      &:not(.active) {
+        color: #666;
+        
+        &:active {
+          background: #f8f9fa;
+        }
+      }
+    }
+  }
+}
+
+/* ================================
+   搜索结果区域
+   ================================ */
+.search-results {
+  padding: 24rpx 30rpx;
+  
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24rpx;
+    
+    .results-count {
+      font-size: 26rpx;
+      color: #666;
+      
+      .count-number {
+        color: #d4af37;
+        font-weight: 600;
+      }
+    }
+    
+    .sort-btn {
+      display: flex;
+      align-items: center;
+      gap: 8rpx;
+      padding: 8rpx 16rpx;
+      background: #f8f9fa;
+      border-radius: 16rpx;
+      transition: all 0.3s ease;
+      
+      .sort-text {
+        font-size: 24rpx;
+        color: #666;
+      }
+      
+      &:active {
+        background: #e9ecef;
+      }
+    }
+  }
+}
+
+/* ================================
+   加载状态
+   ================================ */
+.loading-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 40rpx;
+  
+  .loading-text {
+    font-size: 26rpx;
+    color: #666;
+    margin-top: 20rpx;
+  }
+}
+
+/* ================================
+   无结果状态
+   ================================ */
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 40rpx;
+  text-align: center;
+  
+  .no-results-icon {
+    width: 160rpx;
+    height: 160rpx;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32rpx;
+    
+    &::before {
+      content: '📷';
+      font-size: 64rpx;
+      opacity: 0.6;
+    }
+  }
+  
+  .no-results-text {
+    font-size: 32rpx;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 12rpx;
+  }
+  
+  .no-results-desc {
+    font-size: 26rpx;
+    color: #999;
+    line-height: 1.5;
+    margin-bottom: 32rpx;
+  }
+  
+  .retry-btn {
+    padding: 16rpx 32rpx;
+    background: linear-gradient(135deg, #d4af37 0%, #c4a037 100%);
+    border-radius: 24rpx;
+    transition: all 0.3s ease;
+    
+    .retry-text {
+      font-size: 26rpx;
+      color: #fff;
+      font-weight: 500;
+    }
+    
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+}
+
+/* ================================
+   搜索建议
+   ================================ */
+.search-suggestions {
+  background: #fff;
+  margin: 16rpx 30rpx;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+  
+  .suggestion-section {
+    margin-bottom: 32rpx;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    .section-title {
+      font-size: 28rpx;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 20rpx;
+      position: relative;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        left: -12rpx;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 6rpx;
+        height: 20rpx;
+        background: linear-gradient(135deg, #d4af37 0%, #c4a037 100%);
+        border-radius: 3rpx;
+      }
+    }
+    
+    .keyword-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12rpx;
+      
+      .keyword-tag {
+        padding: 10rpx 18rpx;
+        border-radius: 20rpx;
+        font-size: 24rpx;
+        transition: all 0.3s ease;
+        
+        &.hot {
+          background: linear-gradient(135deg, 
+            rgba(212, 175, 55, 0.12) 0%, 
+            rgba(212, 175, 55, 0.06) 100%
+          );
+          color: #d4af37;
+          border: 1rpx solid rgba(212, 175, 55, 0.2);
+          
+          &:active {
+            background: linear-gradient(135deg, 
+              rgba(212, 175, 55, 0.18) 0%, 
+              rgba(212, 175, 55, 0.1) 100%
+            );
+          }
+        }
+        
+        &.recent {
+          background: #f8f9fa;
+          color: #666;
+          border: 1rpx solid rgba(0, 0, 0, 0.08);
+          
+          &:active {
+            background: #e9ecef;
+          }
+        }
+      }
+    }
+  }
+}

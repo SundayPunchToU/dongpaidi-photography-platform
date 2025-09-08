@@ -1,0 +1,86 @@
+/* pages/message/message.wxss */
+page {
+  height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* 消息页面容器 */
+.message-page {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  /* 底部为tabBar留出空间 */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 112rpx);
+}
+
+/* 自定义导航栏 - 优化间距，紧凑布局 */
+.custom-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* 优化顶部间距，减少不必要的空白 */
+  padding-top: calc(env(safe-area-inset-top) + 20rpx);
+  padding-bottom: 20rpx;
+  padding-left: 30rpx;
+  padding-right: 30rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #f0f0f0;
+  /* 优化最小高度，更紧凑 */
+  min-height: calc(env(safe-area-inset-top) + 100rpx);
+}
+
+.nav-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+}
+
+.profile-btn {
+  width: 68rpx;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f1f3f4 0%, #e8eaed 100%);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  box-shadow: 0 3rpx 12rpx rgba(0,0,0,0.1);
+  border: 1rpx solid rgba(0,0,0,0.08);
+  /* 确保按钮完全在导航栏内容区域 */
+  flex-shrink: 0;
+}
+
+.profile-btn:active {
+  background: linear-gradient(135deg, #e8eaed 0%, #dadce0 100%);
+  transform: scale(0.88);
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.15);
+}
+
+.nav-bar {
+  border-bottom: 1rpx solid #e7e7e7;
+}
+
+.message-list {
+  /* 消息列表占据剩余空间，不需要固定高度 */
+  flex: 1;
+  overflow-y: auto;
+  background-color: #fff;
+}
+
+.avatar {
+  border-radius: 50% !important;
+}
+
+.content > view {
+  width: 560rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content.unread > view {
+  width: 510rpx;
+}

@@ -1,0 +1,160 @@
+<!--约拍详情页面-->
+<view class="appointment-detail-page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar">
+    <view class="nav-left" bindtap="goBack">
+      <text class="nav-icon">←</text>
+    </view>
+    <text class="nav-title">约拍详情</text>
+    <view class="nav-right">
+      <view class="nav-btn" bindtap="onShareTap">
+        <text class="nav-icon">📤</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <t-loading theme="circular" size="60rpx" />
+    <text class="loading-text">加载约拍详情中...</text>
+  </view>
+
+  <!-- 约拍详情内容 -->
+  <scroll-view class="content-scroll" scroll-y="true" wx:if="{{!loading && appointmentDetail}}">
+    <!-- 约拍主图 -->
+    <view class="appointment-images" wx:if="{{appointmentDetail.images && appointmentDetail.images.length > 0}}">
+      <swiper
+        class="images-swiper"
+        indicator-dots="{{appointmentDetail.images.length > 1}}"
+        indicator-color="rgba(255,255,255,0.3)"
+        indicator-active-color="rgba(212,175,55,0.8)"
+        circular="{{true}}"
+      >
+        <swiper-item wx:for="{{appointmentDetail.images}}" wx:key="*this">
+          <image
+            class="appointment-image"
+            src="{{item}}"
+            mode="aspectFill"
+            bindtap="onImagePreview"
+            data-index="{{index}}"
+          />
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <!-- 约拍基本信息卡片 -->
+    <view class="info-card main-info">
+      <!-- 发布者信息 -->
+      <view class="publisher-section">
+        <view class="publisher-info" bindtap="onPublisherTap">
+          <image class="publisher-avatar" src="{{appointmentDetail.publisherAvatar}}" mode="aspectFill" />
+          <view class="publisher-details">
+            <text class="publisher-name">{{appointmentDetail.publisherName}}</text>
+            <view class="publisher-meta">
+              <text class="publisher-type">{{appointmentDetail.type === 'photographer_seek_model' ? '摄影师' : '模特'}}</text>
+              <text class="publish-time">{{appointmentDetail.publishTime}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="publisher-actions">
+          <view class="contact-btn" bindtap="onContactTap">
+            <text class="contact-text">联系TA</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 约拍标题和描述 -->
+      <view class="appointment-content">
+        <text class="appointment-title">{{appointmentDetail.title}}</text>
+        <text class="appointment-description">{{appointmentDetail.description}}</text>
+
+        <!-- 约拍标签 -->
+        <view class="appointment-tags" wx:if="{{appointmentDetail.tags && appointmentDetail.tags.length > 0}}">
+          <text class="tag-item" wx:for="{{appointmentDetail.tags}}" wx:key="*this">
+            #{{item}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 约拍详细信息卡片 -->
+    <view class="info-card detail-info">
+      <view class="card-header">
+        <text class="card-title">📋 约拍详情</text>
+      </view>
+      <view class="detail-grid">
+        <!-- 拍摄时间 -->
+        <view class="detail-item" wx:if="{{appointmentDetail.shootingTime}}">
+          <text class="detail-label">拍摄时间</text>
+          <text class="detail-value">{{appointmentDetail.shootingTime}}</text>
+        </view>
+
+        <!-- 拍摄地点 -->
+        <view class="detail-item" wx:if="{{appointmentDetail.location}}">
+          <text class="detail-label">拍摄地点</text>
+          <text class="detail-value">{{appointmentDetail.location}}</text>
+        </view>
+
+        <!-- 预算范围 -->
+        <view class="detail-item" wx:if="{{appointmentDetail.budget}}">
+          <text class="detail-label">预算范围</text>
+          <text class="detail-value">{{appointmentDetail.budget}}</text>
+        </view>
+
+        <!-- 拍摄风格 -->
+        <view class="detail-item" wx:if="{{appointmentDetail.style}}">
+          <text class="detail-label">拍摄风格</text>
+          <text class="detail-value">{{appointmentDetail.style}}</text>
+        </view>
+
+        <!-- 约拍状态 -->
+        <view class="detail-item">
+          <text class="detail-label">约拍状态</text>
+          <view class="status-badge {{appointmentDetail.status}}">
+            <text class="status-text">
+              {{appointmentDetail.status === 'open' ? '招募中' :
+                appointmentDetail.status === 'in_progress' ? '进行中' :
+                appointmentDetail.status === 'completed' ? '已完成' : '已关闭'}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 要求说明卡片 -->
+    <view class="info-card requirements-info" wx:if="{{appointmentDetail.requirements}}">
+      <view class="card-header">
+        <text class="card-title">📝 要求说明</text>
+      </view>
+      <view class="requirements-content">
+        <text class="requirements-text">{{appointmentDetail.requirements}}</text>
+      </view>
+    </view>
+
+    <!-- 底部安全区域 -->
+    <view class="safe-area-bottom"></view>
+  </scroll-view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-actions" wx:if="{{!loading && appointmentDetail}}">
+    <view class="action-left">
+      <view class="action-item" bindtap="onLikeTap">
+        <text class="action-icon {{appointmentDetail.isLiked ? 'liked' : ''}}">{{appointmentDetail.isLiked ? '❤️' : '🤍'}}</text>
+        <text class="action-count">{{appointmentDetail.likeCount || 0}}</text>
+      </view>
+      <view class="action-item" bindtap="onCollectTap">
+        <text class="action-icon {{appointmentDetail.isCollected ? 'collected' : ''}}">{{appointmentDetail.isCollected ? '⭐' : '☆'}}</text>
+        <text class="action-count">{{appointmentDetail.collectCount || 0}}</text>
+      </view>
+    </view>
+    <view class="action-right">
+      <view class="apply-btn {{appointmentDetail.status !== 'open' ? 'disabled' : ''}}" bindtap="onApplyTap">
+        <text class="apply-text">
+          {{appointmentDetail.status === 'open' ? '立即申请' :
+            appointmentDetail.status === 'in_progress' ? '进行中' :
+            appointmentDetail.status === 'completed' ? '已完成' : '已关闭'}}
+        </text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,86 @@
+<!-- 小红书风格瀑布流 -->
+<view class="waterfall-container">
+  <!-- 左列 -->
+  <view class="waterfall-column">
+    <view
+      class="share-card"
+      wx:for="{{leftColumn}}"
+      wx:key="id"
+      data-share="{{item}}"
+      bindtap="onShareTap"
+      style="margin-bottom: 12rpx;"
+    >
+      <!-- 图片区域 -->
+      <view class="image-container">
+        <image
+          class="share-image"
+          src="{{item.images[0]}}"
+          mode="aspectFill"
+          style="height: {{item.imageHeight}}rpx;"
+        />
+        <!-- 图片数量标识 -->
+        <view class="image-count" wx:if="{{item.imageCount > 1}}">
+          <t-icon name="layers" size="24rpx" />
+          <text>{{item.imageCount}}</text>
+        </view>
+      </view>
+
+      <!-- 内容区域 -->
+      <view class="content-area">
+        <text class="share-title">{{item.title}}</text>
+
+        <!-- 用户信息 -->
+        <view class="user-info">
+          <image class="user-avatar" src="{{item.user.avatar}}" />
+          <text class="user-name">{{item.user.name}}</text>
+          <view class="like-info">
+            <t-icon name="heart" size="24rpx" color="#ff4757" />
+            <text class="like-count">{{item.likes}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 右列 -->
+  <view class="waterfall-column">
+    <view
+      class="share-card"
+      wx:for="{{rightColumn}}"
+      wx:key="id"
+      data-share="{{item}}"
+      bindtap="onShareTap"
+      style="margin-bottom: 12rpx;"
+    >
+      <!-- 图片区域 -->
+      <view class="image-container">
+        <image
+          class="share-image"
+          src="{{item.images[0]}}"
+          mode="aspectFill"
+          style="height: {{item.imageHeight}}rpx;"
+        />
+        <!-- 图片数量标识 -->
+        <view class="image-count" wx:if="{{item.imageCount > 1}}">
+          <t-icon name="layers" size="24rpx" />
+          <text>{{item.imageCount}}</text>
+        </view>
+      </view>
+
+      <!-- 内容区域 -->
+      <view class="content-area">
+        <text class="share-title">{{item.title}}</text>
+
+        <!-- 用户信息 -->
+        <view class="user-info">
+          <image class="user-avatar" src="{{item.user.avatar}}" />
+          <text class="user-name">{{item.user.name}}</text>
+          <view class="like-info">
+            <t-icon name="heart" size="24rpx" color="#ff4757" />
+            <text class="like-count">{{item.likes}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

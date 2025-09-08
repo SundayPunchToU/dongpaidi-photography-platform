@@ -1,0 +1,143 @@
+<!-- 多平台登录页面 -->
+<view class="login-container">
+  <!-- 头部Logo -->
+  <view class="login-header">
+    <image class="logo" src="/static/logo.png" mode="aspectFit"></image>
+    <text class="app-name">懂拍帝</text>
+    <text class="app-slogan">发现摄影之美</text>
+  </view>
+
+  <!-- 登录方式选择 -->
+  <view class="login-methods" wx:if="{{platformInfo.supportedLoginMethods.length > 1}}">
+    <view class="method-tabs">
+      <view 
+        class="method-tab {{loginMethod === 'wechat' ? 'active' : ''}}"
+        wx:if="{{platformInfo.supportedLoginMethods.includes('wechat')}}"
+        data-method="wechat"
+        bindtap="onLoginMethodChange"
+      >
+        微信登录
+      </view>
+      <view 
+        class="method-tab {{loginMethod === 'phone' ? 'active' : ''}}"
+        wx:if="{{platformInfo.supportedLoginMethods.includes('phone')}}"
+        data-method="phone"
+        bindtap="onLoginMethodChange"
+      >
+        手机登录
+      </view>
+    </view>
+  </view>
+
+  <!-- 微信登录 -->
+  <view class="login-form wechat-login" wx:if="{{loginMethod === 'wechat'}}">
+    <view class="form-title">微信快速登录</view>
+    <view class="form-desc">使用微信账号快速登录，安全便捷</view>
+    
+    <button 
+      class="login-btn wechat-btn"
+      loading="{{loading}}"
+      disabled="{{!agreementChecked}}"
+      bindtap="onLogin"
+    >
+      <t-icon name="wechat" size="40rpx" color="#fff"></t-icon>
+      <text>微信授权登录</text>
+    </button>
+  </view>
+
+  <!-- 手机号登录 -->
+  <view class="login-form phone-login" wx:if="{{loginMethod === 'phone'}}">
+    <view class="form-title">手机号登录</view>
+    <view class="form-desc">输入手机号获取验证码登录</view>
+    
+    <!-- 手机号输入 -->
+    <view class="input-group">
+      <t-input
+        value="{{phone}}"
+        placeholder="请输入手机号"
+        type="number"
+        maxlength="11"
+        bind:input="onPhoneInput"
+        t-class="{{phoneError ? 'input-error' : ''}}"
+      >
+        <view slot="label" class="input-label">
+          <text>+86</text>
+          <t-icon name="caret-down-small" size="32rpx"></t-icon>
+        </view>
+      </t-input>
+      <view class="error-text" wx:if="{{phoneError}}">{{phoneError}}</view>
+    </view>
+
+    <!-- 验证码输入 -->
+    <view class="input-group">
+      <t-input
+        value="{{verificationCode}}"
+        placeholder="请输入验证码"
+        type="number"
+        maxlength="6"
+        bind:input="onCodeInput"
+        t-class="{{codeError ? 'input-error' : ''}}"
+      >
+        <view slot="suffix" class="code-suffix">
+          <view class="suffix-line"></view>
+          <t-button
+            size="small"
+            theme="{{sendCodeDisabled ? 'default' : 'primary'}}"
+            variant="text"
+            disabled="{{sendCodeDisabled || !phone}}"
+            loading="{{loading}}"
+            bindtap="onSendCode"
+          >
+            {{sendCodeText}}
+          </t-button>
+        </view>
+      </t-input>
+      <view class="error-text" wx:if="{{codeError}}">{{codeError}}</view>
+    </view>
+
+    <!-- 登录按钮 -->
+    <button 
+      class="login-btn phone-btn"
+      loading="{{loading}}"
+      disabled="{{!phone || !verificationCode || !agreementChecked}}"
+      bindtap="onLogin"
+    >
+      登录
+    </button>
+  </view>
+
+  <!-- 游客登录选项 -->
+  <view class="guest-login" wx:if="{{platformInfo.supportedLoginMethods.includes('guest')}}">
+    <t-button
+      theme="default"
+      variant="text"
+      size="medium"
+      data-method="guest"
+      bindtap="onLoginMethodChange"
+    >
+      游客模式体验
+    </t-button>
+  </view>
+
+  <!-- 用户协议 -->
+  <view class="agreement-section">
+    <t-checkbox
+      value="{{agreementChecked}}"
+      bind:change="onAgreementChange"
+      t-class="agreement-checkbox"
+    >
+      <view class="agreement-text">
+        我已阅读并同意
+        <text class="link" bindtap="onViewAgreement">《用户协议》</text>
+        和
+        <text class="link" bindtap="onViewPrivacy">《隐私政策》</text>
+      </view>
+    </t-checkbox>
+  </view>
+
+  <!-- 平台信息（调试用） -->
+  <view class="debug-info" wx:if="{{platformInfo.platform === 'unknown'}}">
+    <text>当前平台: {{platformInfo.platform}}</text>
+    <text>支持的登录方式: {{platformInfo.supportedLoginMethods.join(', ')}}</text>
+  </view>
+</view>

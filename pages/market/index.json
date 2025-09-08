@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "摄影市场",
+  "usingComponents": {
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-loading": "tdesign-miniprogram/loading/loading"
+  }
+}

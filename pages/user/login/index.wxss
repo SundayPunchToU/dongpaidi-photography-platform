@@ -1,0 +1,64 @@
+/* 登录页面样式 */
+.login-page {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 0;
+}
+
+.login-header {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 32rpx;
+  background: white;
+  border-bottom: 1rpx solid #f0f0f0;
+  position: relative;
+}
+
+.back-btn {
+  padding: 16rpx;
+  margin-left: -16rpx;
+}
+
+.login-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.login-form {
+  padding: 80rpx 48rpx 48rpx;
+  background: white;
+  margin-top: 40rpx;
+  border-radius: 24rpx 24rpx 0 0;
+}
+
+.form-title {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 60rpx;
+  text-align: center;
+}
+
+.login-form .t-input {
+  margin-bottom: 32rpx;
+}
+
+.login-form .t-button {
+  margin-top: 40rpx;
+  margin-bottom: 32rpx;
+}
+
+.login-tips {
+  text-align: center;
+  font-size: 24rpx;
+  color: #666;
+}
+
+.register-link {
+  color: #007aff;
+  margin-left: 8rpx;
+}

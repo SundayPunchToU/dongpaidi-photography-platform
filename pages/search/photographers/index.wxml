@@ -1,0 +1,56 @@
+<!--摄影师搜索页面-->
+<view class="search-photographers-page">
+  <!-- 搜索框 -->
+  <view class="search-header">
+    <view class="search-input-wrapper">
+      <t-input
+        value="{{keyword}}"
+        placeholder="搜索摄影师"
+        bind:input="onSearchInput"
+        bind:confirm="performSearch"
+        confirm-type="search"
+        clearable
+      />
+    </view>
+    <t-button theme="primary" size="small" bindtap="performSearch">搜索</t-button>
+  </view>
+
+  <!-- 搜索结果 -->
+  <view class="search-results" wx:if="{{hasSearched}}">
+    <!-- 加载状态 -->
+    <view class="loading-section" wx:if="{{loading}}">
+      <t-loading theme="circular" size="40rpx" />
+      <text class="loading-text">搜索中...</text>
+    </view>
+
+    <!-- 搜索结果列表 -->
+    <view class="results-list" wx:elif="{{searchResults.length > 0}}">
+      <view 
+        class="photographer-item"
+        wx:for="{{searchResults}}"
+        wx:key="id"
+        data-photographer="{{item}}"
+        bindtap="onPhotographerTap"
+      >
+        <image class="photographer-avatar" src="{{item.avatar}}" />
+        <view class="photographer-info">
+          <text class="photographer-name">{{item.name}}</text>
+          <text class="photographer-location">{{item.city}}</text>
+          <view class="photographer-tags">
+            <text class="tag" wx:for="{{item.specialty}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+        <view class="photographer-stats">
+          <text class="stat-text">{{item.worksCount}}作品</text>
+          <text class="stat-text">{{item.followersCount}}粉丝</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 无结果 -->
+    <view class="no-results" wx:else>
+      <t-icon name="user" size="120rpx" color="#ccc" />
+      <text class="no-results-text">没有找到相关摄影师</text>
+    </view>
+  </view>
+</view>

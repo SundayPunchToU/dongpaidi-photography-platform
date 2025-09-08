@@ -1,0 +1,72 @@
+<!--作品详情页-->
+<view class="work-detail-page" wx:if="{{!loading && workDetail}}">
+  <!-- 图片展示区域 -->
+  <swiper class="work-images" indicator-dots="{{workDetail.images.length > 1}}" bindchange="onImageChange">
+    <swiper-item wx:for="{{workDetail.images}}" wx:key="*this">
+      <image class="work-image" src="{{item}}" mode="aspectFit" />
+    </swiper-item>
+  </swiper>
+
+  <!-- 作品信息 -->
+  <view class="work-info">
+    <view class="work-header">
+      <view class="user-section" bindtap="onUserTap">
+        <image class="user-avatar" src="{{workDetail.user.avatar}}" />
+        <view class="user-info">
+          <text class="user-name">{{workDetail.user.name}}</text>
+          <text class="work-title">{{workDetail.title}}</text>
+        </view>
+      </view>
+      <t-button 
+        theme="{{workDetail.user.isFollowed ? 'default' : 'primary'}}" 
+        size="small"
+        bindtap="onFollowTap"
+      >
+        {{workDetail.user.isFollowed ? '已关注' : '关注'}}
+      </t-button>
+    </view>
+
+    <!-- 作品描述 -->
+    <view class="work-description">
+      <text>{{workDetail.description}}</text>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="work-stats">
+      <view class="stat-item">
+        <t-icon name="thumb-up" size="32rpx" />
+        <text>{{workDetail.stats.likes}}</text>
+      </view>
+      <view class="stat-item">
+        <t-icon name="chat" size="32rpx" />
+        <text>{{workDetail.stats.comments}}</text>
+      </view>
+      <view class="stat-item">
+        <t-icon name="browse" size="32rpx" />
+        <text>{{workDetail.stats.views}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-bar">
+    <view class="action-btn {{workDetail.isLiked ? 'liked' : ''}}" bindtap="onLikeTap">
+      <t-icon name="heart-filled" size="48rpx" />
+      <text>{{workDetail.isLiked ? '已赞' : '点赞'}}</text>
+    </view>
+    <view class="action-btn {{workDetail.isCollected ? 'collected' : ''}}" bindtap="onCollectTap">
+      <t-icon name="star-filled" size="48rpx" />
+      <text>{{workDetail.isCollected ? '已收藏' : '收藏'}}</text>
+    </view>
+    <view class="action-btn" bindtap="onShareTap">
+      <t-icon name="share" size="48rpx" />
+      <text>分享</text>
+    </view>
+  </view>
+</view>
+
+<!-- 加载状态 -->
+<view class="loading-page" wx:if="{{loading}}">
+  <t-loading theme="circular" size="60rpx" />
+  <text class="loading-text">加载中...</text>
+</view>

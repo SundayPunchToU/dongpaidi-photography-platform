@@ -1,0 +1,76 @@
+<!-- 增强版图片上传组件 -->
+<view class="image-uploader">
+  <!-- 图片网格 -->
+  <view class="image-grid">
+    <!-- 已上传的图片 -->
+    <view 
+      class="image-item" 
+      wx:for="{{imageList}}" 
+      wx:key="index"
+      data-index="{{index}}"
+      bindtap="previewImage"
+    >
+      <image 
+        class="image" 
+        src="{{item.url}}" 
+        mode="aspectFill"
+        lazy-load="{{true}}"
+      />
+      
+      <!-- 删除按钮 -->
+      <view 
+        class="delete-btn" 
+        data-index="{{index}}"
+        bindtap="deleteImage"
+        catchtap="deleteImage"
+      >
+        <t-icon name="close" size="32rpx" color="#fff" />
+      </view>
+      
+      <!-- 上传状态遮罩 -->
+      <view class="upload-mask" wx:if="{{uploading && index === imageList.length - 1}}">
+        <view class="upload-progress">
+          <t-loading theme="circular" size="40rpx" />
+          <text class="progress-text">{{uploadProgress}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 添加按钮 -->
+    <view 
+      class="add-btn {{disabled ? 'disabled' : ''}}" 
+      wx:if="{{imageList.length < maxCount}}"
+      bindtap="chooseImage"
+    >
+      <t-icon name="add" size="48rpx" color="#999" />
+      <text class="add-text">添加图片</text>
+      
+      <!-- 上传进度 -->
+      <view class="upload-overlay" wx:if="{{uploading}}">
+        <t-loading theme="circular" size="40rpx" />
+        <text class="upload-text">上传中...</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图片计数 -->
+  <view class="image-count" wx:if="{{maxCount > 1}}">
+    <text class="count-text">{{imageList.length}}/{{maxCount}}</text>
+  </view>
+
+  <!-- 功能提示 -->
+  <view class="tips" wx:if="{{imageList.length === 0}}">
+    <text class="tip-text">
+      {{enableCrop ? '支持裁剪' : ''}}
+      {{enableCompress ? '自动压缩' : ''}}
+      最多{{maxCount}}张
+    </text>
+  </view>
+
+  <!-- 隐藏的canvas用于图片裁剪 -->
+  <canvas 
+    canvas-id="cropCanvas" 
+    class="crop-canvas"
+    wx:if="{{enableCrop}}"
+  ></canvas>
+</view>

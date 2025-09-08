@@ -1,0 +1,475 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// 用户表 - 支持多平台登录
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 多平台用户标识
+  openid   String? @unique // 微信小程序openid
+  phone    String? @unique // 手机号
+  email    String? @unique // 邮箱
+  platform String  @default("wechat") // 平台标识: wechat, ios, android, web
+
+  // 基本信息
+  nickname  String
+  avatarUrl String?
+  bio       String?
+  gender    String? // male, female, other
+  birthDate DateTime?
+  location  String?
+
+  // 角色信息
+  isPhotographer     Boolean @default(false)
+  isModel           Boolean @default(false)
+  photographerLevel String? // beginner, intermediate, professional, master
+  modelExperience   String? // new, experienced, professional
+
+  // 联系方式
+  contactWechat String?
+  contactPhone  String?
+
+  // 作品集和技能
+  portfolioImages String  @default("[]")
+  specialties     String  @default("[]")
+  equipment       String  @default("[]")
+
+  // 统计信息
+  followingCount Int @default(0)
+  followersCount Int @default(0)
+  worksCount     Int @default(0)
+  totalLikes     Int @default(0)
+
+  // 认证和状态
+  isVerified     Boolean @default(false)
+  phoneVerified  Boolean @default(false)
+  emailVerified  Boolean @default(false)
+  status         String  @default("active") // active, suspended, deleted
+
+  // 时间戳
+  lastActiveAt DateTime @default(now())
+
+  // 关联关系
+  works         Work[]
+  appointments  Appointment[]
+  applications  AppointmentApplication[]
+  comments      Comment[]
+  likes         Like[]
+  collections   Collection[]
+  followers     Follow[] @relation("UserFollowers")
+  following     Follow[] @relation("UserFollowing")
+  sentMessages     Message[] @relation("MessageSender")
+  receivedMessages Message[] @relation("MessageReceiver")
+  orders        Order[]
+  payments      Payment[]
+  refunds       Refund[]
+
+  @@map("users")
+  @@index([nickname])
+  @@index([platform])
+  @@index([createdAt])
+  @@index([isVerified])
+  @@index([status])
+  @@index([lastActiveAt])
+  @@index([isPhotographer])
+  @@index([isModel])
+  @@index([location])
+  @@index([platform, status])
+  @@index([isVerified, status])
+  @@index([createdAt, status])
+  @@index([lastActiveAt, status])
+  @@index([followersCount, status])
+  @@index([worksCount, status])
+}
+
+// 作品表
+model Work {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  images      String  @default("[]") // 图片URL数组
+  coverImage  String? // 封面图片
+  tags        String  @default("[]")
+  category    String // portrait, landscape, street, commercial, art, wedding, fashion, nature, architecture, food
+  location    String?
+
+  shootingDate DateTime?
+  shootingInfo String   @default("{}") // 相机、镜头、参数等信息
+
+  // 付费相关
+  price     Float?
+  isPremium Boolean  @default(false)
+
+  // 统计信息
+  likeCount    Int @default(0)
+  commentCount Int @default(0)
+  viewCount    Int @default(0)
+  shareCount   Int @default(0)
+  collectCount Int @default(0)
+
+  status String @default("published") // draft, published, deleted
+
+  // 关联关系
+  comments    Comment[]
+  likes       Like[]
+  collections Collection[]
+
+  @@map("works")
+  @@index([userId])
+  @@index([category])
+  @@index([status])
+  @@index([createdAt])
+  @@index([likeCount])
+  @@index([viewCount])
+  @@index([commentCount])
+  @@index([collectCount])
+  @@index([isPremium])
+  @@index([location])
+  @@index([shootingDate])
+  @@index([userId, status])
+  @@index([category, status])
+  @@index([status, createdAt])
+  @@index([status, likeCount])
+  @@index([status, viewCount])
+  @@index([category, status, createdAt])
+  @@index([userId, category, status])
+  @@index([isPremium, status, createdAt])
+}
+
+// 约拍表
+model Appointment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  publisherId String
+  publisher   User   @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?
+  type        String // photographer_seek_model, model_seek_photographer
+  location    String?
+  shootDate   DateTime?
+
+  budget       Float?
+  requirements String   @default("{}")
+
+  status String @default("open") // open, in_progress, completed, cancelled
+
+  // 关联关系
+  applications AppointmentApplication[]
+
+  @@map("appointments")
+  @@index([publisherId])
+  @@index([status])
+  @@index([type])
+  @@index([location])
+  @@index([shootDate])
+  @@index([createdAt])
+  @@index([publisherId, status])
+  @@index([type, status])
+  @@index([status, createdAt])
+  @@index([location, status])
+  @@index([shootDate, status])
+}
+
+// 约拍申请表
+model AppointmentApplication {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  applicantId String
+  applicant   User   @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  message String?
+  status  String @default("pending") // pending, accepted, rejected
+
+  @@unique([appointmentId, applicantId])
+  @@map("appointment_applications")
+  @@index([appointmentId])
+  @@index([applicantId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([appointmentId, status])
+  @@index([applicantId, status])
+}
+
+// 评论表
+model Comment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workId String
+  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  content   String
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  likeCount Int       @default(0)
+
+  @@map("comments")
+  @@index([workId])
+  @@index([userId])
+  @@index([parentId])
+  @@index([createdAt])
+  @@index([likeCount])
+  @@index([workId, createdAt])
+  @@index([userId, createdAt])
+  @@index([workId, parentId])
+}
+
+// 点赞表
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workId String
+  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workId])
+  @@map("likes")
+  @@index([userId])
+  @@index([workId])
+  @@index([createdAt])
+  @@index([workId, createdAt])
+  @@index([userId, createdAt])
+}
+
+// 收藏表
+model Collection {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  workId String
+  work   Work   @relation(fields: [workId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workId])
+  @@map("collections")
+  @@index([userId])
+  @@index([workId])
+  @@index([createdAt])
+  @@index([userId, createdAt])
+  @@index([workId, createdAt])
+}
+
+// 关注关系表
+model Follow {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  followerId  String
+  follower    User   @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+
+  followingId String
+  following   User   @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+  @@index([followerId])
+  @@index([followingId])
+  @@index([createdAt])
+  @@index([followerId, createdAt])
+  @@index([followingId, createdAt])
+}
+
+// 私信表
+model Message {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  senderId String
+  sender   User   @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  receiverId String
+  receiver   User   @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  content String
+  type    String @default("text") // text, image, system
+  isRead  Boolean @default(false)
+
+  @@map("messages")
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([createdAt])
+  @@index([isRead])
+  @@index([type])
+  @@index([senderId, receiverId])
+  @@index([receiverId, isRead])
+  @@index([senderId, createdAt])
+  @@index([receiverId, createdAt])
+  @@index([senderId, receiverId, createdAt])
+}
+
+// 订单表
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 订单基本信息
+  orderNo     String  @unique // 订单号
+  title       String  // 订单标题
+  description String? // 订单描述
+  amount      Float   // 订单金额（以分为单位）
+  currency    String  @default("CNY") // 货币类型
+
+  // 订单状态
+  status String @default("pending") // pending, paid, cancelled, refunded, expired
+
+  // 用户信息
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 商品信息
+  productType String // work, appointment, vip等
+  productId   String // 商品ID
+  productInfo String? // 商品详细信息（JSON字符串）
+
+  // 支付信息
+  payments Payment[]
+
+  // 过期时间
+  expiresAt DateTime?
+
+  @@map("orders")
+  @@index([orderNo])
+  @@index([userId])
+  @@index([status])
+  @@index([productType])
+  @@index([productId])
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@index([userId, status])
+  @@index([status, createdAt])
+  @@index([productType, status])
+  @@index([userId, productType, status])
+}
+
+// 支付记录表
+model Payment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 支付基本信息
+  paymentNo String @unique // 支付流水号
+  amount    Float  // 支付金额（以分为单位）
+  currency  String @default("CNY") // 货币类型
+
+  // 支付方式
+  method   String // wechat, alipay
+  provider String // 支付服务商
+
+  // 支付状态
+  status String @default("pending") // pending, success, failed, cancelled, refunded
+
+  // 第三方支付信息
+  thirdPartyId     String? // 第三方支付ID
+  thirdPartyStatus String? // 第三方支付状态
+  thirdPartyData   String? // 第三方返回数据（JSON字符串）
+
+  // 关联订单
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // 用户信息
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 支付时间
+  paidAt DateTime?
+
+  // 退款信息
+  refunds Refund[]
+
+  @@map("payments")
+  @@index([paymentNo])
+  @@index([userId])
+  @@index([orderId])
+  @@index([status])
+  @@index([method])
+  @@index([provider])
+  @@index([thirdPartyId])
+  @@index([createdAt])
+  @@index([paidAt])
+  @@index([userId, status])
+  @@index([orderId, status])
+  @@index([status, createdAt])
+  @@index([method, status])
+  @@index([userId, method, status])
+}
+
+// 退款记录表
+model Refund {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 退款基本信息
+  refundNo String  @unique // 退款流水号
+  amount   Float   // 退款金额（以分为单位）
+  reason   String? // 退款原因
+
+  // 退款状态
+  status String @default("pending") // pending, success, failed, cancelled
+
+  // 第三方退款信息
+  thirdPartyId     String? // 第三方退款ID
+  thirdPartyStatus String? // 第三方退款状态
+  thirdPartyData   String? // 第三方返回数据（JSON字符串）
+
+  // 关联支付
+  paymentId String
+  payment   Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  // 用户信息
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 退款时间
+  refundedAt DateTime?
+
+  @@map("refunds")
+  @@index([refundNo])
+  @@index([userId])
+  @@index([paymentId])
+  @@index([status])
+  @@index([thirdPartyId])
+  @@index([createdAt])
+  @@index([refundedAt])
+  @@index([userId, status])
+  @@index([paymentId, status])
+  @@index([status, createdAt])
+}

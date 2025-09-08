@@ -1,0 +1,194 @@
+/* 懂拍帝定制卡片组件样式 */
+@import '/styles/theme-photography.less';
+
+.dp-card {
+  /* 继承主题系统中的卡片样式 */
+  background: var(--dp-bg-primary);
+  border-radius: var(--dp-radius-large);
+  box-shadow: var(--dp-shadow-light);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4rpx;
+    background: var(--dp-gradient-gold);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:active {
+    transform: translateY(-8rpx) scale(1.02);
+    box-shadow: var(--dp-shadow-heavy);
+    
+    &::before {
+      opacity: 1;
+    }
+  }
+  
+  &.no-shadow {
+    box-shadow: none;
+  }
+  
+  &.not-clickable {
+    &:active {
+      transform: none;
+      box-shadow: var(--dp-shadow-light);
+      
+      &::before {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+/* 作品卡片特定样式 */
+.work-card-content {
+  .work-image-container {
+    position: relative;
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    
+    .work-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    
+    /* 悬浮遮罩 */
+    .work-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: var(--dp-space-md);
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+      color: var(--dp-text-inverse);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      
+      .overlay-content {
+        .work-title {
+          font-size: 28rpx;
+          font-weight: 500;
+          margin-bottom: var(--dp-space-xs);
+          text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+        }
+        
+        .work-author {
+          display: flex;
+          align-items: center;
+          gap: var(--dp-space-xs);
+          
+          .author-avatar {
+            width: 32rpx;
+            height: 32rpx;
+            border-radius: var(--dp-radius-round);
+            border: 1rpx solid rgba(255, 255, 255, 0.5);
+          }
+          
+          .author-name {
+            font-size: 24rpx;
+            text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
+          }
+        }
+      }
+    }
+    
+    /* 作品标签 */
+    .work-tags {
+      position: absolute;
+      top: var(--dp-space-sm);
+      left: var(--dp-space-sm);
+      
+      .tag-item {
+        background: rgba(0, 0, 0, 0.6);
+        color: var(--dp-text-inverse);
+        padding: 4rpx var(--dp-space-xs);
+        border-radius: var(--dp-radius-small);
+        font-size: 20rpx;
+        backdrop-filter: blur(10rpx);
+      }
+    }
+    
+    /* 互动按钮 */
+    .interaction-buttons {
+      position: absolute;
+      top: var(--dp-space-sm);
+      right: var(--dp-space-sm);
+      display: flex;
+      flex-direction: column;
+      gap: var(--dp-space-xs);
+      
+      .interaction-btn {
+        width: 56rpx;
+        height: 56rpx;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: var(--dp-radius-round);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(10rpx);
+        transition: all 0.3s ease;
+        
+        &:active {
+          background: rgba(212, 175, 55, 0.8);
+          transform: scale(1.1);
+        }
+        
+        &.liked {
+          background: rgba(255, 71, 87, 0.8);
+        }
+      }
+    }
+    
+    &:active {
+      .work-overlay {
+        opacity: 1;
+      }
+      
+      .work-image {
+        transform: scale(1.1);
+      }
+    }
+  }
+  
+  .work-info {
+    padding: var(--dp-space-md);
+    
+    .work-stats {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .stats-left {
+        display: flex;
+        gap: var(--dp-space-md);
+        
+        .stat-item {
+          display: flex;
+          align-items: center;
+          gap: 4rpx;
+          color: var(--dp-text-tertiary);
+          font-size: 24rpx;
+          
+          .stat-icon {
+            width: 24rpx;
+            height: 24rpx;
+          }
+        }
+      }
+      
+      .work-time {
+        font-size: 20rpx;
+        color: var(--dp-text-tertiary);
+      }
+    }
+  }
+}

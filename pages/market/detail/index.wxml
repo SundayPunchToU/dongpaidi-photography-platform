@@ -1,0 +1,181 @@
+<!--相机设备详情页面-->
+<view class="camera-detail-page">
+  <!-- 自定义导航栏 -->
+  <view class="custom-navbar">
+    <view class="nav-left" bindtap="goBack">
+      <text class="nav-icon">←</text>
+    </view>
+    <text class="nav-title">设备详情</text>
+    <view class="nav-right">
+      <view class="nav-btn" bindtap="onShareTap">
+        <text class="nav-icon">📤</text>
+      </view>
+      <view class="nav-btn" bindtap="onFavoriteTap">
+        <text class="nav-icon">{{cameraDetail.isFavorited ? '❤️' : '🤍'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-container">
+    <t-loading theme="circular" size="60rpx" />
+    <text class="loading-text">加载设备详情中...</text>
+  </view>
+
+  <!-- 设备详情内容 -->
+  <scroll-view class="content-scroll" scroll-y="true" wx:if="{{!loading && cameraDetail}}">
+    <!-- 设备图片展示 -->
+    <view class="camera-images">
+      <swiper
+        class="images-swiper"
+        indicator-dots="{{cameraDetail.images && cameraDetail.images.length > 1}}"
+        indicator-color="rgba(255,255,255,0.3)"
+        indicator-active-color="rgba(212,175,55,0.8)"
+        circular="{{true}}"
+      >
+        <swiper-item wx:for="{{cameraDetail.images || [cameraDetail.image]}}" wx:key="*this">
+          <image
+            class="camera-image"
+            src="{{item}}"
+            mode="aspectFill"
+            bindtap="onImagePreview"
+            data-index="{{index}}"
+          />
+        </swiper-item>
+      </swiper>
+    </view>
+
+    <!-- 设备基本信息卡片 -->
+    <view class="info-card main-info">
+      <!-- 卖家/商家信息 -->
+      <view class="seller-section">
+        <view class="seller-info" bindtap="onSellerTap">
+          <image class="seller-avatar" src="{{cameraDetail.sellerAvatar}}" mode="aspectFill" />
+          <view class="seller-details">
+            <text class="seller-name">{{cameraDetail.seller || cameraDetail.shop}}</text>
+            <view class="seller-meta">
+              <text class="seller-rating">⭐ {{cameraDetail.sellerRating || cameraDetail.shopRating}}</text>
+              <text class="seller-location">{{cameraDetail.location}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="seller-actions">
+          <view class="contact-btn" bindtap="onContactTap">
+            <text class="contact-text">联系{{cameraDetail.type === 'rental' ? '商家' : '卖家'}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 设备标题和价格 -->
+      <view class="camera-content">
+        <text class="camera-title">{{cameraDetail.name}}</text>
+        <view class="price-section">
+          <text class="current-price">¥{{cameraDetail.price}}</text>
+          <text class="price-unit" wx:if="{{cameraDetail.type === 'rental'}}">/天</text>
+          <text class="original-price" wx:if="{{cameraDetail.originalPrice}}">¥{{cameraDetail.originalPrice}}</text>
+        </view>
+        
+        <!-- 押金信息（租赁） -->
+        <view class="deposit-info" wx:if="{{cameraDetail.type === 'rental'}}">
+          <text class="deposit-label">押金：</text>
+          <text class="deposit-amount">¥{{cameraDetail.deposit}}</text>
+        </view>
+
+        <!-- 设备标签 -->
+        <view class="camera-tags" wx:if="{{cameraDetail.tags && cameraDetail.tags.length > 0}}">
+          <text class="tag-item" wx:for="{{cameraDetail.tags}}" wx:key="*this">
+            {{item}}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 设备参数卡片 -->
+    <view class="info-card specs-info">
+      <view class="card-header">
+        <text class="card-title">📷 设备参数</text>
+      </view>
+      <view class="specs-grid">
+        <view class="spec-item" wx:for="{{cameraDetail.features}}" wx:key="*this">
+          <text class="spec-value">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 设备描述卡片 -->
+    <view class="info-card description-info" wx:if="{{cameraDetail.description}}">
+      <view class="card-header">
+        <text class="card-title">📝 设备描述</text>
+      </view>
+      <view class="description-content">
+        <text class="description-text">{{cameraDetail.description}}</text>
+      </view>
+    </view>
+
+    <!-- 租赁信息卡片（仅租赁显示） -->
+    <view class="info-card rental-info" wx:if="{{cameraDetail.type === 'rental'}}">
+      <view class="card-header">
+        <text class="card-title">🏪 租赁信息</text>
+      </view>
+      <view class="rental-details">
+        <view class="rental-item">
+          <text class="rental-label">租赁周期</text>
+          <text class="rental-value">{{cameraDetail.rentalPeriod}}</text>
+        </view>
+        <view class="rental-item">
+          <text class="rental-label">已租次数</text>
+          <text class="rental-value">{{cameraDetail.rentCount}}次</text>
+        </view>
+        <view class="rental-item" wx:if="{{cameraDetail.availableDates}}">
+          <text class="rental-label">可租时间</text>
+          <text class="rental-value">{{cameraDetail.availableDates}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 交易信息卡片（仅买卖显示） -->
+    <view class="info-card trade-info" wx:if="{{cameraDetail.type !== 'rental'}}">
+      <view class="card-header">
+        <text class="card-title">💰 交易信息</text>
+      </view>
+      <view class="trade-details">
+        <view class="trade-item">
+          <text class="trade-label">成色</text>
+          <text class="trade-value">{{cameraDetail.condition}}</text>
+        </view>
+        <view class="trade-item" wx:if="{{cameraDetail.purchaseDate}}">
+          <text class="trade-label">购买时间</text>
+          <text class="trade-value">{{cameraDetail.purchaseDate}}</text>
+        </view>
+        <view class="trade-item" wx:if="{{cameraDetail.warranty}}">
+          <text class="trade-label">保修情况</text>
+          <text class="trade-value">{{cameraDetail.warranty}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部安全区域 -->
+    <view class="safe-area-bottom"></view>
+  </scroll-view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-actions" wx:if="{{!loading && cameraDetail}}">
+    <view class="action-left">
+      <view class="action-item" bindtap="onLikeTap">
+        <text class="action-icon {{cameraDetail.isLiked ? 'liked' : ''}}">{{cameraDetail.isLiked ? '❤️' : '🤍'}}</text>
+        <text class="action-count">{{cameraDetail.likeCount || 0}}</text>
+      </view>
+      <view class="action-item" bindtap="onCollectTap">
+        <text class="action-icon {{cameraDetail.isCollected ? 'collected' : ''}}">{{cameraDetail.isCollected ? '⭐' : '☆'}}</text>
+        <text class="action-count">收藏</text>
+      </view>
+    </view>
+    <view class="action-right">
+      <view class="purchase-btn" bindtap="onPurchaseTap">
+        <text class="purchase-text">
+          {{cameraDetail.type === 'rental' ? '立即租赁' : '立即购买'}}
+        </text>
+      </view>
+    </view>
+  </view>
+</view>

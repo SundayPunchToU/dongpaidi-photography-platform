@@ -1,0 +1,72 @@
+{
+  "pages": [
+    "pages/discover/index",
+    "pages/shoot/index",
+    "pages/market/index",
+    "pages/message/index",
+    "pages/profile/index",
+    "pages/release/index",
+    "pages/detail/index"
+  ],
+  "usingComponents": {
+    "t-toast": "tdesign-miniprogram/toast/toast"
+  },
+  "subpackages": [
+    {
+      "root": "pages/works-detail",
+      "name": "works-detail",
+      "pages": ["detail/index", "upload/index", "category/index"]
+    },
+    {
+      "root": "pages/appointment",
+      "name": "appointment",
+      "pages": ["publish/index", "detail/index", "my-appointments/index", "chat/index"]
+    },
+    {
+      "root": "pages/user",
+      "name": "user",
+      "pages": ["login/index", "register/index", "profile-edit/index", "photographer-detail/index", "settings/index"]
+    },
+    {
+      "root": "pages/social",
+      "name": "social",
+      "pages": ["following/index", "followers/index", "likes/index", "comments/index"]
+    },
+    {
+      "root": "pages/search",
+      "name": "search",
+      "pages": ["index", "works/index", "photographers/index", "appointments/index"]
+    }
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "懂拍帝",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "custom": true,
+    "list": [
+      {
+        "pagePath": "pages/discover/index",
+        "text": "发现"
+      },
+      {
+        "pagePath": "pages/shoot/index",
+        "text": "约拍"
+      },
+      {
+        "pagePath": "pages/market/index",
+        "text": "市场"
+      },
+      {
+        "pagePath": "pages/message/index",
+        "text": "私信"
+      }
+    ]
+  },
+  "resolveAlias": {
+    "~/*": "/*"
+  },
+  "sitemapLocation": "sitemap.json"
+}

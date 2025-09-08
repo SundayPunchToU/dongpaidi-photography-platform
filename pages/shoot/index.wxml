@@ -1,0 +1,181 @@
+<!--约拍页面-->
+<view class="shoot-page">
+  <!-- 专题标签区域 - 与首页样式一致 -->
+  <view class="topics-section">
+    <scroll-view class="topics-scroll" scroll-x="true" show-scrollbar="{{false}}">
+      <view class="topics-container">
+        <view
+          class="topic-tag {{selectedTopic === item.id ? 'selected' : ''}}"
+          wx:for="{{topics}}"
+          wx:key="id"
+          data-topic="{{item}}"
+          bindtap="onTopicTap"
+        >
+          <text class="topic-text">{{item.name}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 搜索栏 -->
+  <view class="search-section">
+    <view class="search-container">
+      <t-icon name="search" size="32rpx" color="#999" />
+      <input
+        class="search-input"
+        placeholder="免费送新周边"
+        value="{{searchKeyword}}"
+        bindinput="onSearchInput"
+        bindconfirm="onSearchConfirm"
+        confirm-type="search"
+      />
+    </view>
+
+    <!-- 相机拍照按钮 -->
+    <view class="camera-btn" bindtap="onCameraTap">
+      <t-icon name="camera" size="36rpx" color="#333" />
+    </view>
+  </view>
+
+  <!-- 约拍内容区域 - 双列瀑布流 -->
+  <view class="appointments-content">
+    <view class="appointments-waterfall">
+      <!-- 左列 -->
+      <view class="waterfall-column">
+        <view
+          class="appointment-card"
+          wx:for="{{leftColumnAppointments}}"
+          wx:key="id"
+          data-appointment="{{item}}"
+          bindtap="onAppointmentTap"
+        >
+          <!-- 卡片图片 - 九图展示 -->
+          <view class="card-images-grid" wx:if="{{item.images && item.images.length > 1}}">
+            <image
+              class="grid-image"
+              src="{{image}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              wx:for="{{item.images}}"
+              wx:for-item="image"
+              wx:key="*this"
+              binderror="onImageError"
+              bindload="onImageLoad"
+            />
+          </view>
+          <!-- 单图展示（兼容旧数据） -->
+          <image
+            class="card-image"
+            src="{{item.coverImage}}"
+            mode="widthFix"
+            lazy-load="{{true}}"
+            wx:else
+          />
+
+          <!-- 卡片内容 -->
+          <view class="card-content">
+            <!-- 用户信息 -->
+            <view class="user-info">
+              <image class="user-avatar" src="{{item.user.avatar}}" />
+              <text class="user-name">{{item.user.name}}</text>
+            </view>
+
+            <!-- 标题 -->
+            <text class="card-title">{{item.title}}</text>
+
+            <!-- 底部信息 -->
+            <view class="card-footer">
+              <view class="location-tag">
+                <t-icon name="location" size="20rpx" color="#666" />
+                <text>{{item.location}}</text>
+              </view>
+              <view class="like-info">
+                <t-icon name="heart" size="24rpx" color="#999" />
+                <text>{{item.likes}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 右列 -->
+      <view class="waterfall-column">
+        <view
+          class="appointment-card"
+          wx:for="{{rightColumnAppointments}}"
+          wx:key="id"
+          data-appointment="{{item}}"
+          bindtap="onAppointmentTap"
+        >
+          <!-- 卡片图片 - 九图展示 -->
+          <view class="card-images-grid" wx:if="{{item.images && item.images.length > 1}}">
+            <image
+              class="grid-image"
+              src="{{image}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              wx:for="{{item.images}}"
+              wx:for-item="image"
+              wx:key="*this"
+              binderror="onImageError"
+              bindload="onImageLoad"
+            />
+          </view>
+          <!-- 单图展示（兼容旧数据） -->
+          <image
+            class="card-image"
+            src="{{item.coverImage}}"
+            mode="widthFix"
+            lazy-load="{{true}}"
+            wx:else
+          />
+
+          <!-- 卡片内容 -->
+          <view class="card-content">
+            <!-- 用户信息 -->
+            <view class="user-info">
+              <image class="user-avatar" src="{{item.user.avatar}}" />
+              <text class="user-name">{{item.user.name}}</text>
+            </view>
+
+            <!-- 标题 -->
+            <text class="card-title">{{item.title}}</text>
+
+            <!-- 底部信息 -->
+            <view class="card-footer">
+              <view class="location-tag">
+                <t-icon name="location" size="20rpx" color="#666" />
+                <text>{{item.location}}</text>
+              </view>
+              <view class="like-info">
+                <t-icon name="heart" size="24rpx" color="#999" />
+                <text>{{item.likes}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-section" wx:if="{{loading}}">
+    <t-loading theme="circular" size="40rpx" />
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{appointments.length === 0 && !loading}}">
+    <t-icon name="camera" size="120rpx" color="#ccc" />
+    <text class="empty-text">暂无约拍信息</text>
+    <text class="empty-desc">发布你的第一个约拍需求吧</text>
+    <t-button theme="primary" size="medium" bindtap="onPublishTap">
+      发布约拍
+    </t-button>
+  </view>
+
+  <!-- 无更多数据 -->
+  <view class="no-more" wx:if="{{!hasMore && appointments.length > 0}}">
+    <text>没有更多约拍了</text>
+  </view>
+</view>

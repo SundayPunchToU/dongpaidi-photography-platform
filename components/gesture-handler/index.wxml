@@ -1,0 +1,10 @@
+<!-- 手势处理组件 -->
+<view 
+  class="gesture-handler"
+  bindtouchstart="onTouchStart"
+  bindtouchmove="onTouchMove"
+  bindtouchend="onTouchEnd"
+  bindtouchcancel="onTouchCancel"
+>
+  <slot></slot>
+</view>

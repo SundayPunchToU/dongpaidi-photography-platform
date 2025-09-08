@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket 消息系统测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        .message-area {
+            height: 300px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+            margin: 10px 0;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .message.sent {
+            background-color: #007bff;
+            color: white;
+            text-align: right;
+        }
+        .message.received {
+            background-color: #e9ecef;
+            color: #333;
+        }
+        .message.system {
+            background-color: #fff3cd;
+            color: #856404;
+            font-style: italic;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        input, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input {
+            flex: 1;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .user-list {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .online-user {
+            display: inline-block;
+            margin: 2px;
+            padding: 4px 8px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WebSocket 消息系统测试</h1>
+        
+        <div id="status" class="status disconnected">未连接</div>
+        
+        <div class="input-group">
+            <input type="text" id="token" placeholder="输入JWT Token" style="flex: 2;">
+            <button onclick="connect()">连接</button>
+            <button onclick="disconnect()">断开</button>
+        </div>
+        
+        <div class="user-list">
+            <strong>在线用户:</strong>
+            <div id="onlineUsers"></div>
+        </div>
+        
+        <div class="message-area" id="messages"></div>
+        
+        <div class="input-group">
+            <input type="text" id="receiverId" placeholder="接收者ID">
+            <input type="text" id="messageInput" placeholder="输入消息内容">
+            <button onclick="sendMessage()" id="sendBtn" disabled>发送</button>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="conversationId" placeholder="对话ID (用于加入房间)">
+            <button onclick="joinConversation()" id="joinBtn" disabled>加入对话</button>
+            <button onclick="leaveConversation()" id="leaveBtn" disabled>离开对话</button>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = null;
+        let currentConversation = null;
+
+        function addMessage(content, type = 'system', sender = null) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const senderInfo = sender ? `${sender.nickname}: ` : '';
+            messageDiv.innerHTML = `<small>${timestamp}</small><br>${senderInfo}${content}`;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function updateStatus(connected) {
+            const statusDiv = document.getElementById('status');
+            const sendBtn = document.getElementById('sendBtn');
+            const joinBtn = document.getElementById('joinBtn');
+            const leaveBtn = document.getElementById('leaveBtn');
+            
+            if (connected) {
+                statusDiv.textContent = '已连接';
+                statusDiv.className = 'status connected';
+                sendBtn.disabled = false;
+                joinBtn.disabled = false;
+                leaveBtn.disabled = false;
+            } else {
+                statusDiv.textContent = '未连接';
+                statusDiv.className = 'status disconnected';
+                sendBtn.disabled = true;
+                joinBtn.disabled = true;
+                leaveBtn.disabled = true;
+            }
+        }
+
+        function updateOnlineUsers(users) {
+            const onlineUsersDiv = document.getElementById('onlineUsers');
+            onlineUsersDiv.innerHTML = '';
+            
+            users.forEach(user => {
+                const userSpan = document.createElement('span');
+                userSpan.className = 'online-user';
+                userSpan.textContent = user.nickname || user.id;
+                onlineUsersDiv.appendChild(userSpan);
+            });
+        }
+
+        function connect() {
+            const token = document.getElementById('token').value;
+            if (!token) {
+                alert('请输入JWT Token');
+                return;
+            }
+
+            socket = io('http://localhost:3000', {
+                auth: {
+                    token: token
+                },
+                transports: ['websocket', 'polling']
+            });
+
+            socket.on('connect', () => {
+                addMessage('WebSocket连接成功', 'system');
+                updateStatus(true);
+            });
+
+            socket.on('disconnect', () => {
+                addMessage('WebSocket连接断开', 'system');
+                updateStatus(false);
+            });
+
+            socket.on('connect_error', (error) => {
+                addMessage(`连接错误: ${error.message}`, 'system');
+                updateStatus(false);
+            });
+
+            socket.on('online_users', (users) => {
+                addMessage(`收到在线用户列表: ${users.length} 人`, 'system');
+                updateOnlineUsers(users);
+            });
+
+            socket.on('new_message', (message) => {
+                addMessage(message.content, 'received', message.sender);
+            });
+
+            socket.on('message_sent', (response) => {
+                if (response.success) {
+                    addMessage(response.message.content, 'sent');
+                } else {
+                    addMessage(`发送失败: ${response.error}`, 'system');
+                }
+            });
+
+            socket.on('user_status_changed', (data) => {
+                const status = data.isOnline ? '上线' : '下线';
+                addMessage(`用户 ${data.userId} ${status}`, 'system');
+            });
+
+            socket.on('user_typing', (data) => {
+                const action = data.isTyping ? '正在输入...' : '停止输入';
+                addMessage(`用户 ${data.userId} ${action}`, 'system');
+            });
+
+            socket.on('messages_read', (data) => {
+                addMessage(`用户 ${data.userId} 已读消息`, 'system');
+            });
+
+            socket.on('system_notification', (notification) => {
+                addMessage(`系统通知: ${JSON.stringify(notification)}`, 'system');
+            });
+
+            socket.on('system_message', (data) => {
+                addMessage(`系统消息: ${data.message}`, 'system');
+            });
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+                updateStatus(false);
+                document.getElementById('onlineUsers').innerHTML = '';
+            }
+        }
+
+        function sendMessage() {
+            const receiverId = document.getElementById('receiverId').value;
+            const content = document.getElementById('messageInput').value;
+            
+            if (!receiverId || !content) {
+                alert('请输入接收者ID和消息内容');
+                return;
+            }
+
+            if (socket && socket.connected) {
+                socket.emit('send_message', {
+                    receiverId: receiverId,
+                    content: content,
+                    type: 'text'
+                });
+                
+                document.getElementById('messageInput').value = '';
+            }
+        }
+
+        function joinConversation() {
+            const conversationId = document.getElementById('conversationId').value;
+            if (!conversationId) {
+                alert('请输入对话ID');
+                return;
+            }
+
+            if (socket && socket.connected) {
+                socket.emit('join_conversation', {
+                    otherUserId: conversationId
+                });
+                currentConversation = conversationId;
+                addMessage(`加入对话: ${conversationId}`, 'system');
+            }
+        }
+
+        function leaveConversation() {
+            if (currentConversation && socket && socket.connected) {
+                socket.emit('leave_conversation', {
+                    otherUserId: currentConversation
+                });
+                addMessage(`离开对话: ${currentConversation}`, 'system');
+                currentConversation = null;
+            }
+        }
+
+        // 回车发送消息
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            addMessage('WebSocket测试客户端已加载', 'system');
+            addMessage('请输入JWT Token并点击连接按钮', 'system');
+        });
+    </script>
+</body>
+</html>

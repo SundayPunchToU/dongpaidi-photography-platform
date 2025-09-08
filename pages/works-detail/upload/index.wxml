@@ -1,0 +1,46 @@
+<!--商品上传页-->
+<view class="upload-page">
+  <form bindsubmit="onSubmit">
+    <view class="form-section">
+      <view class="form-item">
+        <text class="label">商品名称</text>
+        <input 
+          class="input" 
+          placeholder="请输入商品名称"
+          value="{{productInfo.name}}"
+          bindinput="onNameInput"
+        />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">商品价格</text>
+        <input 
+          class="input" 
+          type="digit"
+          placeholder="请输入价格"
+          value="{{productInfo.price}}"
+          bindinput="onPriceInput"
+        />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">商品描述</text>
+        <textarea 
+          class="textarea"
+          placeholder="请输入商品描述"
+          value="{{productInfo.description}}"
+          bindinput="onDescInput"
+        />
+      </view>
+      
+      <view class="form-item">
+        <text class="label">商品图片</text>
+        <view class="image-upload" bindtap="onChooseImage">
+          <text>选择图片</text>
+        </view>
+      </view>
+    </view>
+    
+    <button class="submit-btn" form-type="submit">提交</button>
+  </form>
+</view>

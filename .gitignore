@@ -1,0 +1,174 @@
+# 微信小程序相关
+# WeChat Mini Program
+project.private.config.json
+.miniprogram-cli/
+
+# Node.js 依赖
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# 运行时数据
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 覆盖率目录
+lib-cov
+coverage/
+*.lcov
+.nyc_output
+
+# 依赖目录
+jspm_packages/
+
+# TypeScript 缓存
+*.tsbuildinfo
+
+# 可选的 npm 缓存目录
+.npm
+
+# 可选的 eslint 缓存
+.eslintcache
+
+# 可选的 REPL 历史
+.node_repl_history
+
+# 输出目录
+out
+dist
+
+# Yarn Integrity 文件
+.yarn-integrity
+
+# dotenv 环境变量文件
+.env
+.env.test
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# parcel-bundler 缓存
+.cache
+.parcel-cache
+
+# Next.js 构建输出
+.next
+
+# Nuxt.js 构建/生成输出
+.nuxt
+dist
+
+# Gatsby 文件
+.cache/
+public
+
+# Storybook 构建输出
+.out
+.storybook-out
+
+# 临时文件夹
+tmp/
+temp/
+
+# 运行时数据
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# 日志文件
+logs
+*.log
+
+# 编辑器和IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统生成的文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 微信开发者工具生成的文件
+.miniprogram-cli/
+
+# 构建输出
+build/
+dist/
+
+# 测试覆盖率
+coverage/
+
+# 备份文件
+*.bak
+*.backup
+*.old
+
+# 压缩文件
+*.zip
+*.tar.gz
+*.rar
+
+# 敏感配置文件
+config/env.js
+config/secrets.js
+config/production.js
+utils/config-private.js
+**/env.local.js
+**/secrets.local.js
+
+# 上传文件目录
+uploads/
+static/uploads/
+
+# 缓存文件
+.cache/
+*.cache
+
+# 锁文件（保留 package-lock.json，但排除其他锁文件）
+yarn.lock
+pnpm-lock.yaml
+
+# 后端相关（如果包含后端代码）
+dongpaidi-backend/node_modules/
+dongpaidi-backend/dist/
+dongpaidi-backend/logs/
+dongpaidi-backend/uploads/
+dongpaidi-backend/.env
+dongpaidi-backend/.env.*
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 文档生成
+docs/build/
+
+# 测试文件
+test-results/
+playwright-report/
+
+# MacOS 压缩文件
+__MACOSX/
+
+# Windows 缩略图
+Thumbs.db
+ehthumbs.db
+
+# 临时文件
+*.tmp
+*.temp

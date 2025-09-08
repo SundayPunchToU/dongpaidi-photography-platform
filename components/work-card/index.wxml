@@ -1,0 +1,172 @@
+<!-- 摄影作品卡片组件 -->
+<view class="work-card {{mode}}" bindtap="onCardTap" animation="{{animationData}}">
+  <!-- 图片容器 -->
+  <view class="image-container">
+    <image 
+      class="work-image" 
+      src="{{work.cover_url}}" 
+      mode="aspectFill"
+      lazy-load="{{true}}"
+      bind:load="onImageLoad"
+      bind:error="onImageError"
+    />
+    
+    <!-- 图片加载状态 -->
+    <view class="image-loading" wx:if="{{imageLoading}}">
+      <smart-loading type="image" visible="{{true}}" />
+    </view>
+    
+    <!-- 多图标识 -->
+    <view class="multi-image-badge" wx:if="{{work.images && work.images.length > 1}}">
+      <t-icon name="layers" size="24rpx" color="#fff" />
+      <text class="count">{{work.images.length}}</text>
+    </view>
+    
+    <!-- 视频标识 -->
+    <view class="video-badge" wx:if="{{work.type === 'video'}}">
+      <t-icon name="play-circle" size="48rpx" color="#fff" />
+    </view>
+    
+    <!-- 专业标签 -->
+    <view class="category-tag" wx:if="{{work.category}}">
+      <text class="category-text">{{getCategoryLabel(work.category)}}</text>
+    </view>
+    
+    <!-- 收藏按钮 -->
+    <view 
+      class="favorite-btn {{work.is_favorited ? 'favorited' : ''}}"
+      bindtap="onFavoriteTap"
+      catchtap="onFavoriteTap"
+    >
+      <t-icon 
+        name="{{work.is_favorited ? 'heart-filled' : 'heart'}}" 
+        size="32rpx" 
+        color="{{work.is_favorited ? '#ff4757' : '#fff'}}" 
+      />
+    </view>
+  </view>
+
+  <!-- 作品信息 -->
+  <view class="work-info">
+    <!-- 标题和描述 -->
+    <view class="work-content">
+      <text class="work-title">{{work.title}}</text>
+      <text class="work-description" wx:if="{{work.description}}">
+        {{work.description}}
+      </text>
+    </view>
+
+    <!-- 拍摄参数 (专业模式) -->
+    <view class="shooting-params" wx:if="{{mode === 'professional' && work.camera_info}}">
+      <view class="param-item" wx:if="{{work.camera_info.camera}}">
+        <t-icon name="camera" size="20rpx" color="#8c8c8c" />
+        <text class="param-text">{{work.camera_info.camera}}</text>
+      </view>
+      <view class="param-item" wx:if="{{work.camera_info.lens}}">
+        <t-icon name="focus" size="20rpx" color="#8c8c8c" />
+        <text class="param-text">{{work.camera_info.lens}}</text>
+      </view>
+      <view class="param-item" wx:if="{{work.camera_info.settings}}">
+        <t-icon name="setting" size="20rpx" color="#8c8c8c" />
+        <text class="param-text">{{work.camera_info.settings}}</text>
+      </view>
+    </view>
+
+    <!-- 作者信息 -->
+    <view class="author-info" bindtap="onAuthorTap" catchtap="onAuthorTap">
+      <image 
+        class="author-avatar" 
+        src="{{work.author.avatar_url}}" 
+        mode="aspectFill"
+      />
+      <view class="author-details">
+        <text class="author-name">{{work.author.nickname}}</text>
+        <view class="author-level" wx:if="{{work.author.level}}">
+          <t-icon name="{{getLevelIcon(work.author.level)}}" size="20rpx" color="{{getLevelColor(work.author.level)}}" />
+          <text class="level-text">{{getLevelLabel(work.author.level)}}</text>
+        </view>
+      </view>
+      
+      <!-- 关注按钮 -->
+      <view 
+        class="follow-btn {{work.author.is_following ? 'following' : ''}}"
+        bindtap="onFollowTap"
+        catchtap="onFollowTap"
+        wx:if="{{showActions && !work.author.is_self}}"
+      >
+        <text class="follow-text">
+          {{work.author.is_following ? '已关注' : '关注'}}
+        </text>
+      </view>
+    </view>
+
+    <!-- 互动数据 -->
+    <view class="interaction-stats">
+      <!-- 点赞 -->
+      <view 
+        class="stat-item like-btn {{work.is_liked ? 'liked' : ''}}"
+        bindtap="onLikeTap"
+      >
+        <t-icon 
+          name="{{work.is_liked ? 'thumb-up-filled' : 'thumb-up'}}" 
+          size="28rpx" 
+          color="{{work.is_liked ? '#ff4757' : '#8c8c8c'}}" 
+        />
+        <text class="stat-count">{{formatCount(work.likes_count)}}</text>
+      </view>
+      
+      <!-- 评论 -->
+      <view class="stat-item comment-btn" bindtap="onCommentTap">
+        <t-icon name="chat" size="28rpx" color="#8c8c8c" />
+        <text class="stat-count">{{formatCount(work.comments_count)}}</text>
+      </view>
+      
+      <!-- 分享 -->
+      <view class="stat-item share-btn" bindtap="onShareTap">
+        <t-icon name="share" size="28rpx" color="#8c8c8c" />
+      </view>
+      
+      <!-- 位置信息 -->
+      <view class="location-info" wx:if="{{work.location}}">
+        <t-icon name="location" size="20rpx" color="#8c8c8c" />
+        <text class="location-text">{{work.location}}</text>
+      </view>
+    </view>
+
+    <!-- 标签系统 -->
+    <view class="tags-container" wx:if="{{work.tags && work.tags.length > 0}}">
+      <view 
+        class="tag-item"
+        wx:for="{{work.tags}}"
+        wx:key="*this"
+      >
+        <text class="tag-text">#{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 时间信息 -->
+    <view class="time-info">
+      <text class="time-text">{{formatTime(work.created_at)}}</text>
+    </view>
+  </view>
+
+  <!-- 快速操作面板 (长按显示) -->
+  <view class="quick-actions" wx:if="{{showQuickActions}}">
+    <view class="action-item" bindtap="onQuickLike">
+      <t-icon name="thumb-up" size="32rpx" color="#fff" />
+      <text class="action-text">点赞</text>
+    </view>
+    <view class="action-item" bindtap="onQuickComment">
+      <t-icon name="chat" size="32rpx" color="#fff" />
+      <text class="action-text">评论</text>
+    </view>
+    <view class="action-item" bindtap="onQuickShare">
+      <t-icon name="share" size="32rpx" color="#fff" />
+      <text class="action-text">分享</text>
+    </view>
+    <view class="action-item" bindtap="onQuickBook">
+      <t-icon name="calendar" size="32rpx" color="#fff" />
+      <text class="action-text">约拍</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,167 @@
+<!-- AI摄影助手组件 -->
+<view class="ai-assistant {{mode}}" wx:if="{{visible}}">
+  <!-- AI助手头部 -->
+  <view class="ai-header">
+    <view class="ai-avatar">
+      <image class="avatar-image" src="/images/ai-avatar.png" mode="aspectFill" />
+      <view class="ai-status {{aiStatus}}">
+        <view class="status-dot"></view>
+      </view>
+    </view>
+    
+    <view class="ai-info">
+      <text class="ai-name">小拍AI助手</text>
+      <text class="ai-subtitle">{{getStatusText()}}</text>
+    </view>
+    
+    <view class="ai-actions">
+      <view class="action-btn" bindtap="onMinimize">
+        <t-icon name="minus" size="24rpx" color="#8c8c8c" />
+      </view>
+      <view class="action-btn" bindtap="onClose">
+        <t-icon name="close" size="24rpx" color="#8c8c8c" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 快速功能入口 -->
+  <view class="quick-functions" wx:if="{{mode === 'expanded'}}">
+    <view 
+      class="function-item"
+      wx:for="{{quickFunctions}}"
+      wx:key="key"
+      data-function="{{item}}"
+      bindtap="onQuickFunction"
+    >
+      <view class="function-icon" style="background: {{item.gradient}}">
+        <t-icon name="{{item.icon}}" size="32rpx" color="#fff" />
+      </view>
+      <text class="function-label">{{item.label}}</text>
+    </view>
+  </view>
+
+  <!-- AI对话区域 -->
+  <view class="ai-chat" wx:if="{{mode === 'chat'}}">
+    <!-- 消息列表 -->
+    <scroll-view 
+      class="message-list" 
+      scroll-y="{{true}}"
+      scroll-top="{{scrollTop}}"
+      scroll-with-animation="{{true}}"
+    >
+      <view 
+        class="message-item {{message.type}}"
+        wx:for="{{messages}}"
+        wx:key="id"
+      >
+        <!-- AI消息 -->
+        <view class="ai-message" wx:if="{{message.type === 'ai'}}">
+          <image class="message-avatar" src="/images/ai-avatar.png" mode="aspectFill" />
+          <view class="message-content">
+            <view class="message-bubble ai-bubble">
+              <text class="message-text">{{message.content}}</text>
+              
+              <!-- AI建议卡片 -->
+              <view class="ai-suggestion" wx:if="{{message.suggestion}}">
+                <view class="suggestion-header">
+                  <t-icon name="lightbulb" size="24rpx" color="#d4af37" />
+                  <text class="suggestion-title">AI建议</text>
+                </view>
+                <text class="suggestion-content">{{message.suggestion}}</text>
+              </view>
+              
+              <!-- 快速回复选项 -->
+              <view class="quick-replies" wx:if="{{message.quickReplies}}">
+                <view 
+                  class="reply-option"
+                  wx:for="{{message.quickReplies}}"
+                  wx:for-item="reply"
+                  wx:key="*this"
+                  data-reply="{{reply}}"
+                  bindtap="onQuickReply"
+                >
+                  <text class="reply-text">{{reply}}</text>
+                </view>
+              </view>
+            </view>
+            <text class="message-time">{{formatTime(message.timestamp)}}</text>
+          </view>
+        </view>
+
+        <!-- 用户消息 -->
+        <view class="user-message" wx:if="{{message.type === 'user'}}">
+          <view class="message-content">
+            <view class="message-bubble user-bubble">
+              <text class="message-text">{{message.content}}</text>
+              
+              <!-- 图片消息 -->
+              <image 
+                class="message-image" 
+                src="{{message.image}}" 
+                mode="aspectFill"
+                wx:if="{{message.image}}"
+                bindtap="onImageTap"
+              />
+            </view>
+            <text class="message-time">{{formatTime(message.timestamp)}}</text>
+          </view>
+          <image class="message-avatar" src="{{userAvatar}}" mode="aspectFill" />
+        </view>
+
+        <!-- AI思考状态 -->
+        <view class="ai-thinking" wx:if="{{message.type === 'thinking'}}">
+          <image class="message-avatar" src="/images/ai-avatar.png" mode="aspectFill" />
+          <view class="thinking-bubble">
+            <view class="thinking-dots">
+              <view class="dot"></view>
+              <view class="dot"></view>
+              <view class="dot"></view>
+            </view>
+            <text class="thinking-text">AI正在分析...</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 输入区域 -->
+    <view class="input-area">
+      <view class="input-container">
+        <view class="input-actions">
+          <view class="action-btn" bindtap="onImageUpload">
+            <t-icon name="camera" size="32rpx" color="#8c8c8c" />
+          </view>
+          <view class="action-btn" bindtap="onVoiceInput">
+            <t-icon name="microphone" size="32rpx" color="#8c8c8c" />
+          </view>
+        </view>
+        
+        <input 
+          class="message-input"
+          placeholder="向AI助手提问摄影问题..."
+          value="{{inputText}}"
+          bind:input="onInputChange"
+          bind:confirm="onSendMessage"
+          confirm-type="send"
+        />
+        
+        <view 
+          class="send-btn {{inputText ? 'active' : ''}}"
+          bindtap="onSendMessage"
+        >
+          <t-icon name="send" size="32rpx" color="{{inputText ? '#d4af37' : '#bfbfbf'}}" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 浮动模式 -->
+  <view class="ai-floating" wx:if="{{mode === 'floating'}}" bindtap="onFloatingTap">
+    <view class="floating-avatar">
+      <image class="avatar-image" src="/images/ai-avatar.png" mode="aspectFill" />
+      <view class="floating-pulse"></view>
+    </view>
+    <view class="floating-tip" wx:if="{{showFloatingTip}}">
+      <text class="tip-text">{{floatingTipText}}</text>
+    </view>
+  </view>
+</view>

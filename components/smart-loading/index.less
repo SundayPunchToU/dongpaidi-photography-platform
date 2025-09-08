@@ -1,0 +1,227 @@
+/* 智能加载组件样式 */
+@import '/styles/theme-photography.less';
+
+.smart-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--dp-space-xl);
+  
+  .loading-text {
+    font-size: 28rpx;
+    color: var(--dp-text-secondary);
+    margin-top: var(--dp-space-md);
+    text-align: center;
+  }
+}
+
+/* 默认加载动画 */
+.loading-default {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .loading-spinner {
+    position: relative;
+    width: 80rpx;
+    height: 80rpx;
+    
+    .spinner-ring {
+      width: 100%;
+      height: 100%;
+      border: 4rpx solid var(--dp-bg-tertiary);
+      border-top: 4rpx solid var(--dp-accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    .spinner-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 16rpx;
+      height: 16rpx;
+      background: var(--dp-accent);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+  }
+}
+
+/* 图片加载 */
+.loading-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .image-placeholder {
+    width: 120rpx;
+    height: 120rpx;
+    background: var(--dp-bg-tertiary);
+    border-radius: var(--dp-radius-large);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+}
+
+/* 上传进度 */
+.loading-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .upload-progress {
+    .progress-circle {
+      position: relative;
+      width: 100rpx;
+      height: 100rpx;
+      
+      .progress-bar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(var(--dp-accent) 0deg, var(--dp-bg-tertiary) 0deg);
+        transition: background 0.3s ease;
+      }
+      
+      .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 24rpx;
+        font-weight: 600;
+        color: var(--dp-accent);
+      }
+    }
+  }
+}
+
+/* 支付加载 */
+.loading-payment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .payment-icon {
+    position: relative;
+    
+    .payment-pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80rpx;
+      height: 80rpx;
+      border: 2rpx solid var(--dp-accent);
+      border-radius: 50%;
+      animation: pulse-ring 2s ease-out infinite;
+    }
+  }
+}
+
+/* 搜索加载 */
+.loading-search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+  .search-animation {
+    position: relative;
+    
+    .search-waves {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      
+      .wave {
+        position: absolute;
+        width: 60rpx;
+        height: 60rpx;
+        border: 2rpx solid var(--dp-accent);
+        border-radius: 50%;
+        opacity: 0;
+        animation: wave-expand 2s ease-out infinite;
+        
+        &:nth-child(2) {
+          animation-delay: 0.5s;
+        }
+        
+        &:nth-child(3) {
+          animation-delay: 1s;
+        }
+      }
+    }
+  }
+}
+
+/* 进度条 */
+.progress-bar-container {
+  width: 100%;
+  margin-top: var(--dp-space-md);
+  
+  .progress-bar-bg {
+    width: 100%;
+    height: 8rpx;
+    background: var(--dp-bg-tertiary);
+    border-radius: 4rpx;
+    overflow: hidden;
+    
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--dp-gradient-gold);
+      border-radius: 4rpx;
+      transition: width 0.3s ease;
+    }
+  }
+  
+  .progress-text {
+    font-size: 24rpx;
+    color: var(--dp-text-tertiary);
+    text-align: center;
+    margin-top: var(--dp-space-xs);
+  }
+}
+
+/* 动画定义 */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes wave-expand {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}

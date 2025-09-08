@@ -1,0 +1,71 @@
+/* 懂拍帝定制按钮组件样式 */
+@import '/styles/theme-photography.less';
+
+.dp-button {
+  /* 继承主题系统中的按钮样式 */
+  border-radius: var(--dp-radius-medium);
+  padding: var(--dp-space-sm) var(--dp-space-lg);
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  
+  .dp-button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--dp-space-xs);
+    position: relative;
+    z-index: 2;
+  }
+  
+  .dp-button-icon {
+    transition: transform 0.3s ease;
+    
+    &.rotating {
+      animation: dp-rotate 1s linear infinite;
+    }
+  }
+  
+  .dp-button-text {
+    white-space: nowrap;
+  }
+  
+  .dp-button-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 1;
+  }
+  
+  /* 块级按钮 */
+  &-block {
+    width: 100%;
+    display: flex;
+  }
+  
+  /* 圆形按钮 */
+  &-round {
+    border-radius: var(--dp-radius-round);
+    padding: var(--dp-space-md);
+    
+    .dp-button-text {
+      display: none;
+    }
+  }
+}
+
+/* 旋转动画 */
+@keyframes dp-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
