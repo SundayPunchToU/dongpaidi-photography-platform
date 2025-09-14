@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # PostgreSQL数据库
+  postgres:
+    image: postgres:15-alpine
+    container_name: dongpaidi-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: dongpaidi_prod
+      POSTGRES_USER: dongpaidi_user
+      POSTGRES_PASSWORD: dongpaidi_password_2024
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - dongpaidi-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dongpaidi_user -d dongpaidi_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: dongpaidi-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis_password_2024
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    networks:
+      - dongpaidi-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis_password_2024", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # 后端API服务
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dongpaidi-backend
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://dongpaidi_user:dongpaidi_password_2024@postgres:5432/dongpaidi_prod
+      - REDIS_URL=redis://:redis_password_2024@redis:6379
+      - JWT_SECRET=your_jwt_secret_key_2024_dongpaidi_very_secure
+      - PORT=3000
+      - UPLOAD_PATH=/app/uploads
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./logs:/app/logs
+      - ./data/uploads:/app/uploads
+    networks:
+      - dongpaidi-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: dongpaidi-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+      - ./data/uploads:/var/www/uploads
+    networks:
+      - dongpaidi-network
+    depends_on:
+      - backend
+
+networks:
+  dongpaidi-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
