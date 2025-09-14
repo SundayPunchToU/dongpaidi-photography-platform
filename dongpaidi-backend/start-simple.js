@@ -32,6 +32,9 @@ app.use(morgan('combined'));
 // 静态文件服务
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// 管理后台静态文件服务
+app.use('/admin', express.static(path.join(__dirname, 'admin-panel/dist')));
+
 // 信任代理
 app.set('trust proxy', 1);
 
@@ -173,6 +176,31 @@ app.get('/', (req, res) => {
   }, 'API服务运行正常');
 });
 
+// 管理后台SPA路由支持 - 必须在API路由之前
+app.get('/admin/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin-panel/dist/index.html'));
+});
+
+// 管理后台根路径重定向
+app.get('/admin', (req, res) => {
+  res.redirect('/admin/');
+});
+
+// 测试页面 - 用于调试
+app.get('/admin/test', (req, res) => {
+  res.send(`
+    <html>
+      <head><title>管理后台测试</title></head>
+      <body>
+        <h1>管理后台测试页面</h1>
+        <p>如果您能看到这个页面，说明路由配置正常</p>
+        <p>时间: ${new Date().toISOString()}</p>
+        <a href="/admin/">返回管理后台</a>
+      </body>
+    </html>
+  `);
+});
+
 // 管理员登录
 apiRouter.post('/admin/login', (req, res) => {
   const { username, password } = req.body;
@@ -217,11 +245,142 @@ apiRouter.get('/appointments', requireAuth, (req, res) => {
 });
 
 apiRouter.get('/messages', requireAuth, (req, res) => {
-  res.success([], '获取消息列表成功');
+  const mockMessages = [
+    {
+      id: 'msg_001',
+      from: {
+        id: 'user_001',
+        username: '张三',
+        avatarUrl: '/uploads/avatars/default.jpg'
+      },
+      to: {
+        id: 'admin',
+        username: '管理员',
+        avatarUrl: '/uploads/avatars/admin.jpg'
+      },
+      content: '您好，我想咨询一下约拍的相关事宜',
+      type: 'text',
+      status: 'unread',
+      createdAt: '2025-09-14T10:30:00Z',
+      updatedAt: '2025-09-14T10:30:00Z'
+    },
+    {
+      id: 'msg_002',
+      from: {
+        id: 'user_002',
+        username: '李四',
+        avatarUrl: '/uploads/avatars/default.jpg'
+      },
+      to: {
+        id: 'admin',
+        username: '管理员',
+        avatarUrl: '/uploads/avatars/admin.jpg'
+      },
+      content: '请问外景拍摄的价格是多少？',
+      type: 'text',
+      status: 'read',
+      createdAt: '2025-09-14T09:15:00Z',
+      updatedAt: '2025-09-14T09:15:00Z'
+    }
+  ];
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  res.paginated(mockMessages, page, limit, mockMessages.length, '获取消息列表成功');
+});
+
+// 消息会话列表API
+apiRouter.get('/messages/conversations', requireAuth, (req, res) => {
+  const mockConversations = [
+    {
+      id: 'conv_001',
+      participants: ['user_1', 'user_2'],
+      lastMessage: {
+        id: 'msg_001',
+        content: '您好，我想预约拍摄服务',
+        senderId: 'user_1',
+        timestamp: new Date().toISOString()
+      },
+      unreadCount: 2,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'conv_002',
+      participants: ['user_2', 'user_3'],
+      lastMessage: {
+        id: 'msg_002',
+        content: '拍摄效果很满意，谢谢！',
+        senderId: 'user_3',
+        timestamp: new Date().toISOString()
+      },
+      unreadCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ];
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  res.paginated(mockConversations, page, limit, mockConversations.length, '获取消息会话成功');
 });
 
 apiRouter.get('/payments', requireAuth, (req, res) => {
-  res.success([], '获取支付列表成功');
+  const mockPayments = [
+    {
+      id: 'pay_001',
+      orderId: 'order_20250914001',
+      user: {
+        id: 'user_001',
+        username: '张三',
+        avatarUrl: '/uploads/avatars/default.jpg'
+      },
+      amount: 1200.00,
+      status: 'completed',
+      method: 'wechat',
+      description: '个人写真拍摄套餐',
+      createdAt: '2025-09-14T10:30:00Z',
+      completedAt: '2025-09-14T10:31:00Z'
+    },
+    {
+      id: 'pay_002',
+      orderId: 'order_20250914002',
+      user: {
+        id: 'user_002',
+        username: '李四',
+        avatarUrl: '/uploads/avatars/default.jpg'
+      },
+      amount: 800.00,
+      status: 'pending',
+      method: 'alipay',
+      description: '情侣写真拍摄套餐',
+      createdAt: '2025-09-14T09:15:00Z',
+      completedAt: null
+    }
+  ];
+
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  res.paginated(mockPayments, page, limit, mockPayments.length, '获取支付列表成功');
+});
+
+// 支付统计API (用户端)
+apiRouter.get('/payments/stats', requireAuth, (req, res) => {
+  res.success({
+    total: 125000,
+    thisMonth: 45600,
+    orders: {
+      total: 680,
+      completed: 520,
+      pending: 45
+    },
+    growth: {
+      monthly: 25.8
+    }
+  }, '获取支付统计成功');
 });
 
 apiRouter.get('/stats', requireAuth, (req, res) => {
@@ -231,6 +390,139 @@ apiRouter.get('/stats', requireAuth, (req, res) => {
     appointments: 0,
     messages: 0
   }, '获取统计数据成功');
+});
+
+// 统计趋势API
+apiRouter.get('/stats/trend', requireAuth, (req, res) => {
+  res.success({
+    users: [120, 132, 101, 134, 90, 230, 210],
+    works: [220, 182, 191, 234, 290, 330, 310],
+    appointments: [150, 232, 201, 154, 190, 330, 410],
+    revenue: [35000, 42000, 38000, 45000, 52000, 61000, 58000]
+  }, '获取趋势统计成功');
+});
+
+// 用户统计API
+apiRouter.get('/users/stats', requireAuth, (req, res) => {
+  res.success({
+    total: 1250,
+    active: 980,
+    photographers: 650,
+    models: 600,
+    growth: {
+      daily: 15,
+      weekly: 89,
+      monthly: 320
+    },
+    verification: {
+      verified: 890,
+      pending: 45,
+      rejected: 12
+    }
+  }, '获取用户统计成功');
+});
+
+// 作品统计API
+apiRouter.get('/works/stats', requireAuth, (req, res) => {
+  res.success({
+    total: 3200,
+    published: 2890,
+    draft: 310,
+    categories: {
+      portrait: 1200,
+      wedding: 800,
+      commercial: 650,
+      art: 550
+    },
+    growth: {
+      daily: 25,
+      weekly: 156,
+      monthly: 580
+    }
+  }, '获取作品统计成功');
+});
+
+// 预约统计API
+apiRouter.get('/appointments/stats', requireAuth, (req, res) => {
+  res.success({
+    total: 680,
+    pending: 45,
+    confirmed: 520,
+    completed: 98,
+    cancelled: 17,
+    growth: {
+      daily: 8,
+      weekly: 42,
+      monthly: 165
+    }
+  }, '获取预约统计成功');
+});
+
+// 未读消息数量API
+apiRouter.get('/messages/unread-count', requireAuth, (req, res) => {
+  res.success({
+    count: 23,
+    categories: {
+      system: 5,
+      user: 12,
+      appointment: 6
+    }
+  }, '获取未读消息数量成功');
+});
+
+// 支付订单管理API
+apiRouter.get('/payments/admin/orders', requireAuth, (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  const mockOrders = [
+    {
+      id: 'order_001',
+      userId: 'user_1',
+      amount: 1200,
+      status: 'completed',
+      type: 'appointment',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'order_002',
+      userId: 'user_2',
+      amount: 800,
+      status: 'pending',
+      type: 'work',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+  ];
+
+  res.paginated(mockOrders, page, limit, mockOrders.length, '获取支付订单成功');
+});
+
+// 支付统计API
+apiRouter.get('/payments/admin/stats', requireAuth, (req, res) => {
+  res.success({
+    total: 125000,
+    today: 3200,
+    thisMonth: 45600,
+    orders: {
+      total: 680,
+      completed: 520,
+      pending: 45,
+      failed: 17
+    },
+    growth: {
+      daily: 8.5,
+      weekly: 12.3,
+      monthly: 25.8
+    },
+    topCategories: [
+      { name: '人像拍摄', amount: 45000, percentage: 36 },
+      { name: '婚纱摄影', amount: 38000, percentage: 30.4 },
+      { name: '商业摄影', amount: 25000, percentage: 20 },
+      { name: '艺术摄影', amount: 17000, percentage: 13.6 }
+    ]
+  }, '获取支付统计成功');
 });
 
 // 注册API路由
