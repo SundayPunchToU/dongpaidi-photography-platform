@@ -25,7 +25,7 @@ import {
   CloseOutlined,
   ReloadOutlined,
 } from '@ant-design/icons'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { userApi } from '@/services/api'
 import type { ColumnsType } from 'antd/es/table'
 
@@ -57,68 +57,53 @@ const UserManagement: React.FC = () => {
   const queryClient = useQueryClient()
 
   // 获取用户列表
-  const { data: usersData, isLoading, error: usersError, refetch } = useQuery(
-    ['users', currentPage, pageSize, searchKeyword, platformFilter, verifiedFilter],
-    () => userApi.getUsers({
+  const { data: usersData, isLoading, error: usersError, refetch } = useQuery({
+    queryKey: ['users', currentPage, pageSize, searchKeyword, platformFilter, verifiedFilter],
+    queryFn: () => userApi.getUsers({
       page: currentPage,
       limit: pageSize,
       keyword: searchKeyword,
       platform: platformFilter,
       isVerified: verifiedFilter,
     }),
-    {
-      keepPreviousData: true,
-      retry: 3,
-      retryDelay: 1000,
-      onError: (error) => {
-        console.error('获取用户列表失败:', error);
-        message.error('获取用户列表失败，请稍后重试');
-      },
-    }
-  )
+    placeholderData: (previousData) => previousData,
+    retry: 3,
+    retryDelay: 1000,
+  })
 
   // 获取用户统计
-  const { data: userStats, error: statsError } = useQuery(
-    'userStats',
-    userApi.getUserStats,
-    {
-      retry: 3,
-      retryDelay: 1000,
-      onError: (error) => {
-        console.error('获取用户统计失败:', error);
-      },
-    }
-  )
+  const { data: userStats, error: statsError } = useQuery({
+    queryKey: ['userStats'],
+    queryFn: () => userApi.getUserStats(),
+    retry: 3,
+    retryDelay: 1000,
+  })
 
   // 更新用户状态
-  const updateStatusMutation = useMutation(
-    ({ id, data }: { id: string; data: any }) => userApi.updateUserStatus(id, data),
-    {
-      onSuccess: () => {
-        message.success('操作成功')
-        queryClient.invalidateQueries('users')
-        queryClient.invalidateQueries('userStats')
-      },
-      onError: () => {
-        message.error('操作失败')
-      },
-    }
-  )
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => userApi.updateUserStatus(id, data),
+    onSuccess: () => {
+      message.success('操作成功')
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+      queryClient.invalidateQueries({ queryKey: ['userStats'] })
+    },
+    onError: () => {
+      message.error('操作失败')
+    },
+  })
 
   // 删除用户
-  const deleteUserMutation = useMutation(
-    (id: string) => userApi.deleteUser(id),
-    {
-      onSuccess: () => {
-        message.success('删除成功')
-        queryClient.invalidateQueries('users')
-        queryClient.invalidateQueries('userStats')
-      },
-      onError: () => {
-        message.error('删除失败')
-      },
-    }
-  )
+  const deleteUserMutation = useMutation({
+    mutationFn: (id: string) => userApi.deleteUser(id),
+    onSuccess: () => {
+      message.success('删除成功')
+      queryClient.invalidateQueries({ queryKey: ['users'] })
+      queryClient.invalidateQueries({ queryKey: ['userStats'] })
+    },
+    onError: () => {
+      message.error('删除失败')
+    },
+  })
 
   const handleVerifyUser = (id: string, isVerified: boolean) => {
     updateStatusMutation.mutate({ id, data: { isVerified } })
@@ -188,7 +173,7 @@ const UserManagement: React.FC = () => {
       render: (specialties: string[]) => (
         <div>
           {specialties?.slice(0, 2).map((specialty, index) => (
-            <Tag key={index} size="small">{specialty}</Tag>
+            <Tag key={index}>{specialty}</Tag>
           ))}
           {specialties?.length > 2 && <span style={{ color: '#666' }}>...</span>}
         </div>
@@ -217,7 +202,7 @@ const UserManagement: React.FC = () => {
             size="small"
             icon={record.isVerified ? <CloseOutlined /> : <CheckOutlined />}
             onClick={() => handleVerifyUser(record.id, !record.isVerified)}
-            loading={updateStatusMutation.isLoading}
+            loading={updateStatusMutation.isPending}
           >
             {record.isVerified ? '取消认证' : '认证'}
           </Button>
@@ -232,7 +217,7 @@ const UserManagement: React.FC = () => {
               size="small"
               danger
               icon={<DeleteOutlined />}
-              loading={deleteUserMutation.isLoading}
+              loading={deleteUserMutation.isPending}
             >
               删除
             </Button>
@@ -242,7 +227,7 @@ const UserManagement: React.FC = () => {
     },
   ]
 
-  const stats = userStats?.data || { total: 0, verified: 0, active: 0, newToday: 0 }
+  const stats = userStats?.data?.data || { total: 0, verified: 0, active: 0, newToday: 0 }
 
   return (
     <div>
@@ -325,7 +310,7 @@ const UserManagement: React.FC = () => {
         {/* 用户表格 */}
         <Table
           columns={columns}
-          dataSource={usersData?.data?.items || []}
+          dataSource={usersData?.data?.data || []}
           rowKey="id"
           loading={isLoading}
           pagination={{

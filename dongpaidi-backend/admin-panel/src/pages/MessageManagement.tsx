@@ -105,19 +105,19 @@ const MessageManagement: React.FC = () => {
     queryFn: messageApi.getUnreadCount,
   });
 
-  const conversations = conversationsData?.data || [];
-  const unreadCount = unreadCountData?.data?.count || 0;
+  const conversations = conversationsData?.data?.data || [];
+  const unreadCount = unreadCountData?.data?.data?.count || 0;
 
   // 计算统计数据
   const totalConversations = conversations.length;
-  const activeConversations = conversations.filter(conv => conv.unreadCount > 0).length;
+  const activeConversations = conversations.filter((conv: any) => conv.unreadCount > 0).length;
   const onlineUsersCount = onlineUsers.length;
 
   // 获取对话消息
   const fetchConversationMessages = async (otherUserId: string) => {
     try {
       const response = await messageApi.getConversationMessages(otherUserId);
-      setConversationMessages(response.data.items || []);
+      setConversationMessages(response.data.data || []);
     } catch (error) {
       message.error('获取对话消息失败');
     }
@@ -149,7 +149,7 @@ const MessageManagement: React.FC = () => {
   };
 
   // 过滤对话列表
-  const filteredConversations = conversations.filter(conversation =>
+  const filteredConversations = conversations.filter((conversation: any) =>
     conversation.user.nickname.toLowerCase().includes(searchText.toLowerCase()) ||
     conversation.lastMessage?.content.toLowerCase().includes(searchText.toLowerCase())
   );
@@ -172,7 +172,7 @@ const MessageManagement: React.FC = () => {
             <div style={{ fontWeight: 500 }}>
               {record.user.nickname}
               {record.user.isOnline && (
-                <Tag color="green" size="small" style={{ marginLeft: 8 }}>
+                <Tag color="green" style={{ marginLeft: 8 }}>
                   <WifiOutlined /> 在线
                 </Tag>
               )}
@@ -200,7 +200,7 @@ const MessageManagement: React.FC = () => {
               </Text>
             </div>
             <Space size="small">
-              <Tag color={record.lastMessage.type === 'system' ? 'orange' : 'blue'} size="small">
+              <Tag color={record.lastMessage.type === 'system' ? 'orange' : 'blue'}>
                 {record.lastMessage.type === 'text' ? '文本' : 
                  record.lastMessage.type === 'image' ? '图片' : '系统'}
               </Tag>
@@ -360,7 +360,7 @@ const MessageManagement: React.FC = () => {
               />
               <span>与 {selectedConversation.user.nickname} 的对话</span>
               {selectedConversation.user.isOnline && (
-                <Tag color="green" size="small">
+                <Tag color="green">
                   <WifiOutlined /> 在线
                 </Tag>
               )}
@@ -410,7 +410,7 @@ const MessageManagement: React.FC = () => {
                     </div>
                     <div>{message.content}</div>
                     {message.type !== 'text' && (
-                      <Tag size="small" style={{ marginTop: '4px' }}>
+                      <Tag style={{ marginTop: '4px' }}>
                         {message.type === 'image' ? '图片' : '系统'}
                       </Tag>
                     )}

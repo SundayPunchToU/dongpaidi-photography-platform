@@ -9,29 +9,25 @@ import {
   ArrowDownOutlined,
 } from '@ant-design/icons'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { statsApi } from '@/services/api'
 
 const { Title } = Typography
 
 const Dashboard: React.FC = () => {
   // 获取总体统计数据
-  const { data: overallStats, isLoading: statsLoading } = useQuery(
-    'overallStats',
-    statsApi.getOverallStats,
-    {
-      refetchInterval: 30000, // 30秒刷新一次
-    }
-  )
+  const { data: overallStats, isLoading: statsLoading } = useQuery({
+    queryKey: ['overallStats'],
+    queryFn: () => statsApi.getOverallStats(),
+    refetchInterval: 30000, // 30秒刷新一次
+  })
 
   // 获取趋势数据
-  const { data: trendData, isLoading: trendLoading } = useQuery(
-    'trendData',
-    () => statsApi.getTrendData('week'),
-    {
-      refetchInterval: 60000, // 1分钟刷新一次
-    }
-  )
+  const { data: trendData, isLoading: trendLoading } = useQuery({
+    queryKey: ['trendData'],
+    queryFn: () => statsApi.getTrendData('week'),
+    refetchInterval: 60000, // 1分钟刷新一次
+  })
 
   // 模拟数据（当API不可用时）
   const mockStats = {
@@ -51,8 +47,8 @@ const Dashboard: React.FC = () => {
     { date: '2024-01-07', users: 200, works: 170, appointments: 45 },
   ]
 
-  const stats = overallStats?.data || mockStats
-  const chartData = trendData?.data || mockTrendData
+  const stats = overallStats?.data?.data || mockStats
+  const chartData = Array.isArray(trendData?.data?.data) ? trendData.data.data : mockTrendData
 
   const statCards = [
     {

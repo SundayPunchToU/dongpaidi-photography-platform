@@ -21,7 +21,7 @@ import {
   UserOutlined,
   CameraOutlined,
 } from '@ant-design/icons'
-import { useQuery } from 'react-query'
+import { useQuery } from '@tanstack/react-query'
 import { appointmentApi } from '@/services/api'
 
 const { Title } = Typography
@@ -34,37 +34,26 @@ const AppointmentManagement: React.FC = () => {
   const [pageSize, setPageSize] = useState(20)
 
   // 获取约拍列表
-  const { data: appointmentsData, isLoading, refetch } = useQuery(
-    ['appointments', currentPage, pageSize, searchKeyword, statusFilter],
-    () => appointmentApi.getAppointments({
+  const { data: appointmentsData, isLoading, refetch } = useQuery({
+    queryKey: ['appointments', currentPage, pageSize, searchKeyword, statusFilter],
+    queryFn: () => appointmentApi.getAppointments({
       page: currentPage,
       limit: pageSize,
       keyword: searchKeyword,
       status: statusFilter,
     }),
-    {
-      keepPreviousData: true,
-      retry: 3,
-      retryDelay: 1000,
-      onError: (error) => {
-        console.error('获取约拍列表失败:', error);
-        message.error('获取约拍列表失败，请稍后重试');
-      },
-    }
-  )
+    placeholderData: (previousData) => previousData,
+    retry: 3,
+    retryDelay: 1000,
+  })
 
   // 获取约拍统计
-  const { data: appointmentStats } = useQuery(
-    'appointmentStats', 
-    appointmentApi.getAppointmentStats,
-    {
-      retry: 3,
-      retryDelay: 1000,
-      onError: (error) => {
-        console.error('获取约拍统计失败:', error);
-      },
-    }
-  )
+  const { data: appointmentStats } = useQuery({
+    queryKey: ['appointmentStats'],
+    queryFn: () => appointmentApi.getAppointmentStats(),
+    retry: 3,
+    retryDelay: 1000,
+  })
 
   const handleSearch = () => {
     setCurrentPage(1)
@@ -184,7 +173,7 @@ const AppointmentManagement: React.FC = () => {
     },
   ]
 
-  const stats = appointmentStats?.data || { 
+  const stats = appointmentStats?.data?.data || {
     total: 0, 
     open: 0, 
     inProgress: 0, 
@@ -288,7 +277,7 @@ const AppointmentManagement: React.FC = () => {
         {/* 约拍表格 */}
         <Table
           columns={columns}
-          dataSource={appointmentsData?.data?.items || []}
+          dataSource={appointmentsData?.data?.data || []}
           rowKey="id"
           loading={isLoading}
           pagination={{

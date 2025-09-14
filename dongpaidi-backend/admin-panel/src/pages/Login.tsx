@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/authStore'
 const { Title } = Typography
 
 interface LoginForm {
-  email: string
+  username: string
   password: string
 }
 
@@ -19,16 +19,19 @@ const Login: React.FC = () => {
 
   const onFinish = async (values: LoginForm) => {
     setLoading(true)
+
     try {
       const response = await authApi.login(values)
-      
-      if (response.success) {
-        const { user, tokens } = response.data
-        login(user, tokens.accessToken)
+      const responseData = response.data
+
+      if (responseData.success) {
+        const { user, sessionId } = responseData.data
+        // 将sessionId作为token存储
+        login(user, sessionId)
         message.success('登录成功')
         navigate('/dashboard')
       } else {
-        message.error(response.message || '登录失败')
+        message.error(responseData.message || '登录失败')
       }
     } catch (error: any) {
       console.error('登录错误:', error)
@@ -68,15 +71,14 @@ const Login: React.FC = () => {
           size="large"
         >
           <Form.Item
-            name="email"
+            name="username"
             rules={[
-              { required: true, message: '请输入邮箱地址' },
-              { type: 'email', message: '请输入有效的邮箱地址' },
+              { required: true, message: '请输入用户名' },
             ]}
           >
             <Input
               prefix={<UserOutlined />}
-              placeholder="管理员邮箱"
+              placeholder="管理员用户名"
             />
           </Form.Item>
 

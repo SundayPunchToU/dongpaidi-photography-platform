@@ -111,9 +111,12 @@ const PaymentManagement: React.FC = () => {
   const queryClient = useQueryClient();
 
   // 获取支付统计
-  const { data: stats, isLoading: statsLoading } = useQuery<PaymentStats>({
+  const { data: stats, isLoading: statsLoading } = useQuery({
     queryKey: ['payment-stats'],
-    queryFn: () => paymentApi.getAdminStats(),
+    queryFn: async () => {
+      const response = await paymentApi.getAdminStats();
+      return response.data.data;
+    },
   });
 
   // 获取订单列表
@@ -142,7 +145,7 @@ const PaymentManagement: React.FC = () => {
     },
   });
 
-  const orders = ordersData?.items || [];
+  const orders = ordersData?.data?.data || [];
 
   // 计算统计数据
   const totalOrders = stats?.totalOrders || 0;
@@ -173,7 +176,7 @@ const PaymentManagement: React.FC = () => {
           <div style={{ fontSize: '12px', color: '#666' }}>
             {record.description || '无描述'}
           </div>
-          <Tag size="small" color="blue" style={{ marginTop: 4 }}>
+          <Tag color="blue" style={{ marginTop: 4 }}>
             {record.productType}
           </Tag>
         </div>
@@ -236,11 +239,11 @@ const PaymentManagement: React.FC = () => {
 
         return (
           <div>
-            <Tag color={methodInfo?.color} size="small">
+            <Tag color={methodInfo?.color}>
               {methodInfo?.text}
             </Tag>
             <br />
-            <Tag color={statusInfo?.color} size="small" style={{ marginTop: 4 }}>
+            <Tag color={statusInfo?.color} style={{ marginTop: 4 }}>
               {statusInfo?.text}
             </Tag>
           </div>
@@ -412,8 +415,8 @@ const PaymentManagement: React.FC = () => {
           </Col>
           <Col span={6}>
             <RangePicker
-              value={dateRange}
-              onChange={setDateRange}
+              value={dateRange as any}
+              onChange={(dates) => setDateRange(dates as any)}
               style={{ width: '100%' }}
               placeholder={['开始日期', '结束日期']}
             />
@@ -452,9 +455,9 @@ const PaymentManagement: React.FC = () => {
           rowKey="id"
           loading={ordersLoading}
           pagination={{
-            total: ordersData?.pagination?.total || 0,
-            pageSize: ordersData?.pagination?.limit || 20,
-            current: ordersData?.pagination?.page || 1,
+            total: ordersData?.data?.pagination?.total || 0,
+            pageSize: ordersData?.data?.pagination?.limit || 20,
+            current: ordersData?.data?.pagination?.page || 1,
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total, range) =>

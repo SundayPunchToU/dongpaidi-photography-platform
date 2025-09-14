@@ -4,19 +4,19 @@ import { message } from 'antd'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api/v1',
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   timeout: 10000,
 })
 
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
-    // 动态获取token，避免循环依赖
+    // 动态获取sessionId，避免循环依赖
     const authStorage = localStorage.getItem('auth-storage')
     if (authStorage) {
       const { state } = JSON.parse(authStorage)
       if (state?.token) {
-        config.headers.Authorization = `Bearer ${state.token}`
+        config.headers['x-session-id'] = state.token
       }
     }
     return config
@@ -29,7 +29,8 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response.data
+    // 保持完整的响应结构，让调用方自己处理
+    return response
   },
   (error) => {
     const { response } = error
@@ -37,7 +38,7 @@ api.interceptors.response.use(
     if (response?.status === 401) {
       // 未授权，清除登录状态
       localStorage.removeItem('auth-storage')
-      window.location.href = '/login'
+      window.location.href = '/admin/'
       return Promise.reject(error)
     }
 
@@ -74,12 +75,12 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 // 认证相关API
 export const authApi = {
   // 管理员登录
-  login: (credentials: { email: string; password: string }) =>
-    api.post<ApiResponse<{ user: any; tokens: any }>>('/admin/login', credentials),
+  login: (credentials: { username: string; password: string }) =>
+    api.post<ApiResponse<{ user: any; sessionId: string }>>('/admin/login', credentials),
 
   // 获取当前用户信息
   getCurrentUser: () =>
-    api.get<ApiResponse<any>>('/auth/me'),
+    api.get<ApiResponse<any>>('/admin/profile'),
 
   // 刷新token
   refreshToken: () =>

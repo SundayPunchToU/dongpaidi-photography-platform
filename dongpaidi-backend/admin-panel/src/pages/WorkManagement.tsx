@@ -348,7 +348,7 @@ const WorkManagement: React.FC = () => {
               <Card>
                 <Statistic
                   title="总作品数"
-                  value={statsData.data.total}
+                  value={statsData.data.data.total}
                   prefix={<EyeOutlined />}
                 />
               </Card>
@@ -357,7 +357,7 @@ const WorkManagement: React.FC = () => {
               <Card>
                 <Statistic
                   title="已发布"
-                  value={statsData.data.published}
+                  value={statsData.data.data.published}
                   prefix={<CheckCircleOutlined />}
                   valueStyle={{ color: '#3f8600' }}
                 />
@@ -367,7 +367,7 @@ const WorkManagement: React.FC = () => {
               <Card>
                 <Statistic
                   title="待审核"
-                  value={statsData.data.pending}
+                  value={statsData.data.data.pending}
                   prefix={<ExclamationCircleOutlined />}
                   valueStyle={{ color: '#cf1322' }}
                 />
@@ -377,7 +377,7 @@ const WorkManagement: React.FC = () => {
               <Card>
                 <Statistic
                   title="今日新增"
-                  value={statsData.data.newToday}
+                  value={statsData.data.data.newToday}
                   prefix={<StarOutlined />}
                   valueStyle={{ color: '#1890ff' }}
                 />
@@ -432,7 +432,7 @@ const WorkManagement: React.FC = () => {
         <Card>
           <Table
             columns={columns}
-            dataSource={worksData?.data?.items || []}
+            dataSource={worksData?.data?.data || []}
             rowKey="id"
             loading={isLoading}
             pagination={{

@@ -151,7 +151,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           />
           
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, paddingRight: 24 }}>
-            <span>欢迎，{user?.nickname || user?.email}</span>
+            <span>欢迎，{user?.username || user?.email}</span>
             <Dropdown
               menu={{ items: userMenuItems }}
               placement="bottomRight"
