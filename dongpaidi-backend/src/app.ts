@@ -8,7 +8,8 @@ import { config } from '@/config';
 import { log } from '@/config/logger';
 import { db } from '@/config/database';
 import routes from '@/routes';
-import { errorHandler, notFoundHandler } from '@/middleware/error';
+import { errorHandler, notFoundHandler, requestLogger } from '@/middleware/error';
+import { responseMiddleware } from '@/utils/response';
 
 /**
  * 创建Express应用
@@ -50,6 +51,10 @@ export const createApp = (): express.Application => {
 
   // 信任代理（用于获取真实IP）
   app.set('trust proxy', 1);
+
+  // 添加整合的中间件 - 从backend/迁移
+  app.use(responseMiddleware); // 为res对象添加便捷方法
+  app.use(requestLogger); // 请求日志记录
 
   // API路由
   app.use(config.api.prefix, routes);

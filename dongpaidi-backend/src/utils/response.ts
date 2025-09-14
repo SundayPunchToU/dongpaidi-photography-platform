@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { ApiResponse, ApiErrorResponse, PaginatedResponse } from '@/types';
 
 /**
@@ -223,5 +223,93 @@ export class ErrorUtil {
       message: 'Authentication error',
       code: 401,
     };
+  }
+}
+
+/**
+ * 响应处理中间件 - 从backend/迁移的功能
+ * 为res对象添加便捷的响应方法，保持API兼容性
+ */
+export function responseMiddleware(req: Request, res: Response, next: NextFunction): void {
+  /**
+   * 发送成功响应 - 兼容backend/的API格式
+   */
+  res.success = function(data: any = null, message = '操作成功', meta: any = null) {
+    const response: any = {
+      success: true,
+      message,
+      code: 200,
+      timestamp: new Date().toISOString()
+    };
+
+    if (data !== null) {
+      response.data = data;
+    }
+
+    if (meta !== null) {
+      response.meta = meta;
+    }
+
+    return res.json(response);
+  };
+
+  /**
+   * 发送错误响应 - 兼容backend/的API格式
+   */
+  res.error = function(message = '操作失败', code = 400, data: any = null) {
+    const response: any = {
+      success: false,
+      message,
+      code,
+      timestamp: new Date().toISOString()
+    };
+
+    if (data !== null) {
+      response.data = data;
+    }
+
+    return res.status(code).json(response);
+  };
+
+  /**
+   * 发送分页响应 - 兼容backend/的API格式
+   */
+  res.paginated = function(data: any[], page: number, limit: number, total: number, message = '获取成功') {
+    const totalPages = Math.ceil(total / limit);
+
+    const meta = {
+      pagination: {
+        page: parseInt(page.toString()),
+        limit: parseInt(limit.toString()),
+        total: parseInt(total.toString()),
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    };
+
+    const response = {
+      success: true,
+      data,
+      message,
+      code: 200,
+      timestamp: new Date().toISOString(),
+      meta
+    };
+
+    return res.json(response);
+  };
+
+  next();
+}
+
+// 扩展Express Response接口
+declare global {
+  namespace Express {
+    interface Response {
+      success(data?: any, message?: string, meta?: any): Response;
+      error(message?: string, code?: number, data?: any): Response;
+      paginated(data: any[], page: number, limit: number, total: number, message?: string): Response;
+    }
   }
 }

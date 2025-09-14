@@ -145,4 +145,37 @@ export const config = {
   },
 } as const;
 
+/**
+ * 验证配置项 - 从backend/迁移的功能
+ * 确保所有必要的配置项都已设置
+ */
+export function validateConfig() {
+  const required = [
+    'server.port',
+    'admin.email',
+    'admin.password',
+    'jwt.secret',
+    'database.url'
+  ];
+
+  for (const key of required) {
+    const value = key.split('.').reduce((obj: any, k) => obj && obj[k], config);
+    if (!value) {
+      throw new Error(`Missing required configuration: ${key}`);
+    }
+  }
+
+  // 验证端口号
+  if (config.server.port < 1 || config.server.port > 65535) {
+    throw new Error('Invalid server port number');
+  }
+
+  // 验证上传文件大小
+  if (config.upload.maxSize < 1024) {
+    throw new Error('Upload max size should be at least 1KB');
+  }
+
+  console.log('✅ Configuration validation passed');
+}
+
 export default config;

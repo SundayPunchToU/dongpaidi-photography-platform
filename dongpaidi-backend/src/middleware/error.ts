@@ -152,3 +152,24 @@ export class ConflictError extends AppError {
     super(message, 409);
   }
 }
+
+/**
+ * 请求日志中间件 - 从backend/迁移的功能
+ * 记录所有HTTP请求的详细信息
+ */
+export const requestLogger = (req: Request, res: Response, next: NextFunction): void => {
+  const startTime = Date.now();
+
+  // 记录请求开始
+  if (config.server.isDevelopment) {
+    log.debug(`${req.method} ${req.url} - IP: ${req.ip}`);
+  }
+
+  // 监听响应结束事件
+  res.on('finish', () => {
+    const duration = Date.now() - startTime;
+    log.request(req, res, duration);
+  });
+
+  next();
+};

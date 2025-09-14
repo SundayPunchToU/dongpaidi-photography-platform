@@ -77,13 +77,39 @@ if (config.server.isDevelopment) {
   logger.debug('Logger initialized in development mode');
 }
 
-// 导出便捷方法
+// 导出便捷方法 - 整合backend/的功能
 export const log = {
   error: (message: string, meta?: any) => logger.error(message, meta),
   warn: (message: string, meta?: any) => logger.warn(message, meta),
   info: (message: string, meta?: any) => logger.info(message, meta),
   debug: (message: string, meta?: any) => logger.debug(message, meta),
   http: (message: string, meta?: any) => logger.http(message, meta),
+
+  /**
+   * 记录HTTP请求日志 - 从backend/迁移的功能
+   * @param req - Express请求对象
+   * @param res - Express响应对象
+   * @param duration - 请求处理时间（毫秒）
+   */
+  request: (req: any, res: any, duration: number) => {
+    const meta = {
+      method: req.method,
+      url: req.url,
+      status: res.statusCode,
+      duration: `${duration}ms`,
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    };
+
+    const level = res.statusCode >= 400 ? 'warn' : 'info';
+    const message = `${req.method} ${req.url} - ${res.statusCode}`;
+
+    if (level === 'warn') {
+      logger.warn(message, meta);
+    } else {
+      logger.info(message, meta);
+    }
+  }
 };
 
 export default logger;

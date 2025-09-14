@@ -207,3 +207,119 @@ export const requireOwnership = (resourceType: 'work' | 'appointment') => {
     }
   };
 };
+
+// ========== 从backend/迁移的会话管理功能 ==========
+// 为了保持API兼容性，保留原有的会话管理系统
+
+// 简单的会话管理（生产环境应使用Redis或数据库）
+const sessions = new Map<string, any>();
+
+/**
+ * 生成会话ID
+ */
+export function generateSessionId(): string {
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
+
+/**
+ * 创建用户会话
+ */
+export function createSession(user: any): string {
+  const sessionId = generateSessionId();
+  const sessionData = {
+    id: sessionId,
+    username: user.username || user.email,
+    email: user.email,
+    loginTime: new Date().toISOString(),
+    lastActivity: new Date().toISOString()
+  };
+
+  sessions.set(sessionId, sessionData);
+  return sessionId;
+}
+
+/**
+ * 获取会话信息
+ */
+export function getSession(sessionId: string): any | null {
+  return sessions.get(sessionId) || null;
+}
+
+/**
+ * 更新会话活动时间
+ */
+export function updateSessionActivity(sessionId: string): void {
+  const session = sessions.get(sessionId);
+  if (session) {
+    session.lastActivity = new Date().toISOString();
+    sessions.set(sessionId, session);
+  }
+}
+
+/**
+ * 删除会话
+ */
+export function destroySession(sessionId: string): void {
+  sessions.delete(sessionId);
+}
+
+/**
+ * 清理过期会话
+ */
+export function cleanupExpiredSessions(maxAge = 24 * 60 * 60 * 1000): void {
+  const now = Date.now();
+  for (const [sessionId, session] of sessions.entries()) {
+    const lastActivity = new Date(session.lastActivity).getTime();
+    if (now - lastActivity > maxAge) {
+      sessions.delete(sessionId);
+    }
+  }
+}
+
+/**
+ * 会话认证中间件 - 兼容backend/的API
+ */
+export const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
+  const sessionId = req.headers['x-session-id'] as string || req.query.sessionId as string;
+
+  if (!sessionId) {
+    return res.error('未提供会话ID', 401);
+  }
+
+  const session = getSession(sessionId);
+  if (!session) {
+    return res.error('会话无效或已过期', 401);
+  }
+
+  // 更新会话活动时间
+  updateSessionActivity(sessionId);
+
+  // 将会话信息添加到请求对象
+  (req as any).session = session;
+  (req as any).sessionId = sessionId;
+
+  next();
+};
+
+/**
+ * 可选会话认证中间件 - 兼容backend/的API
+ */
+export const optionalAuth = (req: Request, res: Response, next: NextFunction): void => {
+  const sessionId = req.headers['x-session-id'] as string || req.query.sessionId as string;
+
+  if (sessionId) {
+    const session = getSession(sessionId);
+    if (session) {
+      updateSessionActivity(sessionId);
+      (req as any).session = session;
+      (req as any).sessionId = sessionId;
+    }
+  }
+
+  next();
+};
+
+// 定期清理过期会话
+setInterval(() => {
+  cleanupExpiredSessions();
+}, 60 * 60 * 1000); // 每小时清理一次
