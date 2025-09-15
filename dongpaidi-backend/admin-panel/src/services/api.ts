@@ -11,17 +11,30 @@ const api = axios.create({
 // 请求拦截器
 api.interceptors.request.use(
   (config) => {
+    console.log('API请求:', config.method?.toUpperCase(), config.url)
+
     // 动态获取sessionId，避免循环依赖
     const authStorage = localStorage.getItem('auth-storage')
     if (authStorage) {
-      const { state } = JSON.parse(authStorage)
-      if (state?.token) {
-        config.headers['x-session-id'] = state.token
+      try {
+        const { state } = JSON.parse(authStorage)
+        if (state?.token) {
+          config.headers['x-session-id'] = state.token
+          console.log('添加会话ID:', state.token.substring(0, 10) + '...')
+        } else {
+          console.log('未找到有效的会话token')
+        }
+      } catch (error) {
+        console.error('解析认证存储失败:', error)
+        localStorage.removeItem('auth-storage')
       }
+    } else {
+      console.log('未找到认证存储')
     }
     return config
   },
   (error) => {
+    console.error('请求拦截器错误:', error)
     return Promise.reject(error)
   }
 )
@@ -29,16 +42,25 @@ api.interceptors.request.use(
 // 响应拦截器
 api.interceptors.response.use(
   (response: AxiosResponse) => {
+    console.log('API响应:', response.status, response.config.url)
     // 保持完整的响应结构，让调用方自己处理
     return response
   },
   (error) => {
-    const { response } = error
+    const { response, config } = error
+    console.error('API错误:', {
+      status: response?.status,
+      url: config?.url,
+      message: response?.data?.message,
+      error: error.message
+    })
 
     if (response?.status === 401) {
+      console.log('认证失败，清除登录状态并重定向到登录页')
       // 未授权，清除登录状态
       localStorage.removeItem('auth-storage')
-      window.location.href = '/admin/'
+      // 强制刷新页面以重置应用状态
+      window.location.href = '/admin/login'
       return Promise.reject(error)
     }
 

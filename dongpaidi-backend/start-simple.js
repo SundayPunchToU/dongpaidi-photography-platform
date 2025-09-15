@@ -32,8 +32,57 @@ app.use(morgan('combined'));
 // 静态文件服务
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
-// 管理后台静态文件服务
-app.use('/admin', express.static(path.join(__dirname, 'admin-panel/dist')));
+// 管理后台静态资源服务 - 仅处理assets目录下的静态文件
+app.use('/admin/assets', express.static(path.join(__dirname, 'admin-panel/dist/assets')));
+
+// 管理后台SPA路由支持 - 必须在通用静态文件服务之前
+app.get('/admin/*', (req, res) => {
+  // 如果请求的是静态资源文件，则跳过SPA处理
+  if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|map)$/)) {
+    return res.status(404).send('Static file not found');
+  }
+
+  // 安全检查：防止路径遍历攻击
+  if (req.path.includes('..') || req.path.includes('~')) {
+    return res.status(403).send('Forbidden');
+  }
+
+  console.log(`SPA路由处理: ${req.path}`);
+
+  // 设置正确的缓存头
+  res.set({
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
+  });
+
+  res.sendFile(path.join(__dirname, 'admin-panel/dist/index.html'));
+});
+
+// 管理后台根路径重定向
+app.get('/admin', (req, res) => {
+  res.redirect('/admin/');
+});
+
+// 健康检查端点
+app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: '系统运行正常',
+    timestamp: new Date().toISOString(),
+    service: 'dongpaidi-integrated-api'
+  });
+});
+
+app.get('/api/v1/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API服务运行正常',
+    timestamp: new Date().toISOString(),
+    service: 'dongpaidi-integrated-api',
+    version: '1.0.0'
+  });
+});
 
 // 信任代理
 app.set('trust proxy', 1);
@@ -113,14 +162,13 @@ function generateSessionId() {
 function createSession(user) {
   const sessionId = generateSessionId();
   const sessionData = {
-    id: sessionId,
-    username: user.username || user.email,
-    email: user.email,
-    loginTime: new Date().toISOString(),
-    lastActivity: new Date().toISOString()
+    user: user,  // 保存完整的用户对象
+    loginTime: Date.now(),
+    lastActivity: Date.now()
   };
 
   sessions.set(sessionId, sessionData);
+  console.log('创建会话:', sessionId, sessionData);
   return sessionId;
 }
 
@@ -139,12 +187,16 @@ function updateSessionActivity(sessionId) {
 // 认证中间件
 function requireAuth(req, res, next) {
   const sessionId = req.headers['x-session-id'] || req.query.sessionId;
-  
+
+  console.log('认证检查:', { sessionId, hasSession: !!sessionId });
+
   if (!sessionId) {
     return res.error('未提供会话ID', 401);
   }
 
   const session = getSession(sessionId);
+  console.log('获取会话:', { sessionId, session });
+
   if (!session) {
     return res.error('会话无效或已过期', 401);
   }
@@ -152,7 +204,8 @@ function requireAuth(req, res, next) {
   updateSessionActivity(sessionId);
   req.session = session;
   req.sessionId = sessionId;
-  
+  req.user = session.user || session;  // 兼容两种数据结构
+
   next();
 }
 
@@ -176,15 +229,7 @@ app.get('/', (req, res) => {
   }, 'API服务运行正常');
 });
 
-// 管理后台SPA路由支持 - 必须在API路由之前
-app.get('/admin/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'admin-panel/dist/index.html'));
-});
 
-// 管理后台根路径重定向
-app.get('/admin', (req, res) => {
-  res.redirect('/admin/');
-});
 
 // 测试页面 - 用于调试
 app.get('/admin/test', (req, res) => {
@@ -213,7 +258,8 @@ apiRouter.post('/admin/login', (req, res) => {
     const user = {
       username: 'admin@dongpaidi.com',
       email: 'admin@dongpaidi.com',
-      loginTime: new Date().toISOString()
+      loginTime: new Date().toISOString(),
+      role: 'admin'
     };
 
     const sessionId = createSession(user);
@@ -224,6 +270,16 @@ apiRouter.post('/admin/login', (req, res) => {
     }, '登录成功');
   } else {
     return res.error('用户名或密码错误', 401);
+  }
+});
+
+// 获取当前用户信息API
+apiRouter.get('/admin/profile', requireAuth, (req, res) => {
+  const session = req.session;
+  if (session && session.user) {
+    res.success(session.user, '获取用户信息成功');
+  } else {
+    res.error('用户信息不存在', 404);
   }
 });
 
@@ -295,7 +351,15 @@ apiRouter.get('/messages/conversations', requireAuth, (req, res) => {
   const mockConversations = [
     {
       id: 'conv_001',
-      participants: ['user_1', 'user_2'],
+      userId: 'user_1',
+      user: {
+        id: 'user_1',
+        username: 'photographer1',
+        nickname: '摄影师小王',
+        email: 'photo1@example.com',
+        avatar: '/avatars/photographer1.jpg',
+        role: 'photographer'
+      },
       lastMessage: {
         id: 'msg_001',
         content: '您好，我想预约拍摄服务',
@@ -308,14 +372,43 @@ apiRouter.get('/messages/conversations', requireAuth, (req, res) => {
     },
     {
       id: 'conv_002',
-      participants: ['user_2', 'user_3'],
+      userId: 'user_2',
+      user: {
+        id: 'user_2',
+        username: 'model1',
+        nickname: '模特小李',
+        email: 'model1@example.com',
+        avatar: '/avatars/model1.jpg',
+        role: 'model'
+      },
       lastMessage: {
         id: 'msg_002',
         content: '拍摄效果很满意，谢谢！',
-        senderId: 'user_3',
+        senderId: 'user_2',
         timestamp: new Date().toISOString()
       },
       unreadCount: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'conv_003',
+      userId: 'user_3',
+      user: {
+        id: 'user_3',
+        username: 'client1',
+        nickname: '客户张三',
+        email: 'client1@example.com',
+        avatar: '/avatars/client1.jpg',
+        role: 'client'
+      },
+      lastMessage: {
+        id: 'msg_003',
+        content: '请问什么时候可以看到精修后的照片？',
+        senderId: 'user_3',
+        timestamp: new Date().toISOString()
+      },
+      unreadCount: 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
@@ -324,7 +417,12 @@ apiRouter.get('/messages/conversations', requireAuth, (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
 
-  res.paginated(mockConversations, page, limit, mockConversations.length, '获取消息会话成功');
+  res.success(mockConversations, '获取消息会话成功');
+});
+
+// 获取未读消息数量API
+apiRouter.get('/messages/unread-count', requireAuth, (req, res) => {
+  res.success({ count: 3 }, '获取未读消息数量成功');
 });
 
 apiRouter.get('/payments', requireAuth, (req, res) => {
@@ -479,20 +577,86 @@ apiRouter.get('/payments/admin/orders', requireAuth, (req, res) => {
     {
       id: 'order_001',
       userId: 'user_1',
+      user: {
+        id: 'user_1',
+        username: 'photographer1',
+        nickname: '摄影师小王',
+        email: 'photo1@example.com',
+        avatar: '/avatars/photographer1.jpg',
+        avatarUrl: '/avatars/photographer1.jpg'
+      },
       amount: 1200,
       status: 'completed',
+      method: 'wechat',
       type: 'appointment',
+      description: '人像拍摄服务',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      payments: [
+        {
+          id: 'pay_001',
+          amount: 1200,
+          status: 'completed',
+          method: 'wechat',
+          transactionId: 'wx_20250915001'
+        }
+      ]
     },
     {
       id: 'order_002',
       userId: 'user_2',
+      user: {
+        id: 'user_2',
+        username: 'model1',
+        nickname: '模特小李',
+        email: 'model1@example.com',
+        avatar: '/avatars/model1.jpg',
+        avatarUrl: '/avatars/model1.jpg'
+      },
       amount: 800,
       status: 'pending',
+      method: 'alipay',
       type: 'work',
+      description: '作品购买',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
+      payments: [
+        {
+          id: 'pay_002',
+          amount: 800,
+          status: 'pending',
+          method: 'alipay',
+          transactionId: 'ali_20250915002'
+        }
+      ]
+    },
+    {
+      id: 'order_003',
+      userId: 'user_3',
+      user: {
+        id: 'user_3',
+        username: 'client1',
+        nickname: '客户张三',
+        email: 'client1@example.com',
+        avatar: '/avatars/client1.jpg',
+        avatarUrl: '/avatars/client1.jpg'
+      },
+      amount: 1500,
+      status: 'completed',
+      method: 'wechat',
+      type: 'appointment',
+      description: '婚纱摄影套餐',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      payments: [
+        {
+          id: 'pay_003',
+          amount: 1500,
+          status: 'completed',
+          method: 'wechat',
+          transactionId: 'wx_20250915003'
+        }
+      ]
     }
   ];
 

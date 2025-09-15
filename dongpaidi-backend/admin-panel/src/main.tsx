@@ -28,7 +28,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <ConfigProvider locale={zhCN}>
-        <BrowserRouter>
+        <BrowserRouter basename="/admin">
           {window.location.search.includes('test') ? <TestApp /> : <App />}
         </BrowserRouter>
       </ConfigProvider>

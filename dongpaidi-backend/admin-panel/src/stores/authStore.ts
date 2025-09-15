@@ -26,6 +26,7 @@ export const useAuthStore = create<AuthState>()(
       token: null,
 
       login: (user: User, token: string) => {
+        console.log('用户登录:', { user, token })
         set({
           isAuthenticated: true,
           user,
@@ -34,6 +35,9 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        console.log('用户登出')
+        // 清理localStorage
+        localStorage.removeItem('auth-storage')
         set({
           isAuthenticated: false,
           user: null,
@@ -57,6 +61,20 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         token: state.token,
       }),
+      // 添加版本控制，强制清理旧数据
+      version: 2,
+      migrate: (persistedState: any, version: number) => {
+        console.log('迁移认证状态:', { persistedState, version })
+        // 如果是旧版本，清空状态
+        if (version < 2) {
+          return {
+            isAuthenticated: false,
+            user: null,
+            token: null,
+          }
+        }
+        return persistedState
+      },
     }
   )
 )

@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import AdminLayout from '@/components/Layout/AdminLayout'
 import ErrorBoundary from '@/components/ErrorBoundary'
+import AuthGuard from '@/components/AuthGuard'
 import Login from '@/pages/Login'
 import Dashboard from '@/pages/Dashboard'
 import UserManagement from '@/pages/UserManagement'
@@ -47,21 +48,23 @@ function App() {
             path="/*"
             element={
               isAuthenticated ? (
-                <AdminLayout>
-                  <ErrorBoundary>
-                    <Routes>
-                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/users" element={<UserManagement />} />
-                      <Route path="/works" element={<WorkManagement />} />
-                      <Route path="/appointments" element={<AppointmentManagement />} />
-                      <Route path="/messages" element={<MessageManagement />} />
-                      <Route path="/payments" element={<PaymentManagement />} />
-                      <Route path="/settings" element={<SystemSettings />} />
-                      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                    </Routes>
-                  </ErrorBoundary>
-                </AdminLayout>
+                <AuthGuard>
+                  <AdminLayout>
+                    <ErrorBoundary>
+                      <Routes>
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        <Route path="/dashboard" element={<Dashboard />} />
+                        <Route path="/users" element={<UserManagement />} />
+                        <Route path="/works" element={<WorkManagement />} />
+                        <Route path="/appointments" element={<AppointmentManagement />} />
+                        <Route path="/messages" element={<MessageManagement />} />
+                        <Route path="/payments" element={<PaymentManagement />} />
+                        <Route path="/settings" element={<SystemSettings />} />
+                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                      </Routes>
+                    </ErrorBoundary>
+                  </AdminLayout>
+                </AuthGuard>
               ) : (
                 <Navigate to="/login" replace />
               )

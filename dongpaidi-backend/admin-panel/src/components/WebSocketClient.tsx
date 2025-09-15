@@ -256,10 +256,19 @@ export const useWebSocket = () => {
 
     console.log('正在连接WebSocket服务器...');
 
-    const socket = io('http://localhost:3002', {
+    // 使用当前服务器地址而不是localhost:3002
+    const wsUrl = window.location.protocol === 'https:'
+      ? `wss://${window.location.host}`
+      : `ws://${window.location.host}`;
+
+    console.log('WebSocket URL:', wsUrl);
+
+    const socket = io(wsUrl, {
       transports: ['websocket', 'polling'],
       timeout: 5000,
       forceNew: true,
+      // 禁用自动连接，避免连接失败
+      autoConnect: false,
     });
 
     globalSocket = socket;
@@ -315,26 +324,12 @@ export const useWebSocket = () => {
     });
 
     socket.on('connect_error', (error) => {
-      console.error('WebSocket连接错误:', error);
+      console.warn('WebSocket连接错误 (这是正常的，因为当前没有WebSocket服务):', error.message);
       globalConnected = false;
-
       notifyStateChange();
 
-      if (globalReconnectAttempts < maxReconnectAttempts) {
-        const delay = Math.min(1000 * Math.pow(2, globalReconnectAttempts), 10000);
-        console.log(`${delay}ms后尝试重连...`);
-
-        globalReconnectTimeout = setTimeout(() => {
-          globalReconnectAttempts++;
-          connect();
-        }, delay);
-      } else {
-        notification.error({
-          message: 'WebSocket连接失败',
-          description: '已达到最大重连次数，请刷新页面重试',
-          duration: 5,
-        });
-      }
+      // 不显示错误通知，因为WebSocket是可选功能
+      console.log('WebSocket连接失败，但不影响其他功能的使用');
     });
 
     socket.on('online_users', (users: any[]) => {

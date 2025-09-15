@@ -90,10 +90,22 @@ const MessageManagement: React.FC = () => {
   // WebSocket连接
   const { connected, onlineUsers, connect, disconnect, sendMessage } = useWebSocket();
 
-  // 初始化WebSocket连接
+  // 初始化WebSocket连接（可选功能）
   useEffect(() => {
-    connect();
-    return () => disconnect();
+    // WebSocket是可选功能，连接失败不影响页面正常使用
+    try {
+      connect();
+    } catch (error) {
+      console.log('WebSocket连接失败，但不影响消息管理功能');
+    }
+
+    return () => {
+      try {
+        disconnect();
+      } catch (error) {
+        console.log('WebSocket断开连接时出错，忽略');
+      }
+    };
   }, [connect, disconnect]);
 
   // 获取对话列表
