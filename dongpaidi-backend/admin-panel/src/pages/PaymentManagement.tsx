@@ -63,21 +63,25 @@ const paymentStatusMap = {
 
 interface OrderItem {
   id: string;
-  orderNo: string;
-  title: string;
+  orderId?: string;
+  orderNo?: string;
+  title?: string;
   description?: string;
   amount: number;
   status: string;
-  productType: string;
-  productId: string;
+  method?: string;
+  productType?: string;
+  productId?: string;
   createdAt: string;
   expiresAt?: string;
+  completedAt?: string | null;
   user: {
     id: string;
-    nickname: string;
+    nickname?: string;
+    username?: string;
     avatarUrl?: string;
   };
-  payments: PaymentItem[];
+  payments?: PaymentItem[];
 }
 
 interface PaymentItem {
@@ -188,14 +192,14 @@ const PaymentManagement: React.FC = () => {
       width: 120,
       render: (_, record) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          {record.user.avatarUrl && (
+          {record.user?.avatarUrl && (
             <img
               src={record.user.avatarUrl}
               alt="avatar"
               style={{ width: 24, height: 24, borderRadius: '50%', marginRight: 8 }}
             />
           )}
-          <span>{record.user.nickname}</span>
+          <span>{record.user?.username || record.user?.nickname || '未知用户'}</span>
         </div>
       ),
     },
@@ -229,7 +233,8 @@ const PaymentManagement: React.FC = () => {
       key: 'payments',
       width: 150,
       render: (_, record) => {
-        const payment = record.payments[0]; // 取第一个支付记录
+        // 支付记录本身就是支付对象，不需要取payments[0]
+        const payment = record;
         if (!payment) {
           return <span style={{ color: '#999' }}>暂无支付</span>;
         }
@@ -274,15 +279,17 @@ const PaymentManagement: React.FC = () => {
               }}
             />
           </Tooltip>
-          {record.status === 'paid' && record.payments[0]?.status === 'success' && (
+          {record.status === 'paid' && record.payments?.[0]?.status === 'success' && (
             <Tooltip title="申请退款">
               <Button
                 type="text"
                 size="small"
                 icon={<UndoOutlined />}
                 onClick={() => {
-                  setSelectedPayment(record.payments[0]);
-                  setRefundModalVisible(true);
+                  if (record.payments?.[0]) {
+                    setSelectedPayment(record.payments[0]);
+                    setRefundModalVisible(true);
+                  }
                 }}
               />
             </Tooltip>
@@ -509,7 +516,7 @@ const PaymentManagement: React.FC = () => {
               </Descriptions.Item>
             </Descriptions>
 
-            {selectedOrder.payments.length > 0 && (
+            {selectedOrder.payments && selectedOrder.payments.length > 0 && (
               <div style={{ marginTop: '24px' }}>
                 <h4>支付记录</h4>
                 <Table

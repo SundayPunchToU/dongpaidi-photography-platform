@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1890ff;
+            text-align: center;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+        .error {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+        .info {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #1890ff;
+        }
+        button {
+            background-color: #1890ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #40a9ff;
+        }
+        #results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 懂拍帝管理后台测试页面</h1>
+        
+        <div class="status info">
+            <strong>📍 当前访问地址:</strong> <span id="currentUrl"></span>
+        </div>
+        
+        <div class="status info">
+            <strong>🌐 API基础地址:</strong> http://152.136.155.183/api
+        </div>
+        
+        <h3>🧪 连接测试</h3>
+        <button onclick="testAPI()">测试API连接</button>
+        <button onclick="testLogin()">测试管理员登录</button>
+        <button onclick="testHealth()">测试健康检查</button>
+        
+        <div id="results"></div>
+        
+        <h3>📋 问题排查</h3>
+        <div class="status info">
+            <strong>常见问题:</strong><br>
+            1. 如果看到白屏，请检查浏览器控制台错误<br>
+            2. 如果API请求失败，请确认后端服务正在运行<br>
+            3. 如果登录失败，请检查用户名密码是否正确<br>
+            4. 管理员账户: admin / dongpaidi2024
+        </div>
+        
+        <h3>🔗 快速链接</h3>
+        <button onclick="window.open('http://152.136.155.183:3002', '_blank')">直接访问Vite服务器</button>
+        <button onclick="window.open('http://152.136.155.183/health', '_blank')">健康检查</button>
+        <button onclick="window.open('http://152.136.155.183/api/v1', '_blank')">API文档</button>
+    </div>
+
+    <script>
+        // 显示当前URL
+        document.getElementById('currentUrl').textContent = window.location.href;
+        
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong> - ${message}`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        async function testAPI() {
+            addResult('🔄 正在测试API连接...', 'info');
+            try {
+                const response = await fetch('http://152.136.155.183/api/v1');
+                const data = await response.json();
+                addResult(`✅ API连接成功: ${data.message}`, 'success');
+            } catch (error) {
+                addResult(`❌ API连接失败: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testLogin() {
+            addResult('🔄 正在测试管理员登录...', 'info');
+            try {
+                const response = await fetch('http://152.136.155.183/api/v1/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'dongpaidi2024'
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    addResult(`✅ 登录成功: 欢迎 ${data.user.username}`, 'success');
+                } else {
+                    addResult(`❌ 登录失败: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addResult(`❌ 登录请求失败: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testHealth() {
+            addResult('🔄 正在测试健康检查...', 'info');
+            try {
+                const response = await fetch('http://152.136.155.183/health');
+                const data = await response.json();
+                addResult(`✅ 健康检查通过: ${data.status} (运行时间: ${Math.round(data.uptime)}秒)`, 'success');
+            } catch (error) {
+                addResult(`❌ 健康检查失败: ${error.message}`, 'error');
+            }
+        }
+        
+        // 页面加载时自动测试
+        window.onload = function() {
+            addResult('🚀 测试页面加载完成', 'success');
+            setTimeout(testHealth, 1000);
+        };
+    </script>
+</body>
+</html>

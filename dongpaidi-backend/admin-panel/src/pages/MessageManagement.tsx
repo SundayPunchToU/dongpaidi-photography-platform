@@ -47,12 +47,14 @@ interface MessageItem {
   createdAt: string;
   sender: {
     id: string;
-    nickname: string;
+    nickname?: string;
+    username?: string;
     avatarUrl?: string;
   };
   receiver: {
     id: string;
-    nickname: string;
+    nickname?: string;
+    username?: string;
     avatarUrl?: string;
   };
 }
@@ -61,7 +63,8 @@ interface ConversationItem {
   userId: string;
   user: {
     id: string;
-    nickname: string;
+    nickname?: string;
+    username?: string;
     avatarUrl?: string;
     isOnline?: boolean;
   };
@@ -150,7 +153,7 @@ const MessageManagement: React.FC = () => {
 
   // 过滤对话列表
   const filteredConversations = conversations.filter((conversation: any) =>
-    conversation.user.nickname.toLowerCase().includes(searchText.toLowerCase()) ||
+    (conversation.user?.nickname || conversation.user?.username || '').toLowerCase().includes(searchText.toLowerCase()) ||
     conversation.lastMessage?.content.toLowerCase().includes(searchText.toLowerCase())
   );
 
@@ -170,15 +173,15 @@ const MessageManagement: React.FC = () => {
           </Badge>
           <div>
             <div style={{ fontWeight: 500 }}>
-              {record.user.nickname}
-              {record.user.isOnline && (
+              {record.user?.nickname || record.user?.username || '未知用户'}
+              {record.user?.isOnline && (
                 <Tag color="green" style={{ marginLeft: 8 }}>
                   <WifiOutlined /> 在线
                 </Tag>
               )}
             </div>
             <Text type="secondary" style={{ fontSize: 12 }}>
-              ID: {record.user.id}
+              ID: {record.user?.id || '未知'}
             </Text>
           </div>
         </Space>
@@ -358,8 +361,8 @@ const MessageManagement: React.FC = () => {
                 src={selectedConversation.user.avatarUrl} 
                 icon={<UserOutlined />}
               />
-              <span>与 {selectedConversation.user.nickname} 的对话</span>
-              {selectedConversation.user.isOnline && (
+              <span>与 {selectedConversation.user?.nickname || selectedConversation.user?.username || '未知用户'} 的对话</span>
+              {selectedConversation.user?.isOnline && (
                 <Tag color="green">
                   <WifiOutlined /> 在线
                 </Tag>
