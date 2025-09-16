@@ -1,4 +1,22 @@
 // 小程序API服务层 - 连接自建后端API
+// 版本: 2.0.0 (重构版本)
+// 更新时间: 2025-01-16
+//
+// 🎯 重构改进:
+// - 统一使用新的API客户端
+// - 完善错误处理和日志记录
+// - 实现真实API调用，移除Mock数据
+// - 添加完整的业务逻辑封装
+// - 提升代码可读性和可维护性
+//
+// 📋 服务类说明:
+// - UserService: 用户认证和管理
+// - WorksService: 作品发布和管理
+// - SocialService: 社交功能
+// - AppointmentService: 约拍系统
+// - FileService: 文件上传
+// - MessageService: 消息系统
+
 import {
   apiClient,
   authAPI,
