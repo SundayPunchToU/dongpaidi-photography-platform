@@ -1,6 +1,6 @@
 // 懂拍帝摄影平台 - 统一API客户端
 // 替换Supabase客户端，对接自建后端API服务
-// 版本: 1.0.1
+// 版本: 1.1.0 - 阶段3代码质量优化
 // 创建时间: 2024-09-16
 // 更新时间: 2025-01-16
 //
@@ -15,9 +15,12 @@
 // - 支持请求/响应拦截器
 // - 环境感知配置
 // - 自动日志记录
+// - 统一错误处理系统
 // - TypeScript友好
 
 import { config } from '../config/index.js'
+import { errorHandler, ErrorTypes, ErrorSeverity, createError } from './error-handler.js'
+import { cache, dedupe, perf } from './performance-optimizer.js'
 
 /**
  * API客户端配置
@@ -96,7 +99,7 @@ class APIClient {
       return config
     })
 
-    // 响应拦截器：统一错误处理
+    // 🔧 阶段3优化: 使用统一错误处理系统
     this.addResponseInterceptor(
       (response) => {
         // 成功响应处理
@@ -107,37 +110,71 @@ class APIClient {
             statusCode: response.statusCode
           }
         } else {
-          throw new Error(`HTTP ${response.statusCode}: ${response.data?.message || '请求失败'}`)
+          // 创建标准化错误
+          const error = createError(
+            response.data?.message || `HTTP ${response.statusCode}`,
+            this.getErrorTypeFromStatus(response.statusCode),
+            this.getErrorSeverityFromStatus(response.statusCode),
+            response.statusCode
+          )
+          throw error
         }
       },
       (error) => {
-        // 错误响应处理
-        console.error('API请求错误:', error)
-        
-        // 处理网络错误
-        if (error.errMsg && error.errMsg.includes('timeout')) {
-          return {
-            success: false,
-            error: '请求超时，请检查网络连接',
-            code: 'TIMEOUT'
+        // 🔧 使用统一错误处理系统
+        let errorType = ErrorTypes.UNKNOWN
+        let errorSeverity = ErrorSeverity.MEDIUM
+        let errorMessage = '请求失败'
+
+        // 分析错误类型
+        if (error.errMsg) {
+          if (error.errMsg.includes('timeout')) {
+            errorType = ErrorTypes.NETWORK
+            errorSeverity = ErrorSeverity.HIGH
+            errorMessage = '请求超时'
+          } else if (error.errMsg.includes('fail')) {
+            errorType = ErrorTypes.NETWORK
+            errorSeverity = ErrorSeverity.HIGH
+            errorMessage = '网络连接失败'
           }
         }
-        
-        if (error.errMsg && error.errMsg.includes('fail')) {
-          return {
-            success: false,
-            error: '网络连接失败，请检查网络设置',
-            code: 'NETWORK_ERROR'
-          }
-        }
-        
+
+        const standardError = createError(errorMessage, errorType, errorSeverity, null, { originalError: error })
+
+        // 使用错误处理器处理
+        const result = errorHandler.handle(standardError, { operation: 'api_request' }, false)
+
         return {
           success: false,
-          error: error.message || '请求失败',
-          code: error.code || 'UNKNOWN_ERROR'
+          error: result.userMessage,
+          code: standardError.type,
+          canRetry: result.canRetry,
+          recoveryAction: result.recoveryAction
         }
       }
     )
+  }
+
+  /**
+   * 🔧 阶段3新增: 根据HTTP状态码获取错误类型
+   */
+  getErrorTypeFromStatus(statusCode) {
+    if (statusCode === 401) return ErrorTypes.AUTH
+    if (statusCode === 403) return ErrorTypes.PERMISSION
+    if (statusCode === 400) return ErrorTypes.VALIDATION
+    if (statusCode >= 500) return ErrorTypes.SYSTEM
+    if (statusCode >= 400) return ErrorTypes.BUSINESS
+    return ErrorTypes.UNKNOWN
+  }
+
+  /**
+   * 🔧 阶段3新增: 根据HTTP状态码获取错误严重级别
+   */
+  getErrorSeverityFromStatus(statusCode) {
+    if (statusCode === 401 || statusCode === 403) return ErrorSeverity.HIGH
+    if (statusCode >= 500) return ErrorSeverity.HIGH
+    if (statusCode === 400) return ErrorSeverity.LOW
+    return ErrorSeverity.MEDIUM
   }
 
   /**
@@ -200,9 +237,43 @@ class APIClient {
   }
 
   /**
-   * 通用HTTP请求方法
+   * 通用HTTP请求方法 (阶段3优化: 集成性能监控和缓存)
    */
   async request(config) {
+    const startTime = Date.now()
+    const requestKey = `${config.method || 'GET'}_${config.url}_${JSON.stringify(config.data || {})}`
+
+    try {
+      // 🔧 阶段3优化: 检查缓存
+      if ((config.method === 'GET' || !config.method) && config.cache !== false) {
+        const cacheKey = `api_${requestKey}`
+        const cachedResult = cache.get(cacheKey)
+        if (cachedResult) {
+          console.log('🎯 缓存命中:', config.url)
+          perf.recordApi(config.url, config.method || 'GET', startTime, Date.now(), true)
+          return cachedResult
+        }
+      }
+
+      // 🔧 阶段3优化: 请求去重
+      if (config.dedupe !== false) {
+        return await dedupe.execute(requestKey, async () => {
+          return await this.executeRequestWithPerformanceTracking(config, startTime)
+        })
+      } else {
+        return await this.executeRequestWithPerformanceTracking(config, startTime)
+      }
+    } catch (error) {
+      const endTime = Date.now()
+      perf.recordApi(config.url, config.method || 'GET', startTime, endTime, false, error)
+      throw error
+    }
+  }
+
+  /**
+   * 🔧 阶段3新增: 带性能追踪的请求执行
+   */
+  async executeRequestWithPerformanceTracking(config, startTime) {
     // 应用请求拦截器
     let finalConfig = { ...config }
     for (const interceptor of this.requestInterceptors) {
@@ -210,8 +281,8 @@ class APIClient {
     }
 
     // 构建完整URL
-    const url = finalConfig.url.startsWith('http') 
-      ? finalConfig.url 
+    const url = finalConfig.url.startsWith('http')
+      ? finalConfig.url
       : `${this.baseURL}${finalConfig.url}`
 
     // 请求配置
@@ -223,8 +294,20 @@ class APIClient {
       timeout: finalConfig.timeout || this.timeout
     }
 
-    // 执行请求（带重试机制）
-    return this.executeWithRetry(requestConfig)
+    const result = await this.executeWithRetry(requestConfig)
+    const endTime = Date.now()
+
+    // 记录性能指标
+    perf.recordApi(requestConfig.url, requestConfig.method, startTime, endTime, result.success)
+
+    // 🔧 阶段3优化: 缓存GET请求结果
+    if ((requestConfig.method === 'GET') && result.success && finalConfig.cache !== false) {
+      const cacheKey = `api_${finalConfig.method || 'GET'}_${finalConfig.url}_${JSON.stringify(finalConfig.data || {})}`
+      const cacheTTL = finalConfig.cacheTTL || 5 * 60 * 1000 // 默认5分钟
+      cache.set(cacheKey, result, cacheTTL)
+    }
+
+    return result
   }
 
   /**

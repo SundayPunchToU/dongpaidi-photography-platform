@@ -1,5 +1,5 @@
 // 小程序API服务层 - 连接自建后端API
-// 版本: 2.0.0 (重构版本)
+// 版本: 2.1.0 (阶段3代码质量优化)
 // 更新时间: 2025-01-16
 //
 // 🎯 重构改进:
@@ -8,6 +8,7 @@
 // - 实现真实API调用，移除Mock数据
 // - 添加完整的业务逻辑封装
 // - 提升代码可读性和可维护性
+// - 统一错误处理系统 (阶段3新增)
 //
 // 📋 服务类说明:
 // - UserService: 用户认证和管理
@@ -27,6 +28,7 @@ import {
   uploadAPI,
   socialAPI
 } from './api-client.js'
+import { errorHandler, ErrorTypes, ErrorSeverity, createError } from './error-handler.js'
 
 // ==================== 用户服务 ====================
 
@@ -963,28 +965,58 @@ export {
   apiClient as supabase
 }
 
-// ==================== 全局错误处理 ====================
+// ==================== 全局错误处理 (阶段3优化) ====================
 
+/**
+ * 🔧 阶段3优化: 使用统一错误处理系统
+ * @deprecated 建议使用 errorHandler.handle() 替代
+ */
 export function handleApiError(error) {
-  console.error('API错误:', error)
-  
-  let message = '操作失败，请重试'
-  
-  if (error.message) {
-    if (error.message.includes('network')) {
-      message = '网络连接失败'
-    } else if (error.message.includes('unauthorized')) {
-      message = '请先登录'
-    } else if (error.message.includes('forbidden')) {
-      message = '权限不足'
-    }
+  console.warn('⚠️ 使用了旧的错误处理方法，建议升级到统一错误处理系统')
+
+  // 使用新的错误处理系统
+  const result = errorHandler.handle(error, { operation: 'legacy_api_error' })
+  return result.userMessage
+}
+
+/**
+ * 🔧 阶段3新增: 统一的服务层错误处理
+ */
+export function handleServiceError(error, context = {}) {
+  // 标准化错误
+  let standardError = error
+  if (!(error instanceof Error)) {
+    standardError = createError(
+      typeof error === 'string' ? error : '服务调用失败',
+      ErrorTypes.BUSINESS,
+      ErrorSeverity.MEDIUM
+    )
   }
-  
-  wx.showToast({
-    title: message,
-    icon: 'error',
-    duration: 2000
+
+  // 使用统一错误处理器
+  const result = errorHandler.handle(standardError, {
+    ...context,
+    layer: 'service'
   })
-  
-  return message
+
+  return {
+    success: false,
+    error: result.userMessage,
+    canRetry: result.canRetry,
+    recoveryAction: result.recoveryAction
+  }
+}
+
+/**
+ * 🔧 阶段3新增: 业务逻辑错误创建器
+ */
+export function createBusinessError(message, severity = ErrorSeverity.MEDIUM, details = null) {
+  return createError(message, ErrorTypes.BUSINESS, severity, null, details)
+}
+
+/**
+ * 🔧 阶段3新增: 验证错误创建器
+ */
+export function createValidationError(message, field = null) {
+  return createError(message, ErrorTypes.VALIDATION, ErrorSeverity.LOW, null, { field })
 }
