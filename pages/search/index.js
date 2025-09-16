@@ -67,19 +67,21 @@ Page({
 
   /**
    * 查询历史记录
+   * 🔧 修复: 使用本地存储管理搜索历史
    * @returns {Promise<void>}
    */
   async queryHistory() {
-    request('/api/searchHistory').then((res) => {
-      const { code, data } = res;
-
-      if (code === 200) {
-        const { historyWords = [] } = data;
-        this.setData({
-          historyWords,
-        });
-      }
-    });
+    try {
+      const historyWords = wx.getStorageSync('searchHistory') || [];
+      this.setData({
+        historyWords: historyWords.slice(0, 10) // 最多显示10条历史记录
+      });
+    } catch (error) {
+      console.error('获取搜索历史失败:', error);
+      this.setData({
+        historyWords: []
+      });
+    }
   },
 
   /**

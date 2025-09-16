@@ -1,7 +1,6 @@
-// 导入必要的工具和API
-import request from '../../api/request.js';
+// 🔧 修复: 使用新的API服务类替代旧的调用方式
+import { WorksService } from '../../utils/api.js';
 import { projectResetTool } from '../../utils/project-reset.js';
-import { worksAPI, userAPI } from '../../utils/supabase-client.js';
 
 Page({
   data: {
@@ -493,15 +492,21 @@ Page({
   async onLoad() {
     console.log('🏠 发现页面加载');
 
-    // 初始化作品缓存
+    // 🔧 修复: 使用新的API服务类初始化作品缓存
     try {
-      const res = await request('/works', 'GET', {});
-      this.allWorksCache = res.data.list || [];
+      const result = await WorksService.getList({ page: 1, limit: 50 });
+      if (result.success && result.data) {
+        this.allWorksCache = result.data.items || [];
+      } else {
+        console.error('获取作品列表失败:', result.error);
+        this.allWorksCache = [];
+      }
 
       // 默认显示热门作品
       this.filterWorksByTopic('hot');
     } catch (error) {
       console.error('初始化作品数据失败:', error);
+      this.allWorksCache = [];
     }
 
     // 自动修复常见问题
@@ -545,46 +550,45 @@ Page({
         category: selectedCategory === 'all' ? '' : selectedCategory
       };
 
-      // 🚀 优先使用Supabase数据
-      console.log('🔍 从Supabase加载作品数据...', params);
+      // 🔧 修复: 使用新的API服务类加载作品数据
+      console.log('🔍 从后端API加载作品数据...', params);
 
-      const supabaseResult = await worksAPI.getList(currentPage, pageSize, params.category || null);
+      const result = await WorksService.getList({
+        page: currentPage,
+        limit: pageSize,
+        category: params.category || undefined
+      });
 
       let newWorks = [];
 
-      if (supabaseResult.error) {
-        console.error('❌ Supabase加载失败，使用模拟数据:', supabaseResult.error);
-        // 如果Supabase失败，回退到模拟数据
-        const res = await request('/works', 'GET', params);
-        newWorks = res.data.list || [];
-      } else if (supabaseResult.data && supabaseResult.data.length > 0) {
-        console.log('✅ 从Supabase加载到数据:', supabaseResult.data.length, '条');
-        // 转换Supabase数据格式
-        newWorks = supabaseResult.data.map(work => ({
+      if (result.success && result.data) {
+        console.log('✅ 从后端API加载到数据:', result.data.items?.length || 0, '条');
+        newWorks = result.data.items || [];
+
+        // 确保数据格式正确
+        newWorks = newWorks.map(work => ({
           id: work.id,
-          userId: work.user_id,
-          userName: work.users?.nickname || '匿名用户',
-          userAvatar: work.users?.avatar_url || '/static/default-avatar.png',
+          userId: work.userId || work.user_id,
+          userName: work.userName || work.user?.nickname || '匿名用户',
+          userAvatar: work.userAvatar || work.user?.avatar || '/static/default-avatar.png',
           title: work.title,
           description: work.description,
-          coverImage: work.cover_image || '/static/placeholder.jpg',
-          imageWidth: 400,
-          imageHeight: 400 + Math.random() * 400,
+          coverImage: work.coverImage || work.cover_image || '/static/placeholder.jpg',
+          imageWidth: work.imageWidth || 400,
+          imageHeight: work.imageHeight || (400 + Math.random() * 400),
           stats: {
-            likes: work.like_count || 0,
-            comments: work.comment_count || 0,
-            views: work.view_count || 0
+            likes: work.stats?.likes || work.like_count || 0,
+            comments: work.stats?.comments || work.comment_count || 0,
+            views: work.stats?.views || work.view_count || 0
           },
-          isLiked: false,
+          isLiked: work.isLiked || false,
           tags: work.tags || [],
           category: work.category,
           location: work.location
         }));
       } else {
-        console.log('📋 Supabase数据为空，使用模拟数据');
-        // 如果Supabase没有数据，使用模拟数据
-        const res = await request('/works', 'GET', params);
-        newWorks = res.data.list || [];
+        console.error('❌ 后端API加载失败:', result.error);
+        newWorks = [];
       }
 
 

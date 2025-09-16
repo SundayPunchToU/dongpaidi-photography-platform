@@ -1,6 +1,6 @@
 const app = getApp();
-// 导入认证服务
-import { authService } from '../../utils/auth.js';
+// 🔧 修复: 导入新的API服务类
+import { UserService, WorksService } from '../../utils/api.js';
 // 导入网络检测
 import { networkChecker } from '../../utils/network-check.js';
 
@@ -245,29 +245,45 @@ Page({
     }
   },
 
-  // 加载用户统计数据
+  // 🔧 修复: 使用新的API服务类加载用户统计数据
   async loadUserStats() {
     try {
-      // 这里应该调用真实的API
-      const mockStats = {
-        worksCount: 12,
-        followersCount: 156,
-        followingCount: 89
-      };
-      this.setData({ userStats: mockStats });
+      const currentUser = await UserService.getCurrentUser();
+      if (currentUser.success && currentUser.user) {
+        const stats = {
+          worksCount: currentUser.user.worksCount || 0,
+          followersCount: currentUser.user.followersCount || 0,
+          followingCount: currentUser.user.followingCount || 0
+        };
+        this.setData({ userStats: stats });
+      } else {
+        // 使用默认统计数据
+        const mockStats = {
+          worksCount: 0,
+          followersCount: 0,
+          followingCount: 0
+        };
+        this.setData({ userStats: mockStats });
+      }
     } catch (error) {
       console.error('加载用户统计失败:', error);
+      this.setData({ userStats: { worksCount: 0, followersCount: 0, followingCount: 0 } });
     }
   },
 
-  // 加载我的作品
+  // 🔧 修复: 使用新的API服务类加载我的作品
   async loadMyWorks() {
     try {
-      // 这里应该调用真实的API获取用户作品
-      const mockWorks = [];
-      this.setData({ myWorks: mockWorks });
+      const result = await WorksService.getMyWorks({ page: 1, limit: 20 });
+      if (result.success && result.data) {
+        this.setData({ myWorks: result.data.items || [] });
+      } else {
+        console.error('加载我的作品失败:', result.error);
+        this.setData({ myWorks: [] });
+      }
     } catch (error) {
-      console.error('加载我的作品失败:', error);
+      console.error('加载我的作品异常:', error);
+      this.setData({ myWorks: [] });
     }
   },
 
