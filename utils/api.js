@@ -33,6 +33,7 @@ import {
 class UserService {
   /**
    * 微信登录
+   * 🔧 修复: 适配后端ResponseUtil响应格式
    */
   static async login() {
     try {
@@ -46,17 +47,20 @@ class UserService {
       const result = await authAPI.wechatLogin(loginResult.code, userInfo)
 
       if (result.success && result.data) {
+        // 后端返回格式: { success: true, data: { user: {...}, tokens: {...} }, message: "登录成功" }
+        const { user, tokens } = result.data
+
         // 保存用户信息和token到本地存储
-        wx.setStorageSync('userInfo', result.data.user)
-        wx.setStorageSync('access_token', result.data.tokens.accessToken)
-        wx.setStorageSync('refresh_token', result.data.tokens.refreshToken)
+        wx.setStorageSync('userInfo', user)
+        wx.setStorageSync('access_token', tokens.accessToken)
+        wx.setStorageSync('refresh_token', tokens.refreshToken)
         wx.setStorageSync('isLoggedIn', true)
 
-        console.log('✅ 微信登录成功:', result.data.user.nickname)
-        return { success: true, user: result.data.user }
+        console.log('✅ 微信登录成功:', user.nickname || user.name)
+        return { success: true, user: user }
       } else {
-        console.error('❌ 微信登录失败:', result.error)
-        return { success: false, error: result.error }
+        console.error('❌ 微信登录失败:', result.error || result.message)
+        return { success: false, error: result.error || result.message || '登录失败' }
       }
     } catch (error) {
       console.error('❌ 微信登录异常:', error)
@@ -91,23 +95,27 @@ class UserService {
 
   /**
    * 手机号登录
+   * 🔧 修复: 适配后端ResponseUtil响应格式
    */
   static async loginWithPhone(phone, code) {
     try {
       const result = await authAPI.phoneLogin(phone, code)
 
       if (result.success && result.data) {
+        // 后端返回格式: { success: true, data: { user: {...}, tokens: {...} }, message: "登录成功" }
+        const { user, tokens } = result.data
+
         // 保存用户信息和token
-        wx.setStorageSync('userInfo', result.data.user)
-        wx.setStorageSync('access_token', result.data.tokens.accessToken)
-        wx.setStorageSync('refresh_token', result.data.tokens.refreshToken)
+        wx.setStorageSync('userInfo', user)
+        wx.setStorageSync('access_token', tokens.accessToken)
+        wx.setStorageSync('refresh_token', tokens.refreshToken)
         wx.setStorageSync('isLoggedIn', true)
 
-        console.log('✅ 手机号登录成功:', result.data.user.nickname)
-        return { success: true, user: result.data.user }
+        console.log('✅ 手机号登录成功:', user.nickname || user.name)
+        return { success: true, user: user }
       } else {
-        console.error('❌ 手机号登录失败:', result.error)
-        return { success: false, error: result.error }
+        console.error('❌ 手机号登录失败:', result.error || result.message)
+        return { success: false, error: result.error || result.message || '登录失败' }
       }
     } catch (error) {
       console.error('❌ 手机号登录异常:', error)
@@ -196,6 +204,7 @@ class UserService {
 
   /**
    * 刷新Token
+   * 🔧 修复: 适配后端ResponseUtil响应格式
    */
   static async refreshToken() {
     try {
@@ -207,17 +216,20 @@ class UserService {
       const result = await authAPI.refreshToken(refreshToken)
 
       if (result.success && result.data) {
+        // 后端返回格式: { success: true, data: { accessToken: "...", refreshToken: "..." }, message: "令牌刷新成功" }
+        const tokens = result.data
+
         // 更新token
-        wx.setStorageSync('access_token', result.data.accessToken)
-        wx.setStorageSync('refresh_token', result.data.refreshToken)
+        wx.setStorageSync('access_token', tokens.accessToken)
+        wx.setStorageSync('refresh_token', tokens.refreshToken)
 
         console.log('✅ Token刷新成功')
         return { success: true }
       } else {
-        console.error('❌ Token刷新失败:', result.error)
+        console.error('❌ Token刷新失败:', result.error || result.message)
         // Token刷新失败，需要重新登录
         this.logout()
-        return { success: false, error: result.error }
+        return { success: false, error: result.error || result.message || 'Token刷新失败' }
       }
     } catch (error) {
       console.error('❌ Token刷新异常:', error)

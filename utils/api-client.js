@@ -155,6 +155,51 @@ class APIClient {
   }
 
   /**
+   * 处理响应数据，适配后端ResponseUtil格式
+   * 🔧 修复: 统一响应格式处理
+   */
+  processResponse(response) {
+    console.log('📥 API响应:', response)
+
+    // 检查HTTP状态码
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      const responseData = response.data
+
+      // 适配后端ResponseUtil格式
+      // 后端返回格式: { success: true, data: {...}, message: "..." }
+      if (responseData && typeof responseData === 'object') {
+        if (responseData.success !== undefined) {
+          // 已经是标准格式，直接返回
+          return responseData
+        } else {
+          // 包装为标准格式
+          return {
+            success: true,
+            data: responseData,
+            message: 'success'
+          }
+        }
+      }
+
+      // 处理非对象响应
+      return {
+        success: true,
+        data: responseData,
+        message: 'success'
+      }
+    } else {
+      // 处理错误响应
+      const errorData = response.data
+      return {
+        success: false,
+        error: errorData?.message || errorData?.error || `HTTP ${response.statusCode}`,
+        message: errorData?.message || 'Request failed',
+        statusCode: response.statusCode
+      }
+    }
+  }
+
+  /**
    * 通用HTTP请求方法
    */
   async request(config) {
@@ -190,8 +235,11 @@ class APIClient {
       wx.request({
         ...config,
         success: (response) => {
+          // 🔧 修复: 适配后端ResponseUtil格式
+          let processedResponse = this.processResponse(response)
+
           // 应用响应拦截器
-          let finalResponse = response
+          let finalResponse = processedResponse
           for (const interceptor of this.responseInterceptors) {
             try {
               if (interceptor.onFulfilled) {
@@ -334,13 +382,15 @@ export const { get, post, put, delete: del, upload } = apiClient
 
 /**
  * 用户认证API
+ * 🔧 修复: 对接后端实际API路径和参数格式
  */
 export const authAPI = {
   /**
    * 微信登录
+   * 后端路径: POST /auth/wechat/login
    */
   async wechatLogin(code, userInfo) {
-    return apiClient.post('/auth/wechat', {
+    return apiClient.post('/auth/wechat/login', {
       code,
       userInfo
     })
@@ -348,9 +398,10 @@ export const authAPI = {
 
   /**
    * 手机号登录
+   * 后端路径: POST /auth/phone/login
    */
   async phoneLogin(phone, code) {
-    return apiClient.post('/auth/phone', {
+    return apiClient.post('/auth/phone/login', {
       phone,
       code
     })
@@ -358,6 +409,7 @@ export const authAPI = {
 
   /**
    * 刷新Token
+   * 后端路径: POST /auth/refresh
    */
   async refreshToken(refreshToken) {
     return apiClient.post('/auth/refresh', {
@@ -367,6 +419,7 @@ export const authAPI = {
 
   /**
    * 获取当前用户信息
+   * 后端路径: GET /auth/me (需要认证)
    */
   async getCurrentUser() {
     return apiClient.get('/auth/me')
@@ -374,18 +427,50 @@ export const authAPI = {
 
   /**
    * 登出
+   * 后端路径: POST /auth/logout (需要认证)
    */
   async logout() {
     return apiClient.post('/auth/logout')
+  },
+
+  /**
+   * 发送短信验证码
+   * 后端路径: POST /auth/sms/send
+   */
+  async sendSmsCode(phone) {
+    return apiClient.post('/auth/sms/send', {
+      phone
+    })
+  },
+
+  /**
+   * 验证短信验证码
+   * 后端路径: POST /auth/sms/verify
+   */
+  async verifySmsCode(phone, code) {
+    return apiClient.post('/auth/sms/verify', {
+      phone,
+      code
+    })
+  },
+
+  /**
+   * 检查用户名可用性
+   * 后端路径: GET /auth/check-nickname
+   */
+  async checkNicknameAvailability(nickname) {
+    return apiClient.get('/auth/check-nickname', { nickname })
   }
 }
 
 /**
  * 用户管理API
+ * 🔧 修复: 对接后端实际API路径，基于users.ts路由
  */
 export const userAPI = {
   /**
    * 获取用户详情
+   * 后端路径: GET /users/:id
    */
   async getUserById(userId) {
     return apiClient.get(`/users/${userId}`)
@@ -393,13 +478,41 @@ export const userAPI = {
 
   /**
    * 更新用户资料
+   * 后端路径: PUT /users/me/profile (需要认证)
    */
   async updateProfile(updates) {
-    return apiClient.put('/users/profile', updates)
+    return apiClient.put('/users/me/profile', updates)
+  },
+
+  /**
+   * 搜索用户
+   * 后端路径: GET /users/search
+   */
+  async searchUsers(params = {}) {
+    const { page = 1, limit = 20, keyword } = params
+    return apiClient.get('/users/search', { page, limit, keyword })
+  },
+
+  /**
+   * 获取推荐用户
+   * 后端路径: GET /users/recommended (需要认证)
+   */
+  async getRecommendedUsers(params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get('/users/recommended', { page, limit })
+  },
+
+  /**
+   * 批量获取用户信息
+   * 后端路径: POST /users/batch
+   */
+  async getUsersByIds(userIds) {
+    return apiClient.post('/users/batch', { userIds })
   },
 
   /**
    * 获取用户作品列表
+   * 后端路径: GET /users/:id/works
    */
   async getUserWorks(userId, page = 1, limit = 20) {
     return apiClient.get(`/users/${userId}/works`, { page, limit })
@@ -407,6 +520,7 @@ export const userAPI = {
 
   /**
    * 获取用户关注列表
+   * 后端路径: GET /users/:id/following
    */
   async getFollowing(userId, page = 1, limit = 20) {
     return apiClient.get(`/users/${userId}/following`, { page, limit })
@@ -414,6 +528,7 @@ export const userAPI = {
 
   /**
    * 获取用户粉丝列表
+   * 后端路径: GET /users/:id/followers
    */
   async getFollowers(userId, page = 1, limit = 20) {
     return apiClient.get(`/users/${userId}/followers`, { page, limit })
@@ -422,18 +537,30 @@ export const userAPI = {
 
 /**
  * 作品管理API
+ * 🔧 修复: 对接后端实际API路径和参数格式
  */
 export const worksAPI = {
   /**
    * 获取作品列表
+   * 后端路径: GET /works
+   * 支持分页、分类、用户筛选等
    */
   async getList(params = {}) {
-    const { page = 1, limit = 20, category, userId, keyword } = params
-    return apiClient.get('/works', { page, limit, category, userId, keyword })
+    const { page = 1, limit = 20, category, userId, keyword, sortBy, order } = params
+    return apiClient.get('/works', {
+      page,
+      limit,
+      category,
+      userId,
+      keyword,
+      sortBy,
+      order
+    })
   },
 
   /**
    * 获取作品详情
+   * 后端路径: GET /works/:id (支持可选认证)
    */
   async getDetail(workId) {
     return apiClient.get(`/works/${workId}`)
@@ -441,6 +568,7 @@ export const worksAPI = {
 
   /**
    * 发布作品
+   * 后端路径: POST /works (需要认证)
    */
   async publish(workData) {
     return apiClient.post('/works', workData)
@@ -462,6 +590,7 @@ export const worksAPI = {
 
   /**
    * 点赞/取消点赞作品
+   * 后端路径: POST /works/:id/like (需要认证)
    */
   async toggleLike(workId) {
     return apiClient.post(`/works/${workId}/like`)
@@ -469,6 +598,7 @@ export const worksAPI = {
 
   /**
    * 收藏/取消收藏作品
+   * 后端路径: POST /works/:id/collect (需要认证)
    */
   async toggleCollection(workId) {
     return apiClient.post(`/works/${workId}/collect`)
@@ -476,6 +606,7 @@ export const worksAPI = {
 
   /**
    * 获取作品评论
+   * 后端路径: GET /works/:id/comments
    */
   async getComments(workId, page = 1, limit = 20) {
     return apiClient.get(`/works/${workId}/comments`, { page, limit })
@@ -483,21 +614,56 @@ export const worksAPI = {
 
   /**
    * 添加评论
+   * 后端路径: POST /works/:id/comments (需要认证)
    */
   async addComment(workId, content, parentId = null) {
     return apiClient.post(`/works/${workId}/comments`, {
       content,
       parentId
     })
+  },
+
+  /**
+   * 获取热门作品
+   * 后端路径: GET /works/trending
+   */
+  async getTrending(params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get('/works/trending', { page, limit })
+  },
+
+  /**
+   * 按分类获取作品
+   * 后端路径: GET /works/category/:category
+   */
+  async getByCategory(category, params = {}) {
+    const { page = 1, limit = 20, sortBy, order } = params
+    return apiClient.get(`/works/category/${category}`, {
+      page,
+      limit,
+      sortBy,
+      order
+    })
+  },
+
+  /**
+   * 获取用户收藏的作品
+   * 后端路径: GET /works/me/collections (需要认证)
+   */
+  async getUserCollections(params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get('/works/me/collections', { page, limit })
   }
 }
 
 /**
  * 约拍管理API
+ * 🔧 修复: 对接后端实际API路径，基于appointmentRoutes.ts
  */
 export const appointmentAPI = {
   /**
    * 获取约拍列表
+   * 后端路径: GET /appointments (公开路由)
    */
   async getList(params = {}) {
     const { page = 1, limit = 20, type, status, location } = params
@@ -506,6 +672,7 @@ export const appointmentAPI = {
 
   /**
    * 获取约拍详情
+   * 后端路径: GET /appointments/:id (公开路由)
    */
   async getDetail(appointmentId) {
     return apiClient.get(`/appointments/${appointmentId}`)
@@ -513,20 +680,23 @@ export const appointmentAPI = {
 
   /**
    * 发布约拍
+   * 后端路径: POST /appointments (需要认证)
    */
   async publish(appointmentData) {
     return apiClient.post('/appointments', appointmentData)
   },
 
   /**
-   * 更新约拍
+   * 更新约拍状态
+   * 后端路径: PATCH /appointments/:id/status (需要认证)
    */
-  async update(appointmentId, updates) {
-    return apiClient.put(`/appointments/${appointmentId}`, updates)
+  async updateStatus(appointmentId, status) {
+    return apiClient.patch(`/appointments/${appointmentId}/status`, { status })
   },
 
   /**
    * 删除约拍
+   * 后端路径: DELETE /appointments/:id (需要认证)
    */
   async delete(appointmentId) {
     return apiClient.delete(`/appointments/${appointmentId}`)
@@ -534,32 +704,50 @@ export const appointmentAPI = {
 
   /**
    * 申请约拍
+   * 后端路径: POST /appointments/:id/apply (需要认证)
    */
   async apply(appointmentId, message = '') {
     return apiClient.post(`/appointments/${appointmentId}/apply`, { message })
   },
 
   /**
-   * 获取约拍申请列表
+   * 获取我发布的约拍
+   * 后端路径: GET /appointments/my/published (需要认证)
    */
-  async getApplications(appointmentId, page = 1, limit = 20) {
-    return apiClient.get(`/appointments/${appointmentId}/applications`, { page, limit })
+  async getMyPublished(params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get('/appointments/my/published', { page, limit })
+  },
+
+  /**
+   * 获取我的申请
+   * 后端路径: GET /appointments/my/applications (需要认证)
+   */
+  async getMyApplications(params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get('/appointments/my/applications', { page, limit })
   },
 
   /**
    * 处理约拍申请
+   * 后端路径: POST /appointments/applications/:applicationId/handle (需要认证)
    */
   async handleApplication(applicationId, action, message = '') {
-    return apiClient.post(`/appointments/applications/${applicationId}/${action}`, { message })
+    return apiClient.post(`/appointments/applications/${applicationId}/handle`, {
+      action,
+      message
+    })
   }
 }
 
 /**
  * 消息管理API
+ * 🔧 修复: 对接后端实际API路径，基于messageRoutes.ts
  */
 export const messageAPI = {
   /**
    * 获取对话列表
+   * 后端路径: GET /messages/conversations (需要认证)
    */
   async getConversations(page = 1, limit = 20) {
     return apiClient.get('/messages/conversations', { page, limit })
@@ -567,6 +755,7 @@ export const messageAPI = {
 
   /**
    * 获取对话消息
+   * 后端路径: GET /messages/conversations/:conversationId (需要认证)
    */
   async getMessages(conversationId, page = 1, limit = 50) {
     return apiClient.get(`/messages/conversations/${conversationId}`, { page, limit })
@@ -574,6 +763,7 @@ export const messageAPI = {
 
   /**
    * 发送消息
+   * 后端路径: POST /messages (需要认证)
    */
   async sendMessage(receiverId, content, type = 'text') {
     return apiClient.post('/messages', {
@@ -584,7 +774,16 @@ export const messageAPI = {
   },
 
   /**
+   * 获取未读消息总数
+   * 后端路径: GET /messages/unread-count (需要认证)
+   */
+  async getUnreadCount() {
+    return apiClient.get('/messages/unread-count')
+  },
+
+  /**
    * 标记消息已读
+   * 后端路径: POST /messages/conversations/:conversationId/read (需要认证)
    */
   async markAsRead(conversationId) {
     return apiClient.post(`/messages/conversations/${conversationId}/read`)
@@ -593,10 +792,12 @@ export const messageAPI = {
 
 /**
  * 文件上传API
+ * 🔧 修复: 对接后端实际上传路径
  */
 export const uploadAPI = {
   /**
    * 上传单张图片
+   * 后端路径: POST /upload/image (需要认证)
    */
   async uploadImage(filePath) {
     return apiClient.upload('/upload/image', filePath)
@@ -604,27 +805,46 @@ export const uploadAPI = {
 
   /**
    * 批量上传图片
+   * 后端路径: POST /upload/images (需要认证)
    */
   async uploadMultipleImages(filePaths) {
-    const uploadPromises = filePaths.map(path => this.uploadImage(path))
-    const results = await Promise.all(uploadPromises)
-    return results
+    // 使用后端的批量上传接口
+    return apiClient.upload('/upload/images', filePaths)
+  },
+
+  /**
+   * 上传头像
+   * 后端路径: POST /upload/avatar (需要认证)
+   */
+  async uploadAvatar(filePath) {
+    return apiClient.upload('/upload/avatar', filePath)
   },
 
   /**
    * 获取上传配置
+   * 后端路径: GET /upload/config
    */
   async getUploadConfig() {
     return apiClient.get('/upload/config')
+  },
+
+  /**
+   * 获取上传Token (如果使用云存储)
+   * 后端路径: GET /upload/token (需要认证)
+   */
+  async getUploadToken() {
+    return apiClient.get('/upload/token')
   }
 }
 
 /**
  * 社交功能API
+ * 🔧 修复: 对接后端实际API路径，基于users.ts路由
  */
 export const socialAPI = {
   /**
    * 关注/取消关注用户
+   * 后端路径: POST /users/:id/follow (需要认证)
    */
   async toggleFollow(userId) {
     return apiClient.post(`/users/${userId}/follow`)
@@ -632,16 +852,45 @@ export const socialAPI = {
 
   /**
    * 获取关注状态
+   * 后端路径: GET /users/:id/follow-status (需要认证)
    */
   async getFollowStatus(userId) {
     return apiClient.get(`/users/${userId}/follow-status`)
   },
 
   /**
+   * 获取用户关注列表
+   * 后端路径: GET /users/:id/following
+   */
+  async getUserFollowing(userId, params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get(`/users/${userId}/following`, { page, limit })
+  },
+
+  /**
+   * 获取用户粉丝列表
+   * 后端路径: GET /users/:id/followers
+   */
+  async getUserFollowers(userId, params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get(`/users/${userId}/followers`, { page, limit })
+  },
+
+  /**
+   * 获取我的关注列表
+   * 后端路径: GET /users/me/following (需要认证)
+   */
+  async getMyFollowing(params = {}) {
+    const { page = 1, limit = 20 } = params
+    return apiClient.get('/users/me/following', { page, limit })
+  },
+
+  /**
    * 举报内容
+   * 后端路径: POST /users/report (需要认证)
    */
   async report(targetType, targetId, reason, description = '') {
-    return apiClient.post('/social/report', {
+    return apiClient.post('/users/report', {
       targetType,
       targetId,
       reason,
