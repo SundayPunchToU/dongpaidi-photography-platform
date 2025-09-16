@@ -1,4 +1,7 @@
-// 简化的微信小程序认证服务
+// 简化的微信小程序认证服务 - 重构版本
+// 使用新的API客户端进行认证
+import { UserService } from './api.js'
+
 class SimpleAuthService {
   constructor() {
     this.isLoggedIn = false;
@@ -11,13 +14,17 @@ class SimpleAuthService {
     try {
       const userInfo = wx.getStorageSync('userInfo');
       const isLoggedIn = wx.getStorageSync('isLoggedIn');
-      
-      if (userInfo && isLoggedIn) {
+      const accessToken = wx.getStorageSync('access_token');
+
+      if (userInfo && isLoggedIn && accessToken) {
         this.userInfo = userInfo;
         this.isLoggedIn = true;
+        console.log('✅ 认证状态初始化成功:', userInfo.nickname);
+      } else {
+        console.log('ℹ️ 用户未登录');
       }
     } catch (error) {
-      console.warn('初始化认证状态失败:', error);
+      console.warn('❌ 初始化认证状态失败:', error);
     }
   }
 
@@ -31,34 +38,79 @@ class SimpleAuthService {
     return this.isLoggedIn;
   }
 
-  // 简单登录
-  async login(userInfo) {
+  // 检查登录状态（兼容方法）
+  checkLoginStatus() {
+    return UserService.checkLoginStatus();
+  }
+
+  // 获取当前用户（兼容方法）
+  getCurrentUser() {
+    return this.userInfo;
+  }
+
+  // 微信登录 - 使用新的API客户端
+  async loginWithWechat() {
     try {
-      this.userInfo = userInfo;
-      this.isLoggedIn = true;
-      
-      wx.setStorageSync('userInfo', userInfo);
-      wx.setStorageSync('isLoggedIn', true);
-      
-      return { success: true, data: userInfo };
+      const result = await UserService.login();
+
+      if (result.success) {
+        this.userInfo = result.user;
+        this.isLoggedIn = true;
+        console.log('✅ 微信登录成功:', result.user.nickname);
+        return { success: true, data: result.user };
+      } else {
+        console.error('❌ 微信登录失败:', result.error);
+        return { success: false, error: result.error };
+      }
     } catch (error) {
-      console.error('登录失败:', error);
-      return { success: false, error: error.message };
+      console.error('❌ 微信登录异常:', error);
+      return { success: false, error: error.message || '登录失败' };
     }
   }
 
-  // 登出
-  logout() {
+  // 手机号登录
+  async loginWithPhone(phone, code) {
     try {
+      const result = await UserService.loginWithPhone(phone, code);
+
+      if (result.success) {
+        this.userInfo = result.user;
+        this.isLoggedIn = true;
+        console.log('✅ 手机号登录成功:', result.user.nickname);
+        return { success: true, data: result.user };
+      } else {
+        console.error('❌ 手机号登录失败:', result.error);
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('❌ 手机号登录异常:', error);
+      return { success: false, error: error.message || '登录失败' };
+    }
+  }
+
+  // 通用登录方法（兼容旧版本）
+  async login(options = {}) {
+    if (options.phone && options.code) {
+      return this.loginWithPhone(options.phone, options.code);
+    } else {
+      return this.loginWithWechat();
+    }
+  }
+
+  // 登出 - 使用新的API客户端
+  async logout() {
+    try {
+      // 调用UserService的登出方法
+      await UserService.logout();
+
+      // 更新本地状态
       this.userInfo = null;
       this.isLoggedIn = false;
 
-      wx.removeStorageSync('userInfo');
-      wx.removeStorageSync('isLoggedIn');
-
+      console.log('✅ 用户已登出');
       return { success: true };
     } catch (error) {
-      console.error('登出失败:', error);
+      console.error('❌ 登出失败:', error);
       return { success: false, error: error.message };
     }
   }

@@ -1,7 +1,17 @@
 /** 应用配置 */
 export const config = {
-  // API配置
-  useMock: true, // 是否使用mock代替api返回
+  // API配置 - 根据环境自动判断是否使用Mock
+  useMock: (() => {
+    // 在微信小程序中判断环境
+    if (typeof wx !== 'undefined') {
+      const accountInfo = wx.getAccountInfoSync()
+      const isDev = accountInfo.miniProgram.envVersion === 'develop'
+      // 只有在开发环境且明确启用Mock时才使用
+      return isDev && (typeof process !== 'undefined' && process.env.ENABLE_MOCK === 'true')
+    }
+    // 其他环境默认不使用Mock
+    return false
+  })(),
 
   // 多平台登录配置
   auth: {
