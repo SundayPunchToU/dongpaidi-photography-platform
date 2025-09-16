@@ -5,9 +5,9 @@ services:
     image: postgres:15-alpine
     container_name: dongpaidi-postgres
     environment:
-      POSTGRES_DB: dongpaidi_db
-      POSTGRES_USER: dongpaidi_user
-      POSTGRES_PASSWORD: dongpaidi_password_2024
+      POSTGRES_DB: ${POSTGRES_DB:-dongpaidi_db}
+      POSTGRES_USER: ${POSTGRES_USER:-dongpaidi_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: md5
     ports:
       - "5432:5432"
@@ -18,7 +18,7 @@ services:
       - dongpaidi-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dongpaidi_user -d dongpaidi_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dongpaidi_user} -d ${POSTGRES_DB:-dongpaidi_db}"]
       interval: 10s
       timeout: 5s
       retries: 5

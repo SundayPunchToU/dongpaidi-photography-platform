@@ -386,29 +386,51 @@ EOF
 # 创建环境变量文件
 create_env_file() {
     log "INFO" "创建环境变量文件..."
-    
-    cat > "$PROJECT_ROOT/.env" << 'EOF'
+
+    # 检查是否已存在.env文件
+    if [[ -f "$PROJECT_ROOT/.env" ]]; then
+        log "WARN" ".env文件已存在，跳过创建"
+        log "INFO" "如需重新创建，请先删除现有的.env文件"
+        return 0
+    fi
+
+    # 生成安全的随机密钥
+    local jwt_secret=$(openssl rand -hex 32)
+    local jwt_refresh_secret=$(openssl rand -hex 32)
+    local encryption_key=$(openssl rand -hex 16)
+    local db_password=$(openssl rand -base64 24 | tr -d "=+/" | cut -c1-16)
+    local redis_password=$(openssl rand -base64 24 | tr -d "=+/" | cut -c1-16)
+    local admin_password=$(openssl rand -base64 12 | tr -d "=+/")
+
+    cat > "$PROJECT_ROOT/.env" << EOF
+# ⚠️ 警告：此文件包含敏感信息，请勿提交到版本控制系统
+# 此文件由setup-docker.sh自动生成
+
 # 应用配置
 NODE_ENV=production
 PORT=3000
 
 # 数据库配置
-DATABASE_URL=postgresql://dongpaidi_user:dongpaidi_password_2024@postgres:5432/dongpaidi_prod
+DATABASE_URL=postgresql://dongpaidi_user:${db_password}@postgres:5432/dongpaidi_prod
 
 # Redis配置
-REDIS_URL=redis://:redis_password_2024@redis:6379
+REDIS_URL=redis://:${redis_password}@redis:6379
 REDIS_HOST=redis
 REDIS_PORT=6379
-REDIS_PASSWORD=redis_password_2024
+REDIS_PASSWORD=${redis_password}
 
 # JWT配置
-JWT_SECRET=your_jwt_secret_key_2024_dongpaidi_very_secure
-JWT_EXPIRES_IN=7d
-JWT_REFRESH_EXPIRES_IN=30d
+JWT_SECRET=${jwt_secret}
+JWT_REFRESH_SECRET=${jwt_refresh_secret}
+JWT_EXPIRES_IN=15m
+JWT_REFRESH_EXPIRES_IN=7d
+
+# 加密配置
+ENCRYPTION_KEY=${encryption_key}
 
 # 管理员配置
 ADMIN_EMAIL=admin@dongpaidi.com
-ADMIN_PASSWORD=admin123456
+ADMIN_PASSWORD=${admin_password}
 
 # 文件上传配置
 UPLOAD_MAX_SIZE=10485760
@@ -416,12 +438,25 @@ UPLOAD_PATH=/app/uploads
 
 # API配置
 API_PREFIX=/api/v1
-CORS_ORIGIN=*
+CORS_ORIGIN=https://yourdomain.com
+
+# 安全配置
+SECURITY_ENABLED=true
+THREAT_DETECTION_ENABLED=true
 
 # 日志配置
 LOG_LEVEL=info
 LOG_FILE_PATH=/app/logs
+
+# Docker Compose 专用配置
+POSTGRES_DB=dongpaidi_prod
+POSTGRES_USER=dongpaidi_user
+POSTGRES_PASSWORD=${db_password}
 EOF
+
+    log "SUCCESS" "环境变量文件创建成功"
+    log "WARN" "请记录以下管理员密码: ${admin_password}"
+    log "INFO" "建议运行 ./scripts/security-check.sh 检查配置安全性"
 
     if [[ -f "$PROJECT_ROOT/.env" ]]; then
         log "SUCCESS" "环境变量文件创建成功"

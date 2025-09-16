@@ -27,11 +27,11 @@ readonly CYAN='\033[0;36m'
 readonly WHITE='\033[1;37m'
 readonly NC='\033[0m'
 
-# 数据库配置
-readonly DB_NAME="dongpaidi_prod"
-readonly DB_USER="dongpaidi_user"
-readonly DB_PASSWORD="dongpaidi_password_2024"
-readonly REDIS_PASSWORD="redis_password_2024"
+# 数据库配置 - 从环境变量读取
+readonly DB_NAME="${POSTGRES_DB:-dongpaidi_prod}"
+readonly DB_USER="${POSTGRES_USER:-dongpaidi_user}"
+readonly DB_PASSWORD="${POSTGRES_PASSWORD:-PLEASE_SET_POSTGRES_PASSWORD}"
+readonly REDIS_PASSWORD="${REDIS_PASSWORD:-PLEASE_SET_REDIS_PASSWORD}"
 
 # 等待时间配置
 readonly MAX_WAIT_TIME=300  # 5分钟
