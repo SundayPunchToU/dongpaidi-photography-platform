@@ -8,6 +8,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const path = require('path');
+const multer = require('multer');
 
 const app = express();
 
@@ -689,6 +690,87 @@ apiRouter.get('/payments/admin/stats', requireAuth, (req, res) => {
   }, '获取支付统计成功');
 });
 
+// ==================== 文件上传功能 ====================
+// 文件上传配置
+const storage = multer.memoryStorage(); // 使用内存存储，便于图片处理
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB限制
+    files: 9 // 最多9个文件
+  },
+  fileFilter: (req, file, cb) => {
+    // 基础文件类型检查（详细检查在控制器中进行）
+    const allowedMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`不支持的文件类型: ${file.mimetype}`), false);
+    }
+  }
+});
+
+// 导入批量上传控制器
+const BatchUploadController = require('./controllers/BatchUploadController');
+const uploadController = new BatchUploadController({
+  uploadPath: path.join(process.cwd(), 'uploads'),
+  enableLogging: true
+});
+
+// 文件上传API路由
+// 获取上传配置
+apiRouter.get('/upload/config', (req, res) => {
+  uploadController.getUploadConfig(req, res);
+});
+
+// 单图上传（增强版）
+apiRouter.post('/upload/single-image', requireAuth, upload.single('image'), (req, res) => {
+  uploadController.uploadSingleImage(req, res);
+});
+
+// 批量图片上传
+apiRouter.post('/upload/batch-images', requireAuth, upload.array('images', 9), (req, res) => {
+  uploadController.uploadBatchImages(req, res);
+});
+
+// 文件上传错误处理中间件
+apiRouter.use((error, req, res, next) => {
+  if (error instanceof multer.MulterError) {
+    let message = '文件上传失败';
+
+    switch (error.code) {
+      case 'LIMIT_FILE_SIZE':
+        message = '文件大小超出限制（最大10MB）';
+        break;
+      case 'LIMIT_FILE_COUNT':
+        message = '文件数量超出限制（最多9个）';
+        break;
+      case 'LIMIT_UNEXPECTED_FILE':
+        message = '意外的文件字段';
+        break;
+      default:
+        message = `文件上传错误: ${error.message}`;
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: message,
+      error: error.code
+    });
+  }
+
+  if (error.message && error.message.includes('不支持的文件类型')) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+
+  next(error);
+});
+
+// ==================== 原有API路由 ====================
 // 注册API路由
 app.use('/api/v1', apiRouter);
 
